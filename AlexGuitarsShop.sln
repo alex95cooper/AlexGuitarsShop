@@ -1,0 +1,45 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlexGuitarsShop", "AlexGuitarsShop\AlexGuitarsShop.csproj", "{6E8234D8-4FB2-47EA-8B16-DF7C7D9A4356}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Domain", "Domain", "{F9194F6E-6ED4-47D4-B459-2AB1868661BA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlexGuitarsShop.Domain", "AlexGuitarsShop.Domain\AlexGuitarsShop.Domain.csproj", "{6735FC00-13AF-42EA-85FE-68DD7A47C7A1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DAL", "DAL", "{B0766633-57BC-4BEE-B989-CDEAE3DE607F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlexGuitarsShop.DAL", "AlexGuitarsShop.DAL\AlexGuitarsShop.DAL.csproj", "{5FEF304A-57FF-4055-B75D-B2F286290434}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Service", "Service", "{70B88200-577A-4B7C-9567-41F612E1C344}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlexGuitarsShop.Service", "AlexGuitarsShop.Service\AlexGuitarsShop.Service.csproj", "{B6424F86-B07D-4707-BF13-93196331D8F6}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6E8234D8-4FB2-47EA-8B16-DF7C7D9A4356}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6E8234D8-4FB2-47EA-8B16-DF7C7D9A4356}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6E8234D8-4FB2-47EA-8B16-DF7C7D9A4356}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6E8234D8-4FB2-47EA-8B16-DF7C7D9A4356}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6735FC00-13AF-42EA-85FE-68DD7A47C7A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6735FC00-13AF-42EA-85FE-68DD7A47C7A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6735FC00-13AF-42EA-85FE-68DD7A47C7A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6735FC00-13AF-42EA-85FE-68DD7A47C7A1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5FEF304A-57FF-4055-B75D-B2F286290434}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5FEF304A-57FF-4055-B75D-B2F286290434}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5FEF304A-57FF-4055-B75D-B2F286290434}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5FEF304A-57FF-4055-B75D-B2F286290434}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B6424F86-B07D-4707-BF13-93196331D8F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B6424F86-B07D-4707-BF13-93196331D8F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B6424F86-B07D-4707-BF13-93196331D8F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B6424F86-B07D-4707-BF13-93196331D8F6}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{6735FC00-13AF-42EA-85FE-68DD7A47C7A1} = {F9194F6E-6ED4-47D4-B459-2AB1868661BA}
+		{5FEF304A-57FF-4055-B75D-B2F286290434} = {B0766633-57BC-4BEE-B989-CDEAE3DE607F}
+		{B6424F86-B07D-4707-BF13-93196331D8F6} = {70B88200-577A-4B7C-9567-41F612E1C344}
+	EndGlobalSection
+EndGlobal

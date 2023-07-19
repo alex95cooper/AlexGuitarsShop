@@ -1,0 +1,31 @@
+.home-page-container {
+    height: calc(100vh - 35px);
+    width: 100vw;
+    overflow: auto;
+}
+
+.home-page-container::-webkit-scrollbar {
+    display: none;
+}
+
+.home-page-background-container {
+    background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url(../images/home_page.jpg) no-repeat;
+    height: 1000px;
+    background-size: cover;
+    text-align: center;
+    font-size: 3em;
+    color: gainsboro;
+}
+
+.home-header {
+    padding-top: 70px;
+}
+
+.home-page-background-container a {
+    color: cornflowerblue;
+    text-decoration: none;
+}
+
+.home-page-background-container a:hover {
+    color: gainsboro;
+}

@@ -1,0 +1,138 @@
+.catalog-page-container {
+    height: calc(100vh - 35px);
+    width: 100vw;
+    overflow: auto;
+}
+
+.catalog-page-container::-webkit-scrollbar {
+    display: none;
+}
+
+.catalog-page-background-container {
+    background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url(../images/catalog_page.jpg) no-repeat;
+    height: 950px;
+    background-size: cover;
+    overflow: auto;
+    color: gainsboro;
+}
+
+.catalog-page-background-container::-webkit-scrollbar {
+    display: none;
+}
+
+.catalog-content {
+    font-size: 1.4em;
+    padding: 70px 100px;
+}
+
+.empty-list-container {
+    font-size: 3em;
+    text-align: center;
+}
+
+.add-button {
+    font-size: 1.1em;
+    background: darkgray;
+    height: 50px;
+    width: 150px;
+    text-align: center;
+    padding-top: 20px;
+}
+
+.add-button a:hover {
+    color: grey;
+}
+
+.guitars-container {
+    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5));
+    margin-top: 20px;
+    border: 2px solid gray;
+    min-width: 1000px;
+    padding: 50px;
+}
+
+.model-container {
+    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5));
+    border: 2px solid gray;
+    padding: 50px;
+    height: 300px;
+    margin-bottom: 50px;
+
+}
+
+.image-container {
+    background: white;
+    width: 300px;
+    height: 300px;
+    float: left;
+}
+
+.guitar-img {
+    height: 300px;
+    display: block;
+    margin: 0 auto;
+}
+
+.model-info-container {
+    margin-left: 320px;
+}
+
+.price, .description, .model-buttons-container {
+    margin-top: 20px;
+}
+
+.price {
+    color: goldenrod;
+}
+
+.model-buttons-container a {
+    padding: 5px 15px;
+    border: 2px solid gray;
+    font-size: 1em;
+    color: gainsboro;
+    width: 150px;
+    height: 50px;
+}
+
+.model-buttons-container a:hover {
+    background: gray;
+}
+
+.change-button, .delete-button {
+    margin-left: 20px;
+}
+
+.paginator-container {
+    height: 80px;
+}
+
+.paginator {
+    justify-content: center;
+    display: flex;
+    min-width : 230px;
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.paginator a {
+    text-align: center;
+    color: gainsboro;
+    float: left;
+    padding: 8px 16px;
+    text-decoration: none;
+    transition: background-color .3s;
+}
+
+.border-page-number {
+    font-size: 2em;
+}
+
+.page-number, .current-page-number{
+    margin-top: 20px;
+    margin-bottom: 13px;
+}
+
+.current-page-number {
+    background: darkgray;
+}
+

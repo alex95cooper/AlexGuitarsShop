@@ -1,0 +1,31 @@
+@model AlexGuitarsShop.Domain.ViewModels.LoginViewModel
+
+@{
+    ViewData["Title"] = "Login";
+}
+
+
+<div class="login-page-container">
+    <div class="login-page-background-container">
+        <div class="login-content">
+            <h2>Login</h2>
+            <form method="post" asp-controller="Account" asp-action="Login">
+                <div asp-validation-summary="ModelOnly"></div>
+                <div>
+                    <label asp-for="Email"></label><br/>
+                    <input class="login-input-text" asp-for="Email" type="email"/>
+                    <span asp-validation-for="Email"></span>
+                </div>
+                <div>
+                    <label asp-for="Password"></label><br/>
+                    <input class="login-input-text" id="password" type="password" asp-for="Password" placeholder="From 5 to 50 symbols.." 
+                    pattern=".{5,50}" required/>
+                    <span asp-validation-for="Password"></span>
+                </div>
+                <div>
+                    <input class="login-submit" type="submit" value="Login"/>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

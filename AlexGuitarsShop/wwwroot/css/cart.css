@@ -1,0 +1,123 @@
+.cart-page-container {
+    height: calc(100vh - 35px);
+    width: 100vw;
+    overflow: auto;
+}
+
+.cart-page-container::-webkit-scrollbar {
+    display: none;
+}
+
+.cart-page-background-container {
+    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(../images/cart_page.jpeg) no-repeat;
+    height: 950px;
+    background-size: cover;
+    overflow: auto;
+    color: gainsboro;
+    padding: 70px 100px;
+}
+
+.cart-page-background-container::-webkit-scrollbar {
+    display: none;
+}
+
+.cart-content {
+    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5));
+    border: 2px solid gray;
+    font-size: 1.4em;
+    padding: 20px;
+    min-width: 850px;
+}
+
+.cart-item-container {
+    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5));
+    border: 2px solid gray;
+    height: 150px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.cart-item-container #part{
+    display: inline-block;
+}
+
+.cart-item-info-container {
+    margin-left: 20px;
+}
+
+.cart-item-info-container div{
+    margin-bottom: 7px; 
+}
+
+.calculator .part{
+    color: gainsboro;
+}
+
+.remove-button, .order-button {
+    font-size: 1.1em;
+    height: 50px;
+    width: 150px;
+    text-align: center;
+    padding-top: 20px;
+}
+
+.order-button {
+    background: darkgray;
+}
+
+.remove-button-container{
+    float: right;
+}
+
+.remove-button {
+    background: none;
+    color: gainsboro;
+    border: 2px solid gray;
+    float: right;
+}
+
+.add-button a:hover {
+    color: grey;
+}
+
+.guitars-container {
+    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5));
+    margin-top: 20px;
+    border: 2px solid gray;
+    min-width: 1000px;
+    padding: 50px;
+}
+
+.model-container {
+    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5));
+    border: 2px solid gray;
+    padding: 50px;
+    height: 300px;
+    margin-bottom: 50px;
+
+}
+
+.cart-image-container {
+    background: white;
+    width: 150px;
+    height: 150px;
+    float: left;
+}
+
+.cart-guitar-img {
+    height: 150px;
+    display: block;
+    margin: 0 auto;
+}
+
+.model-info-container {
+    margin-left: 320px;
+}
+
+.price, .description {
+    margin-top: 20px;
+}
+
+.price {
+    color: goldenrod;
+}

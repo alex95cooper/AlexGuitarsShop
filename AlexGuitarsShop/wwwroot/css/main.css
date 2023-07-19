@@ -1,0 +1,118 @@
+* {
+    margin: 0;
+    padding: 0;
+    font-family: "Segoe UI", serif;
+}
+
+body {
+    min-width: 800px;
+    width: 100vw;
+    height: 100vh;
+    font-size: 1em;
+    font-family: "Segoe UI", serif;
+}
+
+body::-webkit-scrollbar {
+    display: none;
+}
+
+a {
+    color: #333;
+    text-decoration: none;
+}
+
+header a:hover {
+    color: grey;
+}
+
+.home-button {
+    font-size: 1.3em;
+}
+
+.about-us-button, .contacts-button, .registration-button, .cart-button {
+    margin-left: 20px;
+}
+
+header, footer {
+    width: 98%;
+    background-color: gainsboro;
+    height: 35px;
+}
+
+header {
+    border-bottom: 2px solid silver;
+    padding: 1%;
+}
+
+a.headerElements {
+    display: inline-block;
+    vertical-align: center;
+}
+
+footer {
+    border-top: 2px solid silver;
+    padding: 20px 1% 1%;
+}
+
+footer a {
+    color: cornflowerblue;
+    text-decoration: underline;
+}
+
+.login-registration-container {
+    padding-top: 5px;
+    margin-right: 0;
+    margin-left: auto;
+}
+
+input, textarea {
+    border: 3px solid #343433;
+    border-radius: 5px;
+    height: 30px;
+    color: #333;
+    font-size: 0.9em;
+    padding-left: 5px;
+}
+
+.user-img {
+    width: 20px;
+    horiz-align: center;
+}
+
+.dropdown-button {
+    background-color: gainsboro;
+    color: grey;
+    border: none;
+    cursor: pointer;
+
+}
+
+.user-box-container {
+    float: right;
+    text-align: center;
+    
+}
+
+.dropdown-button {
+    margin-right: 0;
+
+}
+
+.dropdown-child {
+    display: none;
+    width: 120px;
+    float: right;
+    position: absolute;
+    background-color: darkgray;
+}
+
+.dropdown-child a {
+    color: white;
+    padding: 20px;
+    text-decoration: none;
+    display: block;
+}
+
+.dropdown:hover .dropdown-child {
+    display: block;
+}

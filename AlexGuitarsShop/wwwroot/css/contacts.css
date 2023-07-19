@@ -1,0 +1,34 @@
+.contacts-page-container {
+    height: calc(100vh - 35px);
+    width: 100vw;
+    overflow: auto;
+}
+
+.contacts-page-container::-webkit-scrollbar {
+    display: none;
+}
+
+.contacts-page-background-container {
+    background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url(../images/contacts_page.jpg) no-repeat;
+    height: 1000px;
+    background-size: cover;
+    color: gainsboro;
+}
+
+.contacts-content {
+    line-height: 2;
+    font-size: 1.1em;
+    padding: 50px;
+}
+
+.telephone_information {
+    line-height: 1.7;
+    float: left;
+}
+
+.address_information {
+    line-height: 2;
+    margin-left: 400px;
+}
+
+

@@ -1,0 +1,74 @@
+.add-new-page-container {
+    height: calc(100vh - 35px);
+    width: 100vw;
+    overflow: scroll;
+}
+
+.add-new-page-container::-webkit-scrollbar {
+    display: none;
+}
+
+.add-new-page-background-container {
+    background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url(../images/add_new_page.jpg) no-repeat;
+    height: 1000px;
+    background-size: cover;
+    color: gainsboro;
+    padding-top: 100px;
+
+}
+
+.form-container {
+    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5));
+    border: 2px solid gainsboro;
+    margin: auto;
+    width: 800px;
+    height: 750px;
+    padding: 20px;
+    font-size: 1.5em;
+}
+
+.image-form-group-row {
+    height: 305px;
+    line-height: 1.5;
+}
+
+.image-form-group-row .add-input-container {
+    height: 260px;
+    margin-top: 40px;
+    margin-bottom: 40px;
+}
+
+.form-group-row {
+    line-height: 3;
+}
+
+.col-4 {
+    float: left;
+}
+
+.add-input-container, .add-image-container, .add-submit-container {
+    margin-left: 320px;
+}
+
+.add-input-container, .add-image-container input {
+    Width: 400px;
+}
+
+.description-input {
+    margin-top: 20px;
+    resize: none;
+    width: 400px;
+    height: 100px;
+}
+
+.submit-add-button {
+    height: 50px;
+    width: 100px;
+    color: #343433;
+    background: darkgray;
+    border-style: none;
+    border-radius: 0;
+    text-align: center;
+}
+    
+

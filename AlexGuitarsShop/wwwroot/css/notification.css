@@ -1,0 +1,22 @@
+.notification-page-container {
+    height: calc(100vh - 35px);
+    width: 100vw;
+    overflow: auto;
+}
+
+.notification-page-container::-webkit-scrollbar {
+    display: none;
+}
+
+.notification-page-background-container {
+    background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url(../images/notify_page.jpg) no-repeat;
+    height: 1000px;
+    background-size: cover;
+    text-align: center;
+    font-size: 3em;
+    color: gainsboro;
+}
+
+.notification-header {
+    padding-top: 70px;
+}

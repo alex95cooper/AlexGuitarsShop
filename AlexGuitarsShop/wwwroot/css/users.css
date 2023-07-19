@@ -1,0 +1,94 @@
+.users-page-container {
+    height: calc(100vh - 35px);
+    width: 100vw;
+    overflow: auto;
+}
+
+.users-page-container::-webkit-scrollbar {
+    display: none;
+}
+
+.users-page-background-container::-webkit-scrollbar {
+    display: none;
+}
+
+.users-page-background-container {
+    background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url(../images/users_page.jpg) no-repeat;
+    height: 950px;
+    padding: 70px 100px;
+    background-size: cover;
+    overflow: auto;
+    color: gainsboro;
+}
+
+.users-content {
+    background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3));
+    border: 2px solid gray;
+    font-size: 1.4em;
+    padding: 20px;
+}
+
+.user-container div {
+    display: inline-block;
+}
+
+.make-button-container {
+    float: right;
+}
+
+.make-button {
+    font-size: 1.1em;
+    background: darkgray;
+    height: 50px;
+    width: 170px;
+    text-align: center;
+    padding-top: 20px;
+    float: right;
+}
+
+.make-button a:hover {
+    color: grey;
+}
+
+.user-container {
+    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5));
+    border: 2px solid gray;
+    padding: 20px;
+    height: 80px;
+    margin-bottom: 50px;
+
+}
+
+.image-container {
+    background: white;
+    width: 300px;
+    height: 300px;
+    float: left;
+}
+
+.guitar-img {
+    height: 300px;
+    display: block;
+    margin: 0 auto;
+}
+
+.model-info-container {
+    margin-left: 320px;
+}
+
+.price, .description, .model-buttons-container {
+    margin-top: 20px;
+}
+
+.price {
+    color: goldenrod;
+}
+
+.model-buttons-container a {
+    padding: 5px 15px;
+    border: 2px solid gray;
+    font-size: 1em;
+    color: gainsboro;
+    width: 150px;
+    height: 50px;
+}

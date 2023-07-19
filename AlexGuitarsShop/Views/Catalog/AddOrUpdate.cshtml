@@ -1,0 +1,90 @@
+@using System.Text
+@model AlexGuitarsShop.Domain.ViewModels.GuitarViewModel
+
+@{
+    var textTitle = Model.Id == 0 ? "Add" : "Change";
+}
+
+@{
+    ViewData["Title"] = textTitle;
+}
+
+<div class="add-new-page-container">
+    <div class="add-new-page-background-container">
+        <div class="form-container">
+            <form class="js-form-validate" method="post" asp-action="AddOrUpdate" enctype="multipart/form-data">
+                <h2 class="add-new-header">@textTitle Guitar</h2>
+                <div class="row">
+
+                    <div class="image-form-group-row">
+                        <div class="col-4">
+                            <div class="image-container">
+                                @if (Model.Image == null)
+                                {
+                                    <img class="guitar-img" id="preview" src="/images/guitar-logo.jpg" alt="Guitar"/>
+                                }
+                                else
+                                {
+                                    var image = Convert.ToBase64String(Model.Image);
+                                    <img class="guitar-img" id="preview" src="data:image;base64,@image" alt="Guitar"/>
+                                }
+                            </div>
+                        </div>
+                        <div class="add-image-container">
+                            <div>
+                                <label>Image name</label>
+                            </div>
+                            <div>
+                                <input asp-for="Avatar" type="File" id="file" accept="image/*" onchange="previewImage();"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group-row">
+                        <div class="col-4">
+                            <label>Name</label>
+                        </div>
+                        <div class="add-input-container">
+                            <input asp-for="Name" placeholder="From 5 to 50 symbols.." pattern=".{5,50}" required/>
+                        </div>
+                    </div>
+                    <div class="form-group-row">
+                        <div class="col-4">
+                            <label>Price($)</label>
+                        </div>
+                        <div class="add-input-container">
+                            <input  asp-for="Price" min="10"/>
+                        </div>
+                    </div>
+                    <div class="form-group-row">
+                        <div class="col-4">
+                            <label>Description</label>
+                        </div>
+                        <div class="add-input-container">
+                            <textarea asp-for="Description" placeholder="From 10 to 600 symbols.." pattern=".{10,600}" required 
+                            class="description-input" 
+                            rows="3" ></textarea>
+                        </div>
+                    </div>
+                    <div class="add-submit-container">
+                        <input class="submit-add-button" type="submit" value="@textTitle"/>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function previewImage() {
+        var file = document.getElementById("file").files
+        if (file.length > 0) {
+            var fileReader = new FileReader()
+ 
+            fileReader.onload = function (event) {
+                document.getElementById("preview").setAttribute("src", event.target.result)
+            }
+ 
+            fileReader.readAsDataURL(file[0])
+        }
+    }
+</script>

@@ -1,0 +1,53 @@
+.register-page-container {
+    height: calc(100vh - 35px);
+    width: 100vw;
+    overflow: auto;
+}
+
+.register-page-container::-webkit-scrollbar {
+    display: none;
+}
+
+.register-page-background-container {
+    background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url(../images/register_login_page.jpg) no-repeat;
+    height: 950px;
+    background-size: cover;
+    overflow: auto;
+    color: gainsboro;
+}
+
+.register-content {
+    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5));
+    margin-top: 50px;
+    border: 2px solid gray;
+    width: 380px;
+    padding: 40px;
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 1.5em;
+}
+
+.register-content h2 {
+    margin-bottom: 10px;
+}
+
+.register-input-text {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    width: 300px;
+}
+
+.validation-summary-errors {
+    color: lightcoral;
+}
+
+.register-submit {
+    margin-top: 10px;
+    height: 50px;
+    width: 100px;
+    color: gray;
+    background: none;
+    border: 2px solid gray;
+    border-radius: 0;
+    text-align: center;
+}

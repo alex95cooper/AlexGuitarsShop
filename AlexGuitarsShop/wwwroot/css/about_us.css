@@ -1,0 +1,44 @@
+.about-us-page-container {
+    height: calc(100vh - 35px);
+    overflow: auto;
+}
+
+.about-us-page-container::-webkit-scrollbar {
+    display: none;
+}
+
+.about-us-text-content {
+    font-size: 1.1em;
+    padding: 50px;
+    line-height: 1.8;
+}
+
+.about-us-page-background-container {
+    background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url(../images/about_us_page.jpg) no-repeat;
+    height: 1000px;
+    background-size: cover;
+    color: gainsboro;
+}
+
+.about-us-image-text-content div {
+    height: 250px;
+    margin-top: 10px;
+}
+
+.about-us-image-content {
+    float: left;
+}
+
+.about-us-more-text-content {
+    text-wrap: normal;
+    margin-left: 410px;
+}
+
+.workshop-text-container {
+    margin-top: 10px;
+}
+
+.workshop-text {
+    text-decoration: underline;
+}
+
