@@ -3,12 +3,12 @@
     <PropertyGroup>
         <TargetFramework>net7.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
+        <Nullable>disable</Nullable>
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\AlexGuitarsShop.DAL\AlexGuitarsShop.DAL.csproj" />
-      <ProjectReference Include="..\AlexGuitarsShop.Domain\AlexGuitarsShop.Domain.csproj" />
+      <PackageReference Include="Dapper" Version="2.0.143" />
+      <PackageReference Include="MySqlConnector" Version="2.3.0-beta.2" />
     </ItemGroup>
 
 </Project>

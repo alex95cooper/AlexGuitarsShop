@@ -1,6 +1,6 @@
 using System.Data;
 using AlexGuitarsShop.DAL.Interfaces;
-using AlexGuitarsShop.Domain.Models;
+using AlexGuitarsShop.DAL.Models;
 using Dapper;
 using MySqlConnector;
 
@@ -17,102 +17,101 @@ public class CartItemRepository : ICartItemRepository
         _cart = cart;
     }
 
-    public async Task<CartItem> Get(int id)
+    public async Task<CartItem> GetAsync(int id)
     {
         using IDbConnection db = new MySqlConnection(_connectionString);
         return await db.QueryFirstAsync<CartItem>(@"SELECT Cart_Id, Prod_Id, Guitars.Name, Guitars.Price, 
         Guitars.Image, Guitars.IsDeleted, Quantity 
         FROM CartItems
         INNER JOIN Guitars WHERE CartItems.Prod_Id = @Id
-        AND Guitars.IsDeleted = 0", new {id});
+        AND Guitars.IsDeleted = 0", new {id})!;
     }
 
-    public async Task<List<CartItem>> Select()
+    public async Task<List<CartItem>> SelectAsync()
     {
         using IDbConnection db = new MySqlConnection(_connectionString);
         return (await db.QueryAsync<CartItem, Guitar, CartItem>(@$"SELECT CartItems.*, Guitars.*
         FROM CartItems 
         LEFT JOIN Guitars ON CartItems.Prod_Id = Guitars.Id
-        WHERE CartItems.Cart_Id = '{_cart.Id}' AND Guitars.IsDeleted = 0 ", (item, product) =>
+        WHERE CartItems.Cart_Id = '{_cart!.Id}' AND Guitars.IsDeleted = 0 ", (item, product) =>
         {
-            item.Product = product;
+            item!.Product = product!;
             return item;
-        })).ToList();
+        })!)!.ToList();
     }
 
-    public async Task<List<CartItem>> SelectByLimit(int offset, int limit)
+    public async Task<List<CartItem>> SelectByLimitAsync(int offset, int limit)
     {
         using IDbConnection db = new MySqlConnection(_connectionString);
         return (await db.QueryAsync<CartItem, Guitar, CartItem>(@$"SELECT CartItems.*, Guitars.*
         FROM CartItems 
         LEFT JOIN Guitars ON CartItems.Prod_Id = Guitars.Id
-        WHERE CartItems.Cart_Id = '{_cart.Id}' AND Guitars.IsDeleted = 0 
+        WHERE CartItems.Cart_Id = '{_cart!.Id}' AND Guitars.IsDeleted = 0 
         LIMIT {limit} OFFSET {offset}", (item, product) =>
         {
-            item.Product = product;
+            item!.Product = product;
             return item;
-        })).ToList();
+        })!)!.ToList();
     }
 
-    public async Task Add(CartItem item)
+    public async Task AddAsync(CartItem item)
     {
         using IDbConnection db = new MySqlConnection(_connectionString);
         await db.ExecuteAsync(@"INSERT INTO CartItems (Cart_Id, Prod_Id, Quantity) 
             VALUES (@Cart_Id, @Prod_Id, @Quantity)",
             new
             {
-                Cart_Id = _cart.Id,
-                Prod_Id = item.Product.Id,
+                Cart_Id = _cart!.Id,
+                Prod_Id = item!.Product!.Id,
                 item.Quantity
             }
-        );
+        )!;
     }
 
-    public async Task Update(CartItem item)
+    public async Task UpdateAsync(CartItem item)
     {
         using IDbConnection db = new MySqlConnection(_connectionString);
         await db.ExecuteAsync(@"UPDATE CartItems SET Quantity = @Quantity
         WHERE Cart_Id = @Cart_Id AND Prod_Id = @Prod_Id",
             new
             {
-                Cart_Id = _cart.Id,
-                Prod_Id = item.Product.Id,
+                Cart_Id = _cart!.Id,
+                Prod_Id = item!.Product!.Id,
                 item.Quantity
             }
-        );
+        )!;
     }
 
-    public async Task Delete(int id)
+    public async Task DeleteAsync(int id)
     {
-        //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         using IDbConnection db = new MySqlConnection(_connectionString);
         await db.ExecuteAsync($@"DELETE FROM CartItems WHERE Cart_ID = @Cart_ID AND Prod_Id = @Prod_Id",
-            new {Cart_Id = _cart.Id, Prod_Id = id});
+            new {Cart_Id = _cart!.Id, Prod_Id = id})!;
     }
 
-    public async Task DeleteAll()
+    public async Task DeleteAllAsync()
     {
         using IDbConnection db = new MySqlConnection(_connectionString);
         await db.ExecuteAsync($@"DELETE FROM CartItems WHERE Cart_ID = @Cart_ID",
-            new {Cart_Id = _cart.Id});
+            new {Cart_Id = _cart!.Id})!;
     }
 
-    public async Task<int> GetProductQuantity(int id)
+    public async Task<int> GetProductQuantityAsync(int id)
     {
         using IDbConnection db = new MySqlConnection(_connectionString);
-        return await db.ExecuteScalarAsync<int>($"SELECT Quantity FROM CartItems WHERE Cart_Id = '{_cart.Id}'");
+        return await db.ExecuteScalarAsync<int>($"SELECT Quantity FROM CartItems WHERE Cart_Id = '{_cart!.Id}'")!;
     }
 
-    public async Task ChangeQuantity(int id, int quantity)
+    public async Task ChangeQuantityAsync(int id, int quantity)
     {
         using IDbConnection db = new MySqlConnection(_connectionString);
         await db.ExecuteAsync($@"UPDATE CartItems SET Quantity = {quantity}
-        WHERE Cart_Id = @Cart_Id AND Prod_Id = {id}", new {Cart_Id = _cart.Id});
+        WHERE Cart_Id = @Cart_Id AND Prod_Id = {id}", new {Cart_Id = _cart!.Id})!;
     }
 
-    public async Task<int> GetCount()
+    public async Task<int> GetCountAsync()
     {
         using IDbConnection db = new MySqlConnection(_connectionString);
-        return await db.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM CartItems WHERE Cart_Id = '{_cart.Id}'");
+        return await db.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM CartItems WHERE Cart_Id = '{_cart!.Id}'")!;
     }
 }

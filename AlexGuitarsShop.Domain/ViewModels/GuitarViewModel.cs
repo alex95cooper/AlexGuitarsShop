@@ -4,11 +4,11 @@ namespace AlexGuitarsShop.Domain.ViewModels;
 
 public class GuitarViewModel
 {
-    public int Id { get; set; }
-    public string Name { get; set; }
-    public ushort Price { get; set; }
-    public string Description { get; set; }
-    public IFormFile Avatar { get; set; }
-    public byte[]? Image { get; set; }
-    public ushort IsDeleted { get; set; }
+    public int Id { get; init; }
+    public string Name { get; init; }
+    public ushort Price { get; init; }
+    public string Description { get; init; }
+    public IFormFile Avatar { get; init; }
+    public byte[] Image { get; set; }
+    public ushort IsDeleted { get; init; }
 }

@@ -2,12 +2,13 @@
 
     <PropertyGroup>
         <TargetFramework>net7.0</TargetFramework>
-        <Nullable>enable</Nullable>
+        <Nullable>disable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
+        <LangVersion>10</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Dapper" Version="2.0.138" />
+      <PackageReference Include="Dapper" Version="2.0.143" />
       <PackageReference Include="MySqlConnector" Version="2.3.0-beta.2" />
       <PackageReference Include="System.Data.SqlClient" Version="4.8.5" />
     </ItemGroup>
@@ -15,7 +16,7 @@
     <ItemGroup>
       <ProjectReference Include="..\AlexGuitarsShop.DAL\AlexGuitarsShop.DAL.csproj" />
       <ProjectReference Include="..\AlexGuitarsShop.Domain\AlexGuitarsShop.Domain.csproj" />
-      <ProjectReference Include="..\AlexGuitarsShop.Service\AlexGuitarsShop.Service.csproj" />
+      <ProjectReference Include="..\AlexGuitarsShop.Scripts\AlexGuitarsShop.Scripts.csproj" />
     </ItemGroup>
 
 </Project>

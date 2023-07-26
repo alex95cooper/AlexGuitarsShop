@@ -26,7 +26,7 @@
     <a class="about-us-button" asp-controller="Home" asp-action="AboutUs">AboutUs</a>
     <a class="contacts-button" asp-controller="Home" asp-action="Contacts">Contacts</a>
     <a class="cart-button" asp-controller="Cart" asp-action="Index">Cart</a>
-    @if (!User.Identity.IsAuthenticated)
+    @if (!User.Identity!.IsAuthenticated)
     {
         <span class="login-registration-container">
             <a class="login-button" asp-controller="Account" asp-action="Login">Login</a>
@@ -38,15 +38,15 @@
         <span class="user-box-container">
             <img class="user-img" src="/images/profile-icon.jpg" alt="User"/>
             <div class="dropdown">
-                <a class="dropdown-button">@User.FindFirstValue(ClaimTypes.Role): @User.Identity.Name</a>
+                <a class="dropdown-button">@User.FindFirstValue(ClaimTypes.Role): @User.Identity!.Name</a>
                 <div class="dropdown-child">
                     <a asp-controller="Account" asp-action="Logout">Exit</a>
                     @if (User.IsInRole("Admin") || User.IsInRole("SuperAdmin"))
                     {
-                        <a asp-controller="Account" asp-route-role="Users" asp-action="Users">Users</a>
+                        <a asp-controller="Account" asp-route-role="User" asp-action="Users">Users</a>
                         if (User.IsInRole("SuperAdmin"))
                         {
-                            <a asp-controller="Account" asp-route-role="Admins" asp-action="Users">Admins</a>
+                            <a asp-controller="Account" asp-route-role="Admin" asp-action="Users">Admins</a>
                         }
                     }
                 </div>

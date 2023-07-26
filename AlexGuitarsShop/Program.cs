@@ -1,39 +1,28 @@
-using AlexGuitarsShop.DAL.Repositories;
-using AlexGuitarsShop.DAL.Interfaces;
-using AlexGuitarsShop.Domain.Models;
-using AlexGuitarsShop.Service.Interfaces;
-using AlexGuitarsShop.Service.Services;
+using AlexGuitarsShop;
+using AlexGuitarsShop.DAL.Models;
+using AlexGuitarsShop.Scripts;
 using Microsoft.AspNetCore.Authentication.Cookies;
 
-var builder = WebApplication.CreateBuilder(args);
+var builder = WebApplication.CreateBuilder(args!);
 builder.Services.AddControllersWithViews();
 
-string connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+string connectionString = builder.Configuration.GetConnectionString("DefaultConnection")!;
+SeedDatabase.Init(connectionString);
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
-        options.LoginPath = new PathString("/Account/Login");
+        options!.LoginPath = new PathString("/Account/Login");
         options.AccessDeniedPath = new PathString("/Account/Login");
     });
-
-builder.Services.AddTransient<IRepository<Guitar>, GuitarRepository>(provider => 
-    new GuitarRepository(connectionString));
-builder.Services.AddTransient<IUserRepository, UserRepository>(provider => 
-    new UserRepository(connectionString));
 
 builder.Services.AddMemoryCache();
 builder.Services.AddSession();
 builder.Services.AddScoped(sp => new Cart(sp));
-
-builder.Services.AddTransient<ICartItemRepository, CartItemRepository>(provider => 
-    new CartItemRepository(connectionString, provider.GetService<Cart>()));
-
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
-builder.Services.AddTransient<IGuitarService, GuitarService>();
-builder.Services.AddTransient<IAccountService, AccountService>();
-builder.Services.AddTransient<ICartItemService, CartItemService>();
+builder.Services.InitializeRepositories(connectionString);
+builder.Services.InitializeEntityHandlers();
 
 builder.Services.AddMvc();
 

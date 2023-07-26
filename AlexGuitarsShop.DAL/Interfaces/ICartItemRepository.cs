@@ -1,12 +1,12 @@
-using AlexGuitarsShop.Domain.Models;
+using AlexGuitarsShop.DAL.Models;
 
 namespace AlexGuitarsShop.DAL.Interfaces;
 
 public interface ICartItemRepository: IRepository<CartItem>
 {
-    Task<int> GetProductQuantity(int id);
+    Task<int> GetProductQuantityAsync(int id);
 
-    Task ChangeQuantity(int id, int quantity);
+    Task ChangeQuantityAsync(int id, int quantity);
     
-    Task DeleteAll();
+    Task DeleteAllAsync();
 }

@@ -1,8 +1,6 @@
-using AlexGuitarsShop.Domain.Enums;
-
 namespace AlexGuitarsShop.Domain.Interfaces;
 
-public interface IResponse<T>
+public interface IResponse<out T>
 {
     string Description { get; }
     StatusCode StatusCode { get; }

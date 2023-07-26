@@ -1,4 +1,4 @@
-@model AlexGuitarsShop.Domain.Models.Cart
+@model AlexGuitarsShop.DAL.Models.Cart
 
 @{
     ViewData["Title"] = "Cart";
@@ -7,15 +7,15 @@
 <div class="cart-page-container">
     <div class="cart-page-background-container">
         <div class="cart-content">
-            @foreach (var cartProduct in Model.Products)
+            @foreach (var cartProduct in Model!.Products!)
                 {
                     <div class="cart-item-container">
                         <div class="cart-image-container" id="part">
-                            <img class="cart-guitar-img" src="data:image;base64,@Convert.ToBase64String(cartProduct.Product.Image)" alt="Guitar"/>
+                            <img class="cart-guitar-img" src="data:image;base64,@Convert.ToBase64String(cartProduct!.Product!.Image!)" alt="Guitar"/>
                         </div>
                         <div class="cart-item-info-container" id="part">
                             <div>
-                                <p class="name">@cartProduct.Product.Name</p>
+                                <p class="name">@cartProduct.Product.Name!</p>
                             </div>
                             <div>
                                <p class="cart-price">$ @cartProduct.Product.Price.ToString()</p> 

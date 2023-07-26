@@ -1,11 +1,12 @@
-using AlexGuitarsShop.Domain.Models;
+using AlexGuitarsShop.DAL;
+using AlexGuitarsShop.DAL.Models;
 
 namespace AlexGuitarsShop.Domain.ViewModels;
 
 public class UserListViewModel
 {
-    public List<User> Users { get; set; }
-    public string Role { get; set; }
-    public int PageCount { get; set; }
-    public int CurrentPage { get; set; }
+    public List<User> Users { get; init; }
+    public Role Role { get; init; }
+    public int PageCount { get; init; }
+    public int CurrentPage { get; init; }
 }

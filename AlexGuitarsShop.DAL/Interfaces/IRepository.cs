@@ -2,17 +2,17 @@ namespace AlexGuitarsShop.DAL.Interfaces;
 
 public interface IRepository<T>
 {
-    Task<T> Get(int id);
+    Task<T> GetAsync(int id);
     
-    Task Add(T entity);
+    Task AddAsync(T entity);
     
-    Task<List<T>> Select();
+    Task<List<T>> SelectAsync();
     
-    Task<List<T>> SelectByLimit(int offset, int limit);
+    Task<List<T>> SelectByLimitAsync(int offset, int limit);
     
-    Task Update(T entity);
+    Task UpdateAsync(T entity);
     
-    Task Delete(int id);
+    Task DeleteAsync(int id);
     
-    Task<int> GetCount();
+    Task<int> GetCountAsync();
 }

@@ -1,4 +1,13 @@
+CREATE DATABASE guitarsshop;
+
 USE guitarsshop;
+Drop database guitarsshop;
+
+SELECT SCHEMA_NAME
+  FROM INFORMATION_SCHEMA.SCHEMATA
+ WHERE SCHEMA_NAME = 'guitarsshop';
+
+SHOW DATABASES LIKE 'dbname';
 
 DROP TABLE Guitars;
 

@@ -1,25 +1,28 @@
-using System.Security.Claims;
-using AlexGuitarsShop.Domain.ViewModels;
-using AlexGuitarsShop.Service.Interfaces;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authorization;
+using AlexGuitarsShop.DAL;
 using Microsoft.AspNetCore.Mvc;
+using AlexGuitarsShop.Domain.ViewModels;
+using Microsoft.AspNetCore.Authorization;
+using AlexGuitarsShop.Domain.Interfaces.Account;
 
 namespace AlexGuitarsShop.Controllers;
 
 public class AccountController : Controller
 {
-    const int Limit = 10;
+    private const int Limit = 10;
 
-    private readonly IAccountService _accountService;
+    private readonly IAccountsCreator _accountsCreator;
+    private readonly IAccountsProvider _accountsProvider;
+    private readonly IAccountsUpdater _accountsUpdater;
 
     private int _pageCount;
     private int _offset;
 
-    public AccountController(IAccountService accountService)
+    public AccountController(IAccountsCreator accountsCreator, 
+        IAccountsProvider accountsProvider, IAccountsUpdater accountsUpdater)
     {
-        _accountService = accountService;
+        _accountsCreator  = accountsCreator;
+        _accountsProvider  = accountsProvider;
+        _accountsUpdater  = accountsUpdater;
     }
 
     [HttpGet]
@@ -28,16 +31,16 @@ public class AccountController : Controller
     [HttpPost]
     public async Task<IActionResult> Register(RegisterViewModel model)
     {
-        var response = await _accountService.Register(model);
-        if (response.StatusCode == Domain.Enums.StatusCode.OK)
+        if (_accountsCreator == null) return View(model);
+        var response = await _accountsCreator.AddAccountAsync(model)!;
+        if (response!.StatusCode == Domain.StatusCode.Ok)
         {
-            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
-                new ClaimsPrincipal(response.Data));
-
+            await ValidUserAuthorizer.SignIn(HttpContext, response.Data);
             return RedirectToAction("Index", "Home");
         }
 
-        ModelState.AddModelError("", response.Description);
+        ModelState.AddModelError("", response.Description!);
+
         return View(model);
     }
 
@@ -48,37 +51,37 @@ public class AccountController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Login(LoginViewModel model)
     {
-        var response = await _accountService.Login(model);
-        if (response.StatusCode == Domain.Enums.StatusCode.OK)
+        if (_accountsProvider == null) return View(model);
+        var response = await _accountsProvider.GetAccountAsync(model)!;
+        if (response is {StatusCode: Domain.StatusCode.Ok})
         {
-            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
-                new ClaimsPrincipal(response.Data));
-
+            await ValidUserAuthorizer.SignIn(HttpContext, response.Data);
             return RedirectToAction("Index", "Home");
         }
 
-        ModelState.AddModelError("", response.Description);
+        ModelState.AddModelError("", response!.Description!);
+
         return View(model);
     }
 
     public async Task<IActionResult> Logout()
     {
-        await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        await ValidUserAuthorizer.SignOut(HttpContext);
         return RedirectToAction("Index", "Home");
     }
 
     [HttpGet]
-    public async Task<IActionResult> Users(string role, int pageNumber = 1)
+    public async Task<IActionResult> Users(Role role, int pageNumber = 1)
     {
         _offset = (pageNumber - 1) * Limit;
-        int count = role == "Admins"
-            ? (await _accountService.GetAdminsCount()).Data
-            : (await _accountService.GetUsersCount()).Data;
+        int count = role == Role.User
+            ? (await _accountsProvider!.GetAdminsCountAsync()!)!.Data
+            : (await _accountsProvider!.GetUsersCountAsync()!)!.Data;
         _pageCount = count % Limit == 0 ? count / Limit : count / Limit + 1;
-        var response = role == "Admins"
-            ? await _accountService.GetAdmins(_offset, Limit)
-            : await _accountService.GetUsersOnly(_offset, Limit);
-        if (response.StatusCode == Domain.Enums.StatusCode.OK)
+        var response = role == Role.Admin
+            ? await _accountsProvider.GetAdminsAsync(_offset, Limit)!
+            : await _accountsProvider.GetUsersAsync(_offset, Limit)!;
+        if (response is {StatusCode: Domain.StatusCode.Ok})
         {
             UserListViewModel model = new UserListViewModel
             {
@@ -88,21 +91,21 @@ public class AccountController : Controller
             return View(model);
         }
 
-        ViewBag.Message = response.Description;
+        ViewBag.Message = response!.Description;
         return View("Notification");
     }
 
     [Authorize(Roles = "SuperAdmin")]
     public async Task<IActionResult> MakeAdmin(string email)
     {
-        await _accountService.SetAdminRights(email);
+        if (_accountsUpdater != null) await _accountsUpdater.SetAdminRightsAsync(email)!;
         return RedirectToAction("Users", new {role = "Users"});
     }
 
     [Authorize(Roles = "SuperAdmin")]
     public async Task<IActionResult> MakeUser(string email)
     {
-        await _accountService.RemoveAdminRights(email);
+        if (_accountsUpdater != null) await _accountsUpdater.RemoveAdminRightsAsync(email)!;
         return RedirectToAction("Users", new {role = "Admins"});
     }
 }

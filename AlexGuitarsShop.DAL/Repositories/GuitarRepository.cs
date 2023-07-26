@@ -1,6 +1,6 @@
 using System.Data;
 using AlexGuitarsShop.DAL.Interfaces;
-using AlexGuitarsShop.Domain.Models;
+using AlexGuitarsShop.DAL.Models;
 using Dapper;
 using MySqlConnector;
 
@@ -15,51 +15,51 @@ public class GuitarRepository : IRepository<Guitar>
         _connectionString = connectionString;
     }
 
-    public async Task<Guitar> Get(int id)
+    public async Task<Guitar> GetAsync(int id)
     {
         using IDbConnection db = new MySqlConnection(_connectionString);
-        return await db.QueryFirstOrDefaultAsync<Guitar>($"SELECT * FROM guitars WHERE Id = {id}");
+        return await db.QueryFirstOrDefaultAsync<Guitar>($"SELECT * FROM guitars WHERE Id = {id}")!;
     }
 
-    public async Task<List<Guitar>> Select()
+    public async Task<List<Guitar>> SelectAsync()
     {
         using IDbConnection db = new MySqlConnection(_connectionString);
-        return (await db.QueryAsync<Guitar>(@$"SELECT * FROM guitars WHERE IsDeleted = 0 ")).ToList();
+        return (await db.QueryAsync<Guitar>(@$"SELECT * FROM guitars WHERE IsDeleted = 0 ")!)!.ToList();
     }
 
 
-    public async Task<List<Guitar>> SelectByLimit(int offset, int limit)
+    public async Task<List<Guitar>> SelectByLimitAsync(int offset, int limit)
     {
         using IDbConnection db = new MySqlConnection(_connectionString);
         return (await db.QueryAsync<Guitar>(@$"SELECT * FROM guitars WHERE IsDeleted = 0 
-        LIMIT {limit} OFFSET {offset}")).ToList();
+        LIMIT {limit} OFFSET {offset}")!)!.ToList();
     }
 
-    public async Task Add(Guitar guitar)
+    public async Task AddAsync(Guitar guitar)
     {
         using IDbConnection db = new MySqlConnection(_connectionString);
         await db.ExecuteAsync(@"INSERT INTO Guitars (Name, Price, Description, Image, IsDeleted) 
         VALUES (@Name, @Price, @Description, @Image, 0)",
-            new {guitar.Name, guitar.Price, guitar.Description, guitar.Image});
+            new {guitar!.Name, guitar.Price, guitar.Description, guitar.Image})!;
     }
 
-    public async Task Update(Guitar guitar)
+    public async Task UpdateAsync(Guitar guitar)
     {
         using IDbConnection db = new MySqlConnection(_connectionString);
         await db.ExecuteAsync(@"UPDATE Guitars SET Name = @Name, Price = @Price, 
                    Description = @Description, Image = @Image WHERE Id = @ID",
-            new {guitar.Name, guitar.Price, guitar.Description, guitar.Image, guitar.Id});
+            new {guitar!.Name, guitar.Price, guitar.Description, guitar.Image, guitar.Id})!;
     }
 
-    public async Task Delete(int id)
+    public async Task DeleteAsync(int id)
     {
         using IDbConnection db = new MySqlConnection(_connectionString);
-        await db.ExecuteAsync($@"UPDATE Guitars SET IsDeleted = 1 WHERE Id = {id}");
+        await db.ExecuteAsync($@"UPDATE Guitars SET IsDeleted = 1 WHERE Id = {id}")!;
     }
 
-    public async Task<int> GetCount()
+    public async Task<int> GetCountAsync()
     {
         using IDbConnection db = new MySqlConnection(_connectionString);
-        return await db.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM Guitars WHERE IsDeleted = 0");
+        return await db.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM Guitars WHERE IsDeleted = 0")!;
     }
 }

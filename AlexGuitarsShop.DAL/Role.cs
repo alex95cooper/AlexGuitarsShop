@@ -1,4 +1,4 @@
-namespace AlexGuitarsShop.Domain.Enums;
+namespace AlexGuitarsShop.DAL;
 
 public enum Role
 {

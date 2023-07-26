@@ -1,7 +1,8 @@
+@using AlexGuitarsShop.DAL
 @model AlexGuitarsShop.Domain.ViewModels.UserListViewModel
 
 @{
-    string textTitle = Model.Role;
+    string textTitle = Model!.Role + "s";
 }
 
 @{
@@ -11,20 +12,20 @@
 <div class="users-page-container">
     <div class="users-page-background-container">
         <div class="users-content">
-            @foreach (var user in Model.Users)
+            @foreach (var user in Model!.Users!)
             {
                 <div class="user-container">
                     <div class="user-info">
-                        <p>Name : @user.Name</p>
-                        <p>Email : @user.Email</p>
+                        <p>Name : @user!.Name!</p>
+                        <p>Email : @user.Email!</p>
                     </div>
 
                     @if (User.IsInRole("SuperAdmin"))
                     {
-                        @if (Model.Role == "Users")
+                        @if (Model.Role == Role.User)
                         {
                             <div class="make-button-container">
-                                <a class="make-button" asp-controller="Account" asp-route-email="@user.Email"
+                                <a class="make-button" asp-controller="Account" asp-route-email="@user.Email!"
                                    asp-action="MakeAdmin">
                                     <strong>Make admin</strong>
                                 </a>
@@ -33,7 +34,7 @@
                         else
                         {
                             <div class="make-button-container">
-                                <a class="make-button" asp-controller="Account" asp-route-email="@user.Email" asp-action="MakeUser">
+                                <a class="make-button" asp-controller="Account" asp-route-email="@user.Email!" asp-action="MakeUser">
                                     <strong>Make user</strong>
                                 </a>
                             </div>
@@ -52,8 +53,9 @@
                         }
                         else
                         {
+                            var number = i;
                             <a class="page-number" asp-controller="Account" asp-route-role="@Model.Role" 
-                            asp-route-pageNumber="@i" asp-action="Users">@i</a>
+                            asp-route-pageNumber="@number" asp-action="Users">@number</a>
                         }
                     }
                     <a class="border-page-number" href="#"> ]</a>

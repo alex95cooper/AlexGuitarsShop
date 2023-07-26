@@ -1,8 +1,9 @@
-namespace AlexGuitarsShop.Domain.Enums;
+namespace AlexGuitarsShop.Domain;
 
 public enum StatusCode
 {
     DataBaseError = 0,
-    OK = 200,
+    Ok = 200,
+    ClientError = 400,
     InternalServerError = 500
 }

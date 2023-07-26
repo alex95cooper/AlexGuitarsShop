@@ -15,14 +15,14 @@
                     </a>
                 </div>
             }
-            @if (Model.Guitars.Count > 0)
+            @if (Model!.Guitars!.Count > 0)
             {
                 <div class="guitars-container">
                     @foreach (var guitar in Model.Guitars)
                     {
                         <div class="model-container">
                             <div class="image-container">
-                                @if (guitar.Image == null)
+                                @if (guitar!.Image == null)
                                 {
                                     <img class="guitar-img" src="/images/guitar-logo.jpg" alt="Guitar"/>
                                 }
@@ -63,7 +63,8 @@
                                 }
                                 else
                                 {
-                                    <a class="page-number" asp-controller="Catalog" asp-route-pageNumber="@i" asp-action="Index">@i</a>
+                                    var number = i;
+                                    <a class="page-number" asp-controller="Catalog" asp-route-pageNumber="@number" asp-action="Index">@number</a>
                                 }
                             }
                             <a class="border-page-number" href="#"> ]</a>
