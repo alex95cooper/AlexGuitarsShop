@@ -7,6 +7,10 @@ namespace AlexGuitarsShop.Domain.EntityHandlers.CartItemsHandlers;
 
 public class CartItemsProvider : ICartItemsProvider
 {
+
+    private const string ItemAlreadyAddedMessage = "Item already added";
+    private const string CartEmptyMessage = "Cart is empty";
+    
     private readonly ICartItemRepository _cartItemRepository;
 
     public CartItemsProvider(ICartItemRepository cartItemRepository)
@@ -14,21 +18,24 @@ public class CartItemsProvider : ICartItemsProvider
         _cartItemRepository = cartItemRepository;
     }
 
+    public async Task<IResponse<CartItem>> GetCartItemAsync(int id)
+    {
+        try
+        {
+            var item = await _cartItemRepository!.GetAsync(id)!;
+            return ResponseCreator.GetValidResponse(item);
+        }
+        catch (Exception e)
+        {
+            return ResponseCreator.GetInvalidResponse<CartItem>(ItemAlreadyAddedMessage);
+        }
+    }
+
     public async Task<IResponse<List<CartItem>>> GetCartItemsAsync()
     {
         var cartList = await _cartItemRepository!.SelectAsync()!;
-        if (cartList!.Count == 0)
-        {
-            return new Response<List<CartItem>>
-            {
-                Description = "Cart is empty"
-            };
-        }
-
-        return new Response<List<CartItem>>
-        {
-            Data = cartList,
-            StatusCode = StatusCode.Ok
-        };
+        return cartList!.Count == 0 
+            ? ResponseCreator.GetInvalidResponse<List<CartItem>>(CartEmptyMessage) 
+            : ResponseCreator.GetValidResponse(cartList);
     }
 }

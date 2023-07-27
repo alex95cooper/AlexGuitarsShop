@@ -20,11 +20,10 @@ public class CartItemRepository : ICartItemRepository
     public async Task<CartItem> GetAsync(int id)
     {
         using IDbConnection db = new MySqlConnection(_connectionString);
-        return await db.QueryFirstAsync<CartItem>(@"SELECT Cart_Id, Prod_Id, Guitars.Name, Guitars.Price, 
-        Guitars.Image, Guitars.IsDeleted, Quantity 
-        FROM CartItems
-        INNER JOIN Guitars WHERE CartItems.Prod_Id = @Id
-        AND Guitars.IsDeleted = 0", new {id})!;
+        return await db.QueryFirstAsync<CartItem>($@"SELECT CartItems.*, Guitars.*
+        FROM CartItems 
+        LEFT JOIN Guitars ON CartItems.Prod_Id = Guitars.Id
+        WHERE CartItems.Cart_Id = '{_cart!.Id}' AND CartItems.Prod_Id = @Id AND Guitars.IsDeleted = 0 ", new {id})!;
     }
 
     public async Task<List<CartItem>> SelectAsync()

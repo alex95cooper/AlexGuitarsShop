@@ -9,6 +9,9 @@ namespace AlexGuitarsShop.Domain.EntityHandlers.AccountHandlers;
 
 public class AccountsCreator : IAccountsCreator
 {
+    private const string ExistEmailErrorMessage = "User with this e-mail already exists";
+    
+        
     private readonly IUserRepository _userRepository;
 
     public AccountsCreator(IUserRepository userRepository)
@@ -21,30 +24,12 @@ public class AccountsCreator : IAccountsCreator
         var user = await _userRepository!.GetUserByEmailAsync(model!.Email!)!;
         if (user != null)
         {
-            return GetInvalidResponse();
+            return ResponseCreator.GetInvalidResponse<User>(ExistEmailErrorMessage);
         }
 
         user = model.ToUser();
         await _userRepository.AddAsync(user)!;
-        return GetValidResponse(user);
+        return ResponseCreator.GetValidResponse(user);
     }
-
-    private static IResponse<User> GetInvalidResponse()
-    {
-        return new Response<User>
-        {
-            StatusCode = StatusCode.ClientError,
-            Description = "User with this e-mail already exists"
-        };
-    }
-
-    private static IResponse<User> GetValidResponse(User user)
-    {
-        return new Response<User>
-        {
-            StatusCode = StatusCode.Ok,
-            Description = "User with this e-mail already exists",
-            Data = user
-        };
-    }
+    
 }

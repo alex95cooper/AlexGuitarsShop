@@ -17,10 +17,8 @@ public class GuitarsProvider : IGuitarsProvider
 
     public async Task<IResponse<List<Guitar>>> GetGuitarsByLimitAsync(int offset, int limit)
     {
-        return new Response<List<Guitar>>
-        {
-            Data = await _guitarRepository!.SelectByLimitAsync(offset, limit)!
-        };
+        var guitarsList = await _guitarRepository!.SelectByLimitAsync(offset, limit)!;
+        return ResponseCreator.GetValidResponse(guitarsList);
     }
 
     public async Task<IResponse<GuitarViewModel>> GetGuitarAsync(int id)
@@ -42,9 +40,7 @@ public class GuitarsProvider : IGuitarsProvider
 
     public async Task<IResponse<int>> GetCountAsync()
     {
-        return new Response<int>
-        {
-            Data = await _guitarRepository!.GetCountAsync()!
-        };
+        int count = await _guitarRepository!.GetCountAsync()!;
+        return ResponseCreator.GetValidResponse(count);
     }
 }

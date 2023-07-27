@@ -21,70 +21,37 @@ public class AccountsProvider : IAccountsProvider
         if (user == null || user.Password != PasswordHasher.HashPassword(model.Password))
         {
             string message = user == null ? "User is not found" : "Invalid password or login";
-            return GetInvalidResponse<User>(message);
+            return ResponseCreator.GetInvalidResponse<User>(message);
         }
 
-        return new Response<User>
-        {
-            StatusCode = StatusCode.Ok,
-            Data = user
-        };
+        return ResponseCreator.GetValidResponse(user);
     }
 
     public async Task<IResponse<List<User>>> GetUsersAsync(int offset, int limit)
     {
         var userList = await _userRepository!.GetUsersByLimitAsync(offset, limit)!;
-        if (userList is {Count: 0})
-        {
-            return GetInvalidResponse<List<User>>("No users");
-        }
-
-        return new Response<List<User>>
-        {
-            Data = userList,
-            StatusCode = StatusCode.Ok
-        };
+        return userList is {Count: 0} 
+            ? ResponseCreator.GetInvalidResponse<List<User>>("No users") 
+            : ResponseCreator.GetValidResponse(userList);
     }
 
     public async Task<IResponse<List<User>>> GetAdminsAsync(int offset, int limit)
     {
         var userList = await _userRepository!.GetAdminsByLimitAsync(offset, limit)!;
-        if (userList is {Count: 0})
-        {
-            return GetInvalidResponse<List<User>>("No admins");
-        }
-
-        return new Response<List<User>>
-        {
-            Data = userList,
-            StatusCode = StatusCode.Ok
-        };
+        return userList is {Count: 0} 
+            ? ResponseCreator.GetInvalidResponse<List<User>>("No admins") 
+            : ResponseCreator.GetValidResponse(userList);
     }
 
     public async Task<IResponse<int>> GetUsersCountAsync()
     {
-        return new Response<int>
-        {
-            Data = await _userRepository!.GetUsersCountAsync()!,
-            StatusCode = StatusCode.Ok
-        };
+        int usersCount = await _userRepository!.GetUsersCountAsync()!;
+        return ResponseCreator.GetValidResponse(usersCount);
     }
 
     public async Task<IResponse<int>> GetAdminsCountAsync()
     {
-        return new Response<int>
-        {
-            Data = await _userRepository!.GetAdminsCountAsync()!,
-            StatusCode = StatusCode.Ok
-        };
-    }
-
-    private IResponse<T> GetInvalidResponse<T>(string message)
-    {
-        return new Response<T>
-        {
-            StatusCode = StatusCode.InternalServerError,
-            Description = message
-        };
+        int adminsCount = await _userRepository!.GetAdminsCountAsync()!;
+        return ResponseCreator.GetValidResponse(adminsCount);
     }
 }

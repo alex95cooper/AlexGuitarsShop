@@ -15,6 +15,8 @@ public class CatalogController : Controller
     private readonly IGuitarsProvider _guitarsProvider;
     private readonly IGuitarsUpdater _guitarsUpdater;
     private readonly ICartItemsCreator _cartItemsCreator;
+    private readonly ICartItemsProvider _cartItemsProvider;
+    private readonly ICartItemsUpdater _cartItemsUpdater;
     private readonly Cart _cart;
 
     private int _pageCount;
@@ -22,12 +24,15 @@ public class CatalogController : Controller
 
     public CatalogController(IGuitarsCreator guitarsCreator, 
         IGuitarsProvider guitarsProvider, IGuitarsUpdater guitarsUpdater,
-        ICartItemsCreator cartItemsCreator, Cart cart)
+        ICartItemsCreator cartItemsCreator, ICartItemsProvider cartItemsProvider,
+    ICartItemsUpdater cartItemsUpdater, Cart cart)
     {
         _guitarsCreator = guitarsCreator;
         _guitarsProvider = guitarsProvider;
         _guitarsUpdater = guitarsUpdater;
         _cartItemsCreator = cartItemsCreator;
+        _cartItemsProvider = cartItemsProvider;
+        _cartItemsUpdater = cartItemsUpdater;
         _cart = cart;
     }
 
@@ -85,16 +90,24 @@ public class CatalogController : Controller
 
     public async Task<RedirectToActionResult> AddToCart(int prodId)
     {
-        if (_guitarsProvider == null) return RedirectToAction("Index");
-        var response = await _guitarsProvider.GetGuitarAsync(prodId)!;
-        Guitar product = response!.Data.ToGuitar();
-        CartItem item = new CartItem {Product = product, Quantity = 1};
-        if (product!.IsDeleted == 0 && !_cart!.Products!.Contains(item))
+        if (_guitarsProvider == null || _cartItemsProvider ==null) return RedirectToAction("Index");
+        var guitarResponse = await _guitarsProvider.GetGuitarAsync(prodId)!;
+        Guitar product = guitarResponse!.Data.ToGuitar();
+        var cartResponse = await _cartItemsProvider.GetCartItemAsync(prodId)!;
+        if (cartResponse!.StatusCode == Domain.StatusCode.Ok)
         {
-            _cart.Products.Add(item);
-            await _cartItemsCreator!.AddCartItemAsync(item)!;
+            await _cartItemsUpdater!.IncrementAsync(prodId)!;
         }
-
+        else
+        {
+            CartItem item = new CartItem {Product = product, Quantity = 1};
+            if (product!.IsDeleted == 0 && !_cart!.Products!.Contains(item))
+            {
+                _cart.Products.Add(item);
+                await _cartItemsCreator!.AddCartItemAsync(item)!;
+            }
+        }
+        
         return RedirectToAction("Index");
     }
 
