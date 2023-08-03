@@ -1,0 +1,40 @@
+@using AlexGuitarsShop.Domain
+@model AlexGuitarsShop.Domain.ViewModels.PaginationViewModel;
+
+@{
+    Layout = null;
+}
+
+<div class="paginator-container">
+    <div class="paginator">
+        <a class="border-page-number" href="#">[ </a>
+        @for (int i = 1; i < Model.PageCount + 1; i++)
+        {
+            if (i == Model.CurrentPage)
+            {
+                <a class="current-page-number" href="#"> @i</a>
+            }
+            else
+            {
+                var number = i;
+
+                switch (Model.Title)
+                {
+                    case Title.Catalog:
+                        <a class="page-number" asp-controller="Catalog"
+                           asp-route-pageNumber="@number" asp-action="Index">@number</a>
+                        break;
+                    case Title.Admins:
+                        <a class="page-number" asp-controller="Account"
+                           asp-route-pageNumber="@number" asp-action="Admins">@number</a>
+                        break;
+                    case Title.Users:
+                        <a class="page-number" asp-controller="Account"
+                           asp-route-pageNumber="@number" asp-action="Users">@number</a>
+                        break;
+                }
+            }
+        }
+        <a class="border-page-number" href="#"> ]</a>
+    </div>
+</div>

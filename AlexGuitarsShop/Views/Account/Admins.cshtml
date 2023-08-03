@@ -1,7 +1,7 @@
 @model AlexGuitarsShop.Domain.ViewModels.ListViewModel<AlexGuitarsShop.DAL.Models.User>
 
 @{
-    const string textTitle = "Users";
+    const string textTitle = "Admins";
     ViewData["Title"] = textTitle;
 }
 
@@ -13,7 +13,7 @@
             @if (Model.List.Count == 0)
             {
                 <div class="notification-header">
-                    <h1>No users</h1>
+                    <h1>No admins</h1>
                 </div>
             }
             else
@@ -27,21 +27,17 @@
                                 <p>Name : @user.Name</p>
                                 <p>Email : @user.Email</p>
                             </div>
-
-                            @if (User.IsInRole("SuperAdmin"))
-                            {
-                                <div class="make-button-container">
-                                    <a class="make-button" asp-controller="Account" asp-route-email="@user.Email"
-                                       asp-action="MakeAdmin">
-                                        <strong>Make admin</strong>
-                                    </a>
-                                </div>
-                            }
+                            <div class="make-button-container">
+                                <a class="make-button" asp-controller="Account" asp-route-email="@user.Email" asp-action="MakeUser">
+                                    <strong>Make user</strong>
+                                </a>
+                            </div>
                         </div>
                     }
                     @Html.Partial("_Pagination", Model)
                 </div>
             }
         }
+
     </div>
 </div>

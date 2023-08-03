@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace AlexGuitarsShop.Views.Catalog;
+namespace AlexGuitarsShop.Views;
 
-public class Add : PageModel
+public class _Pagination : PageModel
 {
     public void OnGet()
     {

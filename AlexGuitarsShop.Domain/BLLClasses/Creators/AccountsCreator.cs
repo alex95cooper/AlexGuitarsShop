@@ -5,7 +5,7 @@ using AlexGuitarsShop.Domain.Interfaces;
 using AlexGuitarsShop.Domain.Interfaces.Account;
 using AlexGuitarsShop.Domain.ViewModels;
 
-namespace AlexGuitarsShop.Domain.EntityHandlers.AccountHandlers;
+namespace AlexGuitarsShop.Domain.BLLClasses.Creators;
 
 public class AccountsCreator : IAccountsCreator
 {
@@ -19,17 +19,19 @@ public class AccountsCreator : IAccountsCreator
         _userRepository = userRepository;
     }
 
-    public async Task<IResponse<User>> AddAccountAsync(RegisterViewModel model)
+    public async Task<IResult<User>> AddAccountAsync(RegisterViewModel model)
     {
-        var user = await _userRepository!.GetUserByEmailAsync(model!.Email!)!;
+        if (_userRepository == null) throw new ArgumentNullException(nameof(_userRepository));
+        if (model == null) throw new ArgumentNullException(nameof(model));
+        var user = await _userRepository.FindAsync(model.Email)!;
         if (user != null)
         {
-            return ResponseCreator.GetInvalidResponse<User>(ExistEmailErrorMessage);
+            return ResultCreator.GetInvalidResult<User>(ExistEmailErrorMessage);
         }
 
         user = model.ToUser();
-        await _userRepository.AddAsync(user)!;
-        return ResponseCreator.GetValidResponse(user);
+        await _userRepository.CreateAsync(user)!;
+        return ResultCreator.GetValidResult(user);
     }
     
 }

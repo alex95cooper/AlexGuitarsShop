@@ -1,4 +1,5 @@
-using AlexGuitarsShop.DAL;
+using AlexGuitarsShop.DAL.Models;
+using AlexGuitarsShop.Domain;
 using Microsoft.AspNetCore.Mvc;
 using AlexGuitarsShop.Domain.ViewModels;
 using Microsoft.AspNetCore.Authorization;
@@ -13,16 +14,18 @@ public class AccountController : Controller
     private readonly IAccountsCreator _accountsCreator;
     private readonly IAccountsProvider _accountsProvider;
     private readonly IAccountsUpdater _accountsUpdater;
+    private readonly ValidUserAuthorizer _validUserAuthorizer;
 
     private int _pageCount;
     private int _offset;
 
-    public AccountController(IAccountsCreator accountsCreator, 
+    public AccountController(IAccountsCreator accountsCreator,
         IAccountsProvider accountsProvider, IAccountsUpdater accountsUpdater)
     {
-        _accountsCreator  = accountsCreator;
-        _accountsProvider  = accountsProvider;
-        _accountsUpdater  = accountsUpdater;
+        _accountsCreator = accountsCreator;
+        _accountsProvider = accountsProvider;
+        _accountsUpdater = accountsUpdater;
+        _validUserAuthorizer = new ValidUserAuthorizer(HttpContext);
     }
 
     [HttpGet]
@@ -31,15 +34,19 @@ public class AccountController : Controller
     [HttpPost]
     public async Task<IActionResult> Register(RegisterViewModel model)
     {
-        if (_accountsCreator == null) return View(model);
-        var response = await _accountsCreator.AddAccountAsync(model)!;
-        if (response!.StatusCode == Domain.StatusCode.Ok)
+        if (_accountsCreator == null) throw new ArgumentNullException(nameof(_accountsCreator));
+        if (_validUserAuthorizer == null) throw new ArgumentNullException(nameof(_validUserAuthorizer));
+        var result = await _accountsCreator.AddAccountAsync(model)!;
+        result = result ?? throw new ArgumentNullException(nameof(result));
+        if (result.IsSuccess)
         {
-            await ValidUserAuthorizer.SignIn(HttpContext, response.Data);
+            await _validUserAuthorizer.SignIn(result.Data);
             return RedirectToAction("Index", "Home");
         }
 
-        ModelState.AddModelError("", response.Description!);
+        ModelState.AddModelError("",
+            result.Description
+            ?? throw new ArgumentNullException(nameof(result.Description)));
 
         return View(model);
     }
@@ -51,61 +58,73 @@ public class AccountController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Login(LoginViewModel model)
     {
-        if (_accountsProvider == null) return View(model);
-        var response = await _accountsProvider.GetAccountAsync(model)!;
-        if (response is {StatusCode: Domain.StatusCode.Ok})
+        if (_accountsProvider == null) throw new ArgumentNullException(nameof(_accountsProvider));
+        if (_validUserAuthorizer == null) throw new ArgumentNullException(nameof(_validUserAuthorizer));
+        var result = await _accountsProvider.GetAccountAsync(model)!;
+        result = result ?? throw new ArgumentNullException(nameof(result));
+        if (result.IsSuccess)
         {
-            await ValidUserAuthorizer.SignIn(HttpContext, response.Data);
+            await _validUserAuthorizer.SignIn(result.Data);
             return RedirectToAction("Index", "Home");
         }
 
-        ModelState.AddModelError("", response!.Description!);
+        ModelState.AddModelError("",
+            result.Description
+            ?? throw new ArgumentNullException(nameof(result.Description)));
 
         return View(model);
     }
 
     public async Task<IActionResult> Logout()
     {
-        await ValidUserAuthorizer.SignOut(HttpContext);
+        if (_validUserAuthorizer == null) throw new ArgumentNullException(nameof(_validUserAuthorizer));
+        await _validUserAuthorizer.SignOut();
         return RedirectToAction("Index", "Home");
     }
 
     [HttpGet]
-    public async Task<IActionResult> Users(Role role, int pageNumber = 1)
+    public async Task<IActionResult> Admins(int pageNumber = 1)
     {
+        if (_accountsProvider == null) throw new ArgumentNullException(nameof(_accountsProvider));
         _offset = (pageNumber - 1) * Limit;
-        int count = role == Role.User
-            ? (await _accountsProvider!.GetAdminsCountAsync()!)!.Data
-            : (await _accountsProvider!.GetUsersCountAsync()!)!.Data;
+        var countResult = await _accountsProvider.GetAdminsCountAsync()!;
+        countResult = countResult ?? throw new ArgumentNullException(nameof(countResult));
+        int count = countResult.Data;
         _pageCount = count % Limit == 0 ? count / Limit : count / Limit + 1;
-        var response = role == Role.Admin
-            ? await _accountsProvider.GetAdminsAsync(_offset, Limit)!
-            : await _accountsProvider.GetUsersAsync(_offset, Limit)!;
-        if (response is {StatusCode: Domain.StatusCode.Ok})
-        {
-            UserListViewModel model = new UserListViewModel
-            {
-                Users = response.Data, Role = role, PageCount = _pageCount, CurrentPage = pageNumber
-            };
+        var result = await _accountsProvider.GetAdminsAsync(_offset, Limit)!;
+        result = result ?? throw new ArgumentNullException(nameof(result));
+        ListViewModel<User> model = new(result.Data, Title.Admins, _pageCount, pageNumber);
+        return View(model);
+    }
 
-            return View(model);
-        }
-
-        ViewBag.Message = response!.Description;
-        return View("Notification");
+    [HttpGet]
+    public async Task<IActionResult> Users(int pageNumber = 1)
+    {
+        if (_accountsProvider == null) throw new ArgumentNullException(nameof(_accountsProvider));
+        _offset = (pageNumber - 1) * Limit;
+        var countResult = await _accountsProvider.GetUsersCountAsync()!;
+        countResult = countResult ?? throw new ArgumentNullException(nameof(countResult));
+        int count = countResult.Data;
+        _pageCount = count % Limit == 0 ? count / Limit : count / Limit + 1;
+        var result = await _accountsProvider.GetUsersAsync(_offset, Limit)!;
+        result = result ?? throw new ArgumentNullException(nameof(result));
+        ListViewModel<User> model = new(result.Data, Title.Users, _pageCount, pageNumber);
+        return View(model);
     }
 
     [Authorize(Roles = "SuperAdmin")]
     public async Task<IActionResult> MakeAdmin(string email)
     {
-        if (_accountsUpdater != null) await _accountsUpdater.SetAdminRightsAsync(email)!;
+        if (_accountsUpdater == null) throw new ArgumentNullException(nameof(_accountsUpdater));
+        await _accountsUpdater.SetAdminRightsAsync(email)!;
         return RedirectToAction("Users", new {role = "Users"});
     }
 
     [Authorize(Roles = "SuperAdmin")]
     public async Task<IActionResult> MakeUser(string email)
     {
-        if (_accountsUpdater != null) await _accountsUpdater.RemoveAdminRightsAsync(email)!;
+        if (_accountsUpdater == null) throw new ArgumentNullException(nameof(_accountsUpdater));
+        await _accountsUpdater.RemoveAdminRightsAsync(email)!;
         return RedirectToAction("Users", new {role = "Admins"});
     }
 }

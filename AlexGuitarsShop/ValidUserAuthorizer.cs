@@ -5,26 +5,39 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace AlexGuitarsShop;
 
-public static class ValidUserAuthorizer
+public class ValidUserAuthorizer
 {
-    public static async Task SignIn(HttpContext context, User user)
+    private readonly HttpContext _context;
+
+    public ValidUserAuthorizer(HttpContext context)
     {
-        ClaimsIdentity claimsIdentity = Authenticate(user);
-        await context!.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
-            new ClaimsPrincipal(claimsIdentity!));
+        _context = context;
     }
 
-    public static async Task SignOut(HttpContext context)
+    public async Task SignIn(User user)
     {
-        await context!.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        ClaimsIdentity claimsIdentity = Authenticate(user);
+        await (_context ?? throw new ArgumentNullException(nameof(_context))).SignInAsync(
+            CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity!));
+    }
+
+    public async Task SignOut()
+    {
+        await (_context ?? throw new ArgumentNullException(nameof(_context))).SignOutAsync(
+            CookieAuthenticationDefaults.AuthenticationScheme);
     }
 
     private static ClaimsIdentity Authenticate(User user)
     {
-        if (user == null) return new ClaimsIdentity();
+        if (user == null)
+            throw new ArgumentNullException(nameof(user));
+        
+        if (user.Email == null)
+            throw new ArgumentNullException(nameof(user.Email));
+        
         var claims = new List<Claim>
         {
-            new(ClaimsIdentity.DefaultNameClaimType, user.Email!),
+            new(ClaimsIdentity.DefaultNameClaimType, user.Email),
             new(ClaimsIdentity.DefaultRoleClaimType, user.Role.ToString())
         };
         return new ClaimsIdentity(claims, "ApplicationCookie",

@@ -1,80 +1,76 @@
-@model AlexGuitarsShop.Domain.ViewModels.CatalogViewModel;
+@model AlexGuitarsShop.Domain.ViewModels.ListViewModel<AlexGuitarsShop.DAL.Models.Guitar>;
 
 @{
-    ViewData["Title"] = "Catalog";
+    const string textTitle = "Catalog";
+    ViewData["Title"] = textTitle;
+
 }
 
 <div class="catalog-page-container">
     <div class="catalog-page-background-container">
         <div class="catalog-content">
+            @if (Model == null)
+            {
+                throw new ArgumentNullException(nameof(Model));
+            }
             @if (User.IsInRole("Admin") || User.IsInRole("SuperAdmin"))
             {
                 <div class="add-button">
-                    <a class="add-button-content" asp-controller="Catalog" asp-route-id="0" asp-action="AddOrUpdate">
+                    <a class="add-button-content" asp-controller="Catalog" asp-action="Add">
                         <strong>+ Add new</strong>
                     </a>
                 </div>
             }
-            @if (Model!.Guitars!.Count > 0)
-            {
-                <div class="guitars-container">
-                    @foreach (var guitar in Model.Guitars)
-                    {
-                        <div class="model-container">
-                            <div class="image-container">
-                                @if (guitar!.Image == null)
-                                {
-                                    <img class="guitar-img" src="/images/guitar-logo.jpg" alt="Guitar"/>
-                                }
-                                else
-                                {
-                                    <img class="guitar-img" src="data:image;base64,@Convert.ToBase64String(guitar.Image)" alt="Guitar"/>
-                                }
-                            </div>
-                            <div class="model-info-container">
-                                <h2 class="name">@guitar.Name</h2>
-                                <p class="price">$ @guitar.Price.ToString()</p>
-                                <p class="description">@guitar.Description</p>
-                                <div class="model-buttons-container">
-                                    <a class="add-button-content" asp-controller="Catalog" asp-action="AddToCart" asp-route-prodId="@guitar.Id">
-                                        Add to Cart
-                                    </a>
-                                    @if (User.IsInRole("Admin") || User.IsInRole("SuperAdmin"))
+            @{
+                if (Model == null) throw new ArgumentNullException(nameof(Model));
+                if (Model.List == null) throw new ArgumentNullException(nameof(Model.List));
+                @if (Model.List.Count > 0)
+                {
+                    <div class="guitars-container">
+                        @foreach (var guitar in Model.List)
+                        {
+                            if (guitar == null) throw new ArgumentNullException(nameof(guitar));
+                            <div class="model-container">
+                                <div class="image-container">
+                                    @if (guitar.Image == null)
                                     {
-                                        <a class="change-button" asp-controller="Catalog" asp-route-id="@guitar.Id" asp-action="AddOrUpdate">
-                                            Change
-                                        </a>
-                                        <a class="delete-button" asp-controller="Catalog" asp-action="Delete" asp-route-id="@guitar.Id">
-                                            Delete
-                                        </a>
+                                        <img class="guitar-img" src="/images/guitar-logo.jpg" alt="Guitar"/>
+                                    }
+                                    else
+                                    {
+                                        <img class="guitar-img" src="data:image;base64,@Convert.ToBase64String(guitar.Image)" alt="Guitar"/>
                                     }
                                 </div>
+                                <div class="model-info-container">
+                                    <h2 class="name">@guitar.Name</h2>
+                                    <p class="price">$ @guitar.Price.ToString()</p>
+                                    <p class="description">@guitar.Description</p>
+                                    <div class="model-buttons-container">
+                                        <a class="add-button-content" asp-controller="Catalog" asp-action="AddToCart" asp-route-prodId="@guitar.Id">
+                                            Add to Cart
+                                        </a>
+                                        @if (User.IsInRole("Admin") || User.IsInRole("SuperAdmin"))
+                                        {
+                                            <a class="change-button" asp-controller="Catalog" asp-route-id="@guitar.Id" asp-action="Update">
+                                                Change
+                                            </a>
+                                            <a class="delete-button" asp-controller="Catalog" asp-action="Delete" asp-route-id="@guitar.Id">
+                                                Delete
+                                            </a>
+                                        }
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    }
-                    <div class="paginator-container">
-                        <div class="paginator">
-                            <a class="border-page-number" href="#">[ </a>
-                            @for (int i = 1; i < Model.PageCount + 1; i++)
-                            {
-                                if (i == Model.CurrentPage)
-                                {
-                                    <a class="current-page-number" href="#"> @i</a>
-                                }
-                                else
-                                {
-                                    var number = i;
-                                    <a class="page-number" asp-controller="Catalog" asp-route-pageNumber="@number" asp-action="Index">@number</a>
-                                }
-                            }
-                            <a class="border-page-number" href="#"> ]</a>
-                        </div>
+                        }
+                        @Html.Partial("_Pagination", Model)
                     </div>
-                </div>
-            }
-            else
-            {
-                <h1 class="empty-list-container">Catalog is empty</h1>
+                }
+                else
+                {
+                    <div class="notification-header">
+                        <h1>Catalog is empty</h1>
+                    </div>
+                }
             }
         </div>
     </div>

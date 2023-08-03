@@ -1,0 +1,33 @@
+.paginator-container {
+    height: 80px;
+}
+
+.paginator {
+    justify-content: center;
+    display: flex;
+    min-width : 230px;
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.paginator a {
+    text-align: center;
+    color: gainsboro;
+    float: left;
+    padding: 8px 16px;
+    text-decoration: none;
+    transition: background-color .3s;
+}
+
+.border-page-number {
+    font-size: 2em;
+}
+
+.page-number, .current-page-number{
+    margin-top: 20px;
+    margin-bottom: 13px;
+}
+
+.current-page-number {
+    background: darkgray;
+}

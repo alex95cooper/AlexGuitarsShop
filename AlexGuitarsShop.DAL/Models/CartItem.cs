@@ -1,8 +1,9 @@
 namespace AlexGuitarsShop.DAL.Models;
 
-public class CartItem
+public record CartItem(int Quantity, Guitar Product)
 {
-    public int Id { get; set; }
-    public int Quantity { get; init; }
-    public Guitar Product { get; set; }
+    public CartItem() : this(default, default){ }
+    
+    public Guitar Product { get; set; } = Product;
 }
+

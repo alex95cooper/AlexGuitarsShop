@@ -8,15 +8,87 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Dapper" Version="2.0.143" />
-      <PackageReference Include="MySqlConnector" Version="2.3.0-beta.2" />
-      <PackageReference Include="System.Data.SqlClient" Version="4.8.5" />
+        <PackageReference Include="Dapper" Version="2.0.143" />
+        <PackageReference Include="MySqlConnector" Version="2.2.7" />
+        <PackageReference Include="System.Data.SqlClient" Version="4.8.5" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\AlexGuitarsShop.DAL\AlexGuitarsShop.DAL.csproj" />
-      <ProjectReference Include="..\AlexGuitarsShop.Domain\AlexGuitarsShop.Domain.csproj" />
-      <ProjectReference Include="..\AlexGuitarsShop.Scripts\AlexGuitarsShop.Scripts.csproj" />
+        <ProjectReference Include="..\AlexGuitarsShop.Domain\AlexGuitarsShop.Domain.csproj" />
+        <ProjectReference Include="..\AlexGuitarsShop.Scripts\AlexGuitarsShop.Scripts.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <_ContentIncludedByDefault Remove="wwwroot\images\products_images\bc-rich-bich.jpg" />
+        <_ContentIncludedByDefault Remove="wwwroot\images\products_images\bc-rich-ironbird-mk2.jpg" />
+        <_ContentIncludedByDefault Remove="wwwroot\images\products_images\bc-rich-mockinbird.jpg" />
+        <_ContentIncludedByDefault Remove="wwwroot\images\products_images\bc-rich-warbeast.jpg" />
+        <_ContentIncludedByDefault Remove="wwwroot\images\products_images\bc-rich-warlock-mk1.jpg" />
+        <_ContentIncludedByDefault Remove="wwwroot\images\products_images\bc-rich-wbstgbk.jpg" />
+        <_ContentIncludedByDefault Remove="wwwroot\images\products_images\cort-cr250.jpg" />
+        <_ContentIncludedByDefault Remove="wwwroot\images\products_images\cort-kx-5.jpg" />
+        <_ContentIncludedByDefault Remove="wwwroot\images\products_images\cort-kx507-multi-scale.jpg" />
+        <_ContentIncludedByDefault Remove="wwwroot\images\products_images\cort-x-2.jpg" />
+        <_ContentIncludedByDefault Remove="wwwroot\images\products_images\cort-x-5.jpg" />
+        <_ContentIncludedByDefault Remove="wwwroot\images\products_images\esp-e-2-arrow.jpg" />
+        <_ContentIncludedByDefault Remove="wwwroot\images\products_images\esp-e-2-eclipse-ft.jpg" />
+        <_ContentIncludedByDefault Remove="wwwroot\images\products_images\fender-american-pro-telecaster.jpg" />
+        <_ContentIncludedByDefault Remove="wwwroot\images\products_images\fender-noventa-jazzmaster.jpg" />
+        <_ContentIncludedByDefault Remove="wwwroot\images\products_images\fender-player-stratocaster.jpg" />
+        <_ContentIncludedByDefault Remove="wwwroot\images\products_images\gibson-57-les-paul-goldtop.jpg" />
+        <_ContentIncludedByDefault Remove="wwwroot\images\products_images\gibson-es-335-figured-sixties-cherry.jpg" />
+        <_ContentIncludedByDefault Remove="wwwroot\images\products_images\gibson-explorer-70s-classic-white.jpg" />
+        <_ContentIncludedByDefault Remove="wwwroot\images\products_images\gibson-firebird-custom-natural.jpg" />
+        <_ContentIncludedByDefault Remove="wwwroot\images\products_images\gibson-sg-standard-heritage-cherry.jpg" />
+        <_ContentIncludedByDefault Remove="wwwroot\images\products_images\ibanez-rg370ahmz-bmt.jpg" />
+        <_ContentIncludedByDefault Remove="wwwroot\images\products_images\ibanez-rg421-mol.jpg" />
+        <_ContentIncludedByDefault Remove="wwwroot\images\products_images\ibanez-rg5121-bcf.jpg" />
+        <_ContentIncludedByDefault Remove="wwwroot\images\products_images\ibanez-rg8520sltd-ntf.jpg" />
+        <_ContentIncludedByDefault Remove="wwwroot\images\products_images\ibanez-rgms8-bk.jpg" />
+        <_ContentIncludedByDefault Remove="wwwroot\images\products_images\jackson-js32t-kelly.jpg" />
+        <_ContentIncludedByDefault Remove="wwwroot\images\products_images\jackson-rr3-roads.jpg" />
+        <_ContentIncludedByDefault Remove="wwwroot\images\products_images\ltd_f-200_black_satin.jpg" />
+        <_ContentIncludedByDefault Remove="wwwroot\images\products_images\mayones-regius-6-gothic.jpg" />
+        <_ContentIncludedByDefault Remove="wwwroot\images\products_images\mayones-regius-pro-6-gothic.jpg" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Content Update="wwwroot\images\about_us_page.jpg">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Update="wwwroot\images\users_page.jpg">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Update="wwwroot\images\register_login_page.jpg">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Update="wwwroot\images\profile-icon.jpg">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Update="wwwroot\images\notify_page.jpg">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Update="wwwroot\images\home_page.jpg">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Update="wwwroot\images\contacts_page.jpg">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Update="wwwroot\images\guitar-logo.jpg">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Update="wwwroot\images\catalog_page.jpg">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Update="wwwroot\images\cart_page.jpeg">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Update="wwwroot\images\add_new_page.jpg">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Update="wwwroot\images\aboutUs.jpg">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
     </ItemGroup>
 
 </Project>

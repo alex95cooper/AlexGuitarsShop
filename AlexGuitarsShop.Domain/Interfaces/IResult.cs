@@ -1,8 +1,8 @@
 namespace AlexGuitarsShop.Domain.Interfaces;
 
-public interface IResponse<out T>
+public interface IResult<out T>
 {
     string Description { get; }
-    StatusCode StatusCode { get; }
+    bool IsSuccess { get; }
     T Data { get; }
 }

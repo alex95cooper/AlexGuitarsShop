@@ -1,7 +1,7 @@
 @model AlexGuitarsShop.Domain.ViewModels.GuitarViewModel
 
 @{
-    var textTitle = Model!.Id == 0 ? "Add" : "Change";
+    const string textTitle = "Add";
 }
 
 @{
@@ -11,22 +11,14 @@
 <div class="add-new-page-container">
     <div class="add-new-page-background-container">
         <div class="form-container">
-            <form class="js-form-validate" method="post" asp-action="AddOrUpdate" enctype="multipart/form-data">
+            <form class="js-form-validate" method="post" asp-action="Add" enctype="multipart/form-data">
                 <h2 class="add-new-header">@textTitle Guitar</h2>
                 <div class="row">
 
                     <div class="image-form-group-row">
                         <div class="col-4">
                             <div class="image-container">
-                                @if (Model.Image == null)
-                                {
-                                    <img class="guitar-img" id="preview" src="/images/guitar-logo.jpg" alt="Guitar"/>
-                                }
-                                else
-                                {
-                                    var image = Convert.ToBase64String(Model.Image);
-                                    <img class="guitar-img" id="preview" src="data:image;base64,@image" alt="Guitar"/>
-                                }
+                                <img class="guitar-img" id="preview" src="/images/guitar-logo.jpg" alt="Guitar"/>
                             </div>
                         </div>
                         <div class="add-image-container">
@@ -72,18 +64,3 @@
         </div>
     </div>
 </div>
-
-<script>
-    function previewImage() {
-        let file = document.getElementById("file").files
-        if (file.length > 0) {
-            let fileReader = new FileReader();
- 
-            fileReader.onload = function (event) {
-                document.getElementById("preview").setAttribute("src", event.target.result)
-            }
- 
-            fileReader.readAsDataURL(file[0])
-        }
-    }
-</script>

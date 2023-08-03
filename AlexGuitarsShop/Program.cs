@@ -3,16 +3,18 @@ using AlexGuitarsShop.DAL.Models;
 using AlexGuitarsShop.Scripts;
 using Microsoft.AspNetCore.Authentication.Cookies;
 
-var builder = WebApplication.CreateBuilder(args!);
+var builder = WebApplication.CreateBuilder();
+builder.Services.AddMvc();
 builder.Services.AddControllersWithViews();
 
-string connectionString = builder.Configuration.GetConnectionString("DefaultConnection")!;
+string connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 SeedDatabase.Init(connectionString);
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie(options =>
+    .AddCookie(options  =>
     {
-        options!.LoginPath = new PathString("/Account/Login");
+        options = options ?? throw new ArgumentNullException(nameof(options));
+        options.LoginPath = new PathString("/Account/Login");
         options.AccessDeniedPath = new PathString("/Account/Login");
     });
 
@@ -23,8 +25,6 @@ builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
 builder.Services.InitializeRepositories(connectionString);
 builder.Services.InitializeEntityHandlers();
-
-builder.Services.AddMvc();
 
 var app = builder.Build();
 

@@ -1,7 +1,8 @@
+using AlexGuitarsShop.DAL;
 using AlexGuitarsShop.DAL.Interfaces;
 using AlexGuitarsShop.Domain.Interfaces.Account;
 
-namespace AlexGuitarsShop.Domain.EntityHandlers.AccountHandlers;
+namespace AlexGuitarsShop.Domain.BLLClasses.Updaters;
 
 public class AccountsUpdater : IAccountsUpdater
 {
@@ -14,11 +15,13 @@ public class AccountsUpdater : IAccountsUpdater
 
     public async Task SetAdminRightsAsync(string email)
     {
-        await _userRepository!.SetAdminRightsAsync(email)!;
+        if (_userRepository == null) throw new ArgumentNullException(nameof(_userRepository));
+        await _userRepository.UpdateAsync(email, (int)Role.Admin)!;
     }
 
     public async Task RemoveAdminRightsAsync(string email)
     {
-        await _userRepository!.RemoveAdminRightsAsync(email)!;
+        if (_userRepository == null) throw new ArgumentNullException(nameof(_userRepository));
+        await _userRepository.UpdateAsync(email, (int)Role.User)!;
     }
 }

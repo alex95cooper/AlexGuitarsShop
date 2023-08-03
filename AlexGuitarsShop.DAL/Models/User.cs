@@ -1,9 +1,8 @@
 namespace AlexGuitarsShop.DAL.Models;
 
-public class User 
+public record User(string Name,
+    string Email, string Password, Role Role)
 {
-    public string Name{ get; init; }
-    public string Email { get; init; }
-    public string Password { get; init; }
-    public Role Role { get; init; }
+    public User() : this(default, default, default,
+        default) { }
 }

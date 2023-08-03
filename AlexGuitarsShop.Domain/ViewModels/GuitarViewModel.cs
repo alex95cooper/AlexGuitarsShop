@@ -2,13 +2,11 @@ using Microsoft.AspNetCore.Http;
 
 namespace AlexGuitarsShop.Domain.ViewModels;
 
-public class GuitarViewModel
+public record GuitarViewModel(int Id, string Name, ushort Price, 
+    string Description, IFormFile Avatar, byte[] Image, ushort IsDeleted)
 {
-    public int Id { get; init; }
-    public string Name { get; init; }
-    public ushort Price { get; init; }
-    public string Description { get; init; }
-    public IFormFile Avatar { get; init; }
-    public byte[] Image { get; set; }
-    public ushort IsDeleted { get; init; }
+    public GuitarViewModel() : this(default, default, default,
+        default, default, default, default) { }
+    
+    public byte[] Image { get; set; } = Image;
 }

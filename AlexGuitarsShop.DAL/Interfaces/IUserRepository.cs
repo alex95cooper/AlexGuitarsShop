@@ -2,19 +2,19 @@ using AlexGuitarsShop.DAL.Models;
 
 namespace AlexGuitarsShop.DAL.Interfaces;
 
-public interface IUserRepository : IRepository<User>
+public interface IUserRepository
 {
-    Task<User> GetUserByEmailAsync(string email);
-
-    Task<List<User>> GetUsersByLimitAsync(int offset, int limit);
-
-    Task<List<User>> GetAdminsByLimitAsync(int offset, int limit);
-
+    Task<User> FindAsync(string email);
+    
     Task<int> GetUsersCountAsync();
 
     Task<int> GetAdminsCountAsync();
+    
+    Task<List<User>> GetUsersAsync(int offset, int limit);
 
-    Task SetAdminRightsAsync(string email);
+    Task<List<User>> GetAdminsAsync(int offset, int limit);
 
-    Task RemoveAdminRightsAsync(string email);
+    Task CreateAsync(User user);
+
+    Task UpdateAsync(string email, int role);
 }
