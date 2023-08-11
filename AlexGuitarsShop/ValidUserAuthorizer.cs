@@ -17,24 +17,25 @@ public class ValidUserAuthorizer
     public async Task SignIn(User user)
     {
         ClaimsIdentity claimsIdentity = Authenticate(user);
-        await (_context ?? throw new ArgumentNullException(nameof(_context))).SignInAsync(
-            CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity!));
+        if (_context == null) throw new ArgumentNullException(nameof(_context));
+        await _context.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, 
+            new ClaimsPrincipal(claimsIdentity!));
     }
 
     public async Task SignOut()
     {
-        await (_context ?? throw new ArgumentNullException(nameof(_context))).SignOutAsync(
-            CookieAuthenticationDefaults.AuthenticationScheme);
+        if (_context == null) throw new ArgumentNullException(nameof(_context));
+        await _context.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
     }
 
     private static ClaimsIdentity Authenticate(User user)
     {
         if (user == null)
             throw new ArgumentNullException(nameof(user));
-        
+
         if (user.Email == null)
             throw new ArgumentNullException(nameof(user.Email));
-        
+
         var claims = new List<Claim>
         {
             new(ClaimsIdentity.DefaultNameClaimType, user.Email),

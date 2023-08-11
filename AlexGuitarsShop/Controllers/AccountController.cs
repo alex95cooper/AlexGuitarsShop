@@ -14,8 +14,8 @@ public class AccountController : Controller
     private readonly IAccountsCreator _accountsCreator;
     private readonly IAccountsProvider _accountsProvider;
     private readonly IAccountsUpdater _accountsUpdater;
-    private readonly ValidUserAuthorizer _validUserAuthorizer;
-
+    
+    private ValidUserAuthorizer _validUserAuthorizer;
     private int _pageCount;
     private int _offset;
 
@@ -25,7 +25,6 @@ public class AccountController : Controller
         _accountsCreator = accountsCreator;
         _accountsProvider = accountsProvider;
         _accountsUpdater = accountsUpdater;
-        _validUserAuthorizer = new ValidUserAuthorizer(HttpContext);
     }
 
     [HttpGet]
@@ -35,7 +34,7 @@ public class AccountController : Controller
     public async Task<IActionResult> Register(RegisterViewModel model)
     {
         if (_accountsCreator == null) throw new ArgumentNullException(nameof(_accountsCreator));
-        if (_validUserAuthorizer == null) throw new ArgumentNullException(nameof(_validUserAuthorizer));
+        _validUserAuthorizer ??= new ValidUserAuthorizer(HttpContext);
         var result = await _accountsCreator.AddAccountAsync(model)!;
         result = result ?? throw new ArgumentNullException(nameof(result));
         if (result.IsSuccess)
@@ -59,7 +58,7 @@ public class AccountController : Controller
     public async Task<IActionResult> Login(LoginViewModel model)
     {
         if (_accountsProvider == null) throw new ArgumentNullException(nameof(_accountsProvider));
-        if (_validUserAuthorizer == null) throw new ArgumentNullException(nameof(_validUserAuthorizer));
+        _validUserAuthorizer ??= new ValidUserAuthorizer(HttpContext);
         var result = await _accountsProvider.GetAccountAsync(model)!;
         result = result ?? throw new ArgumentNullException(nameof(result));
         if (result.IsSuccess)
@@ -77,7 +76,7 @@ public class AccountController : Controller
 
     public async Task<IActionResult> Logout()
     {
-        if (_validUserAuthorizer == null) throw new ArgumentNullException(nameof(_validUserAuthorizer));
+        _validUserAuthorizer ??= new ValidUserAuthorizer(HttpContext);
         await _validUserAuthorizer.SignOut();
         return RedirectToAction("Index", "Home");
     }
@@ -117,7 +116,7 @@ public class AccountController : Controller
     {
         if (_accountsUpdater == null) throw new ArgumentNullException(nameof(_accountsUpdater));
         await _accountsUpdater.SetAdminRightsAsync(email)!;
-        return RedirectToAction("Users", new {role = "Users"});
+        return RedirectToAction("Users");
     }
 
     [Authorize(Roles = "SuperAdmin")]
@@ -125,6 +124,6 @@ public class AccountController : Controller
     {
         if (_accountsUpdater == null) throw new ArgumentNullException(nameof(_accountsUpdater));
         await _accountsUpdater.RemoveAdminRightsAsync(email)!;
-        return RedirectToAction("Users", new {role = "Admins"});
+        return RedirectToAction("Admins");
     }
 }
