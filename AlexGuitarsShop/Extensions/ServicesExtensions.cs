@@ -8,7 +8,7 @@ using AlexGuitarsShop.Domain.Interfaces.Account;
 using AlexGuitarsShop.Domain.Interfaces.CartItem;
 using AlexGuitarsShop.Domain.Interfaces.Guitar;
 
-namespace AlexGuitarsShop;
+namespace AlexGuitarsShop.Extensions;
 
 public static class ServicesExtensions
 {
@@ -17,8 +17,8 @@ public static class ServicesExtensions
         services = services ?? throw new ArgumentNullException(nameof(services));
         services.AddTransient<IGuitarRepository, GuitarRepository>(_ =>
             new GuitarRepository(connectionString));
-        services.AddTransient<IUserRepository, UserRepository>(_ =>
-            new UserRepository(connectionString));
+        services.AddTransient<IAccountRepository, AccountRepository>(_ =>
+            new AccountRepository(connectionString));
         services.AddTransient<ICartItemRepository, CartItemRepository>(provider =>
             new CartItemRepository(connectionString, 
                 (provider ?? throw new ArgumentNullException(nameof(provider))).GetService<Cart>()));
@@ -36,5 +36,15 @@ public static class ServicesExtensions
         services.AddTransient<IGuitarsCreator, GuitarsCreator>();
         services.AddTransient<IGuitarsProvider, GuitarsProvider>();
         services.AddTransient<IGuitarsUpdater, GuitarsUpdater>();
+    }
+
+    public static void InitializeAuthorizer(this IServiceCollection services)
+    {
+        services = services ?? throw new ArgumentNullException(nameof(services));
+        services.AddHttpContextAccessor();
+        services.AddTransient<IAuthorizer, ValidUserAuthorizer>(provider => 
+            new ValidUserAuthorizer(
+                (provider ?? throw new ArgumentNullException(
+                    nameof(provider))).GetService<IHttpContextAccessor>()));
     }
 }

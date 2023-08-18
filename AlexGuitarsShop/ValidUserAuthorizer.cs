@@ -5,41 +5,40 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace AlexGuitarsShop;
 
-public class ValidUserAuthorizer
+public class ValidUserAuthorizer : IAuthorizer
 {
     private readonly HttpContext _context;
 
-    public ValidUserAuthorizer(HttpContext context)
+    public ValidUserAuthorizer(IHttpContextAccessor httpContextAccessor)
     {
-        _context = context;
+        httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
+        _context = httpContextAccessor.HttpContext;
     }
 
-    public async Task SignIn(User user)
+    public async Task SignIn(Account account)
     {
-        ClaimsIdentity claimsIdentity = Authenticate(user);
-        if (_context == null) throw new ArgumentNullException(nameof(_context));
-        await _context.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, 
+        ClaimsIdentity claimsIdentity = Authenticate(account);
+        await _context!.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, 
             new ClaimsPrincipal(claimsIdentity!));
     }
 
     public async Task SignOut()
     {
-        if (_context == null) throw new ArgumentNullException(nameof(_context));
-        await _context.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        await _context!.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
     }
 
-    private static ClaimsIdentity Authenticate(User user)
+    private static ClaimsIdentity Authenticate(Account account)
     {
-        if (user == null)
-            throw new ArgumentNullException(nameof(user));
-
-        if (user.Email == null)
-            throw new ArgumentNullException(nameof(user.Email));
-
+        account = account ?? throw new ArgumentNullException(nameof(account));
+        if (account.Email == null)
+        {
+            throw new ArgumentNullException(nameof(account.Email));
+        }
+        
         var claims = new List<Claim>
         {
-            new(ClaimsIdentity.DefaultNameClaimType, user.Email),
-            new(ClaimsIdentity.DefaultRoleClaimType, user.Role.ToString())
+            new(ClaimsIdentity.DefaultNameClaimType, account.Email),
+            new(ClaimsIdentity.DefaultRoleClaimType, account.Role.ToString())
         };
         return new ClaimsIdentity(claims, "ApplicationCookie",
             ClaimsIdentity.DefaultNameClaimType, ClaimsIdentity.DefaultRoleClaimType);

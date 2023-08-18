@@ -51,3 +51,8 @@
     border-radius: 0;
     text-align: center;
 }
+
+.register-submit:disabled{
+    background: gray;
+    color: lavender;
+}

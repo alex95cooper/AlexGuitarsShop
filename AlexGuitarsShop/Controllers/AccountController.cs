@@ -1,5 +1,6 @@
 using AlexGuitarsShop.DAL.Models;
 using AlexGuitarsShop.Domain;
+using AlexGuitarsShop.Domain.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using AlexGuitarsShop.Domain.ViewModels;
 using Microsoft.AspNetCore.Authorization;
@@ -14,17 +15,17 @@ public class AccountController : Controller
     private readonly IAccountsCreator _accountsCreator;
     private readonly IAccountsProvider _accountsProvider;
     private readonly IAccountsUpdater _accountsUpdater;
+    private readonly IAuthorizer _authorizer;
+    private readonly Paginator _paginator;
     
-    private ValidUserAuthorizer _validUserAuthorizer;
-    private int _pageCount;
-    private int _offset;
-
-    public AccountController(IAccountsCreator accountsCreator,
-        IAccountsProvider accountsProvider, IAccountsUpdater accountsUpdater)
+    public AccountController(IAccountsCreator accountsCreator, IAccountsProvider accountsProvider,
+        IAccountsUpdater accountsUpdater, IAuthorizer authorizer)
     {
-        _accountsCreator = accountsCreator;
-        _accountsProvider = accountsProvider;
-        _accountsUpdater = accountsUpdater;
+        _accountsCreator = accountsCreator ?? throw new ArgumentNullException(nameof(accountsCreator));
+        _accountsProvider = accountsProvider ?? throw new ArgumentNullException(nameof(accountsProvider));
+        _accountsUpdater = accountsUpdater ?? throw new ArgumentNullException(nameof(accountsUpdater));
+        _authorizer = authorizer ?? throw new ArgumentNullException(nameof(authorizer));
+        _paginator = new Paginator(Limit);
     }
 
     [HttpGet]
@@ -33,19 +34,16 @@ public class AccountController : Controller
     [HttpPost]
     public async Task<IActionResult> Register(RegisterViewModel model)
     {
-        if (_accountsCreator == null) throw new ArgumentNullException(nameof(_accountsCreator));
-        _validUserAuthorizer ??= new ValidUserAuthorizer(HttpContext);
         var result = await _accountsCreator.AddAccountAsync(model)!;
         result = result ?? throw new ArgumentNullException(nameof(result));
         if (result.IsSuccess)
         {
-            await _validUserAuthorizer.SignIn(result.Data);
+            await _authorizer.SignIn(result.Data);
             return RedirectToAction("Index", "Home");
         }
 
         ModelState.AddModelError("",
-            result.Description
-            ?? throw new ArgumentNullException(nameof(result.Description)));
+            result.Error ?? throw new ArgumentNullException(nameof(result.Error)));
 
         return View(model);
     }
@@ -57,64 +55,53 @@ public class AccountController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Login(LoginViewModel model)
     {
-        if (_accountsProvider == null) throw new ArgumentNullException(nameof(_accountsProvider));
-        _validUserAuthorizer ??= new ValidUserAuthorizer(HttpContext);
         var result = await _accountsProvider.GetAccountAsync(model)!;
         result = result ?? throw new ArgumentNullException(nameof(result));
         if (result.IsSuccess)
         {
-            await _validUserAuthorizer.SignIn(result.Data);
+            await _authorizer.SignIn(result.Data);
             return RedirectToAction("Index", "Home");
         }
 
         ModelState.AddModelError("",
-            result.Description
-            ?? throw new ArgumentNullException(nameof(result.Description)));
+            result.Error ?? throw new ArgumentNullException(nameof(result.Error)));
 
         return View(model);
     }
 
     public async Task<IActionResult> Logout()
     {
-        _validUserAuthorizer ??= new ValidUserAuthorizer(HttpContext);
-        await _validUserAuthorizer.SignOut();
+        await _authorizer.SignOut();
         return RedirectToAction("Index", "Home");
     }
 
     [HttpGet]
+    [Authorize(Roles = "SuperAdmin")]
     public async Task<IActionResult> Admins(int pageNumber = 1)
     {
-        if (_accountsProvider == null) throw new ArgumentNullException(nameof(_accountsProvider));
-        _offset = (pageNumber - 1) * Limit;
         var countResult = await _accountsProvider.GetAdminsCountAsync()!;
-        countResult = countResult ?? throw new ArgumentNullException(nameof(countResult));
-        int count = countResult.Data;
-        _pageCount = count % Limit == 0 ? count / Limit : count / Limit + 1;
-        var result = await _accountsProvider.GetAdminsAsync(_offset, Limit)!;
+        _paginator.SetPaginationValues(pageNumber, countResult);
+        var result = await _accountsProvider.GetAdminsAsync(_paginator.OffSet, Limit)!;
         result = result ?? throw new ArgumentNullException(nameof(result));
-        ListViewModel<User> model = new(result.Data, Title.Admins, _pageCount, pageNumber);
-        return View(model);
+        return View(_paginator.GetPaginatedList(
+            result.Data, Title.Admins, pageNumber));
     }
 
     [HttpGet]
+    [Authorize(Roles = "SuperAdmin, Admin")]
     public async Task<IActionResult> Users(int pageNumber = 1)
     {
-        if (_accountsProvider == null) throw new ArgumentNullException(nameof(_accountsProvider));
-        _offset = (pageNumber - 1) * Limit;
         var countResult = await _accountsProvider.GetUsersCountAsync()!;
-        countResult = countResult ?? throw new ArgumentNullException(nameof(countResult));
-        int count = countResult.Data;
-        _pageCount = count % Limit == 0 ? count / Limit : count / Limit + 1;
-        var result = await _accountsProvider.GetUsersAsync(_offset, Limit)!;
+        _paginator.SetPaginationValues(pageNumber, countResult);
+        var result = await _accountsProvider.GetUsersAsync(_paginator.OffSet, Limit)!;
         result = result ?? throw new ArgumentNullException(nameof(result));
-        ListViewModel<User> model = new(result.Data, Title.Users, _pageCount, pageNumber);
-        return View(model);
+        return View(_paginator.GetPaginatedList(
+            result.Data, Title.Users, pageNumber));
     }
 
     [Authorize(Roles = "SuperAdmin")]
     public async Task<IActionResult> MakeAdmin(string email)
     {
-        if (_accountsUpdater == null) throw new ArgumentNullException(nameof(_accountsUpdater));
         await _accountsUpdater.SetAdminRightsAsync(email)!;
         return RedirectToAction("Users");
     }
@@ -122,7 +109,6 @@ public class AccountController : Controller
     [Authorize(Roles = "SuperAdmin")]
     public async Task<IActionResult> MakeUser(string email)
     {
-        if (_accountsUpdater == null) throw new ArgumentNullException(nameof(_accountsUpdater));
         await _accountsUpdater.RemoveAdminRightsAsync(email)!;
         return RedirectToAction("Admins");
     }

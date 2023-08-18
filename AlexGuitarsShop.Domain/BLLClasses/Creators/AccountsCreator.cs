@@ -12,25 +12,25 @@ public class AccountsCreator : IAccountsCreator
     private const string ExistEmailErrorMessage = "User with this e-mail already exists";
     
         
-    private readonly IUserRepository _userRepository;
+    private readonly IAccountRepository _accountRepository;
 
-    public AccountsCreator(IUserRepository userRepository)
+    public AccountsCreator(IAccountRepository accountRepository)
     {
-        _userRepository = userRepository;
+        _accountRepository = accountRepository;
     }
 
-    public async Task<IResult<User>> AddAccountAsync(RegisterViewModel model)
+    public async Task<IResult<Account>> AddAccountAsync(RegisterViewModel model)
     {
-        if (_userRepository == null) throw new ArgumentNullException(nameof(_userRepository));
+        if (_accountRepository == null) throw new ArgumentNullException(nameof(_accountRepository));
         if (model == null) throw new ArgumentNullException(nameof(model));
-        var user = await _userRepository.FindAsync(model.Email)!;
+        var user = await _accountRepository.FindAsync(model.Email)!;
         if (user != null)
         {
-            return ResultCreator.GetInvalidResult<User>(ExistEmailErrorMessage);
+            return ResultCreator.GetInvalidResult<Account>(ExistEmailErrorMessage);
         }
 
         user = model.ToUser();
-        await _userRepository.CreateAsync(user)!;
+        await _accountRepository.CreateAsync(user)!;
         return ResultCreator.GetValidResult(user);
     }
     

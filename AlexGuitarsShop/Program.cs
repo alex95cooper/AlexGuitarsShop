@@ -1,6 +1,6 @@
 using AlexGuitarsShop;
 using AlexGuitarsShop.DAL.Models;
-using AlexGuitarsShop.Scripts;
+using AlexGuitarsShop.Extensions;
 using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder();
@@ -8,7 +8,6 @@ builder.Services.AddMvc();
 builder.Services.AddControllersWithViews();
 
 string connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-SeedDatabase.Init(connectionString);
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options  =>
@@ -25,6 +24,7 @@ builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
 builder.Services.InitializeRepositories(connectionString);
 builder.Services.InitializeEntityHandlers();
+builder.Services.InitializeAuthorizer();
 
 var app = builder.Build();
 

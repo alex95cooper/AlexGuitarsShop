@@ -8,50 +8,102 @@
   <div class="register-page-background-container">
         <div class="register-content">
             <h2>New user register</h2>
-            <form method="post" asp-controller="Account" asp-action="Register">
-                <div  asp-validation-summary="ModelOnly"></div>
+            <form id="form" method="post" asp-controller="Account" asp-action="Register">
+                <div id="error" asp-validation-summary="ModelOnly"></div>
                 <div>
                     <label asp-for="Name"></label><br/>
-                    <input class="register-input-text" asp-for="Name" placeholder="From 3 to 20 symbols.." pattern=".{3,20}" 
+                    <div class="error-field" id="error-name"></div>
+                    <input class="register-input-text" id="name" asp-for="Name" placeholder="From 3 to 20 symbols.." 
+                    pattern=".{3,20}" 
                     required/>
                     <span asp-validation-for="Name"></span>
                 </div>
                 <div>
                     <label asp-for="Email"></label><br/>
-                    <input class="register-input-text" asp-for="Email" type="email"/>
+                    <div class="error-field" id="error-email"></div>
+                    <input class="register-input-text" id="email" asp-for="Email" type="email"/>
                     <span asp-validation-for="Email"></span>
                 </div>
                 <div>
                     <label asp-for="Password"></label><br/>
+                    <div class="error-field" id="error-password"></div>
                     <input class="register-input-text" id="password" type="password" asp-for="Password" placeholder="From 5 to 50 symbols.." pattern=".{5,50}" required/>
                     <span asp-validation-for="Password"></span>
                 </div>
                 <div>
                     <label asp-for="PasswordConfirm"></label><br/>
+                    <div class="error-field" id="error-confirm-password"></div>
                     <input class="register-input-text" id="confirm_password" type="password" asp-for="PasswordConfirm" required/>
                     <span asp-validation-for="PasswordConfirm"></span>
                 </div>
                 <div>
-                    <input class="register-submit" type="submit" value="Register"/>
+                    <input class="register-submit" id="submit" type="submit" value="Register" disabled/>
                 </div>
             </form>
         </div>
   </div>
 </div>
 
-
 <script>
-const password = document.getElementById("password")
-  , confirm_password = document.getElementById("confirm_password");
+const form = document.getElementById("form");
+const name = document.getElementById("name");
+const email = document.getElementById("email");
+const password = document.getElementById("password");
+const confirm_password = document.getElementById("confirm_password");
+const submit = document.getElementById("submit");
 
-function validatePassword(){
-  if(password.value !== confirm_password.value) {
-    confirm_password.setCustomValidity("Passwords Don't Match");
-  } else {
-    confirm_password.setCustomValidity('');
-  }
-}
-
-password.onchange = validatePassword;
-confirm_password.onkeyup = validatePassword;
+form.addEventListener('input', (e) => {
+    const error_Name = document.getElementById("error-name"); 
+    const error_Email = document.getElementById("error-email");
+    const error_Password = document.getElementById("error-password");
+    const error_Confirm_Password = document.getElementById("error-confirm-password");
+    submit.disabled = false;
+    if (name.value === '' || name.value == null) {
+        error_Name.innerText = 'Name is required'
+        submit.disabled = true;
+        }
+    else if (name.value.length < 3 || name.value.length > 20){
+        error_Name.innerText = 'Name must be between 3...20 characters long'
+        submit.disabled = true;
+        }
+    else {
+        error_Name.innerText = ''
+        }
+    
+    const mailFormat = /^\w+([.-]?\w+)*@@\w+([.-]?\w+)*(\.\w{2,3})+$/;
+    if (email.value === '' || email.value == null) {
+        error_Email.innerText = 'Email is required'
+    }
+    else if (!email.value.match(mailFormat)){
+        error_Email.innerText = 'Email format does not follow common rules'
+        submit.disabled = true;
+    }
+    else {
+        error_Email.innerText = ''
+        }
+    
+    if (password.value === '' || password.value == null) {
+        error_Password.innerText = 'Password is required'
+        submit.disabled = true;
+        }
+    else if (password.value.length < 5 || password.value.length > 50){
+        error_Password.innerText = 'Password must be between 5...50 characters long'
+        submit.disabled = true;
+        }
+    else {
+        error_Password.innerText = ''
+        }
+    
+    if (confirm_password.value === '' || confirm_password.value == null) {
+        error_Confirm_Password.innerText = 'Confirm password is required'
+        submit.disabled = true;
+        }
+    else if (confirm_password.value !== password.value){
+        error_Confirm_Password.innerText = 'Confirm password is not match'
+        submit.disabled = true;
+        }
+    else {
+        error_Confirm_Password.innerText = ''
+        }
+})
 </script>

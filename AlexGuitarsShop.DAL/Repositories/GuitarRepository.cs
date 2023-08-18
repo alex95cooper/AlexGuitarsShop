@@ -18,7 +18,7 @@ public class GuitarRepository : IGuitarRepository
     public async Task<Guitar> GetAsync(int id)
     {
         using IDbConnection db = new MySqlConnection(_connectionString);
-        return await db.QueryFirstOrDefaultAsync<Guitar>($"SELECT * FROM guitars WHERE Id = {id}")!;
+        return await db.QueryFirstOrDefaultAsync<Guitar>($"SELECT * FROM Guitars WHERE Id = {id}")!;
     }
     
     public async Task<int> GetCountAsync()
@@ -30,7 +30,7 @@ public class GuitarRepository : IGuitarRepository
     public async Task<List<Guitar>> GetAllAsync(int offset, int limit)
     {
         using IDbConnection db = new MySqlConnection(_connectionString);
-        return (await db.QueryAsync<Guitar>(@$"SELECT * FROM guitars WHERE IsDeleted = 0 
+        return (await db.QueryAsync<Guitar>(@$"SELECT * FROM Guitars WHERE IsDeleted = 0 
         LIMIT {limit} OFFSET {offset}")!)!.ToList();
     }
 

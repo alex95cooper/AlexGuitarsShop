@@ -8,52 +8,52 @@ namespace AlexGuitarsShop.Domain.BLLClasses.Providers;
 
 public class AccountsProvider : IAccountsProvider
 {
-    private readonly IUserRepository _userRepository;
+    private readonly IAccountRepository _accountRepository;
 
-    public AccountsProvider(IUserRepository userRepository)
+    public AccountsProvider(IAccountRepository accountRepository)
     {
-        _userRepository = userRepository;
+        _accountRepository = accountRepository;
     }
 
-    public async Task<IResult<User>> GetAccountAsync(LoginViewModel model)
+    public async Task<IResult<Account>> GetAccountAsync(LoginViewModel model)
     {
         if (model == null) throw new ArgumentNullException(nameof(model));
-        if (_userRepository == null) throw new ArgumentNullException(nameof(_userRepository));
-        var user = await _userRepository.FindAsync(model.Email)!;
+        if (_accountRepository == null) throw new ArgumentNullException(nameof(_accountRepository));
+        var user = await _accountRepository.FindAsync(model.Email)!;
         if (user == null || user.Password != PasswordHasher.HashPassword(model.Password))
         {
             string message = user == null ? "User is not found" : "Invalid password or login";
-            return ResultCreator.GetInvalidResult<User>(message);
+            return ResultCreator.GetInvalidResult<Account>(message);
         }
 
         return ResultCreator.GetValidResult(user);
     }
 
-    public async Task<IResult<List<User>>> GetUsersAsync(int offset, int limit)
+    public async Task<IResult<List<Account>>> GetUsersAsync(int offset, int limit)
     {
-        if (_userRepository == null) throw new ArgumentNullException(nameof(_userRepository));
-        var userList = await _userRepository.GetUsersAsync(offset, limit)!;
+        if (_accountRepository == null) throw new ArgumentNullException(nameof(_accountRepository));
+        var userList = await _accountRepository.GetUsersAsync(offset, limit)!;
         return ResultCreator.GetValidResult(userList);
     }
 
-    public async Task<IResult<List<User>>> GetAdminsAsync(int offset, int limit)
+    public async Task<IResult<List<Account>>> GetAdminsAsync(int offset, int limit)
     {
-        if (_userRepository == null) throw new ArgumentNullException(nameof(_userRepository));
-        var userList = await _userRepository.GetAdminsAsync(offset, limit)!;
+        if (_accountRepository == null) throw new ArgumentNullException(nameof(_accountRepository));
+        var userList = await _accountRepository.GetAdminsAsync(offset, limit)!;
         return ResultCreator.GetValidResult(userList);
     }
 
     public async Task<IResult<int>> GetUsersCountAsync()
     {
-        if (_userRepository == null) throw new ArgumentNullException(nameof(_userRepository));
-        int usersCount = await _userRepository.GetUsersCountAsync()!;
+        if (_accountRepository == null) throw new ArgumentNullException(nameof(_accountRepository));
+        int usersCount = await _accountRepository.GetUsersCountAsync()!;
         return ResultCreator.GetValidResult(usersCount);
     }
 
     public async Task<IResult<int>> GetAdminsCountAsync()
     {
-        if (_userRepository == null) throw new ArgumentNullException(nameof(_userRepository));
-        int adminsCount = await _userRepository.GetAdminsCountAsync()!;
+        if (_accountRepository == null) throw new ArgumentNullException(nameof(_accountRepository));
+        int adminsCount = await _accountRepository.GetAdminsCountAsync()!;
         return ResultCreator.GetValidResult(adminsCount);
     }
 }

@@ -29,7 +29,7 @@ header a:hover {
     font-size: 1.3em;
 }
 
-.about-us-button, .contacts-button, .registration-button, .cart-button {
+.menu-button, .registration-button {
     margin-left: 20px;
 }
 
@@ -60,6 +60,7 @@ footer a {
 }
 
 .login-registration-container {
+    float: right;
     padding-top: 5px;
     margin-right: 0;
     margin-left: auto;
@@ -115,4 +116,10 @@ input, textarea {
 
 .dropdown:hover .dropdown-child {
     display: block;
+}
+
+.error-field{
+    color: lightcoral;
+    font-size: 0.7em;
+    height:30px;
 }

@@ -6,19 +6,19 @@ using MySqlConnector;
 
 namespace AlexGuitarsShop.DAL.Repositories;
 
-public class UserRepository : IUserRepository
+public class AccountRepository : IAccountRepository
 {
     private readonly string _connectionString;
 
-    public UserRepository(string connectionString)
+    public AccountRepository(string connectionString)
     {
         _connectionString = connectionString;
     }
     
-    public async Task<User> FindAsync(string email)
+    public async Task<Account> FindAsync(string email)
     {
         using IDbConnection db = new MySqlConnection(_connectionString);
-        return await db.QueryFirstOrDefaultAsync<User>($"SELECT * FROM Users WHERE Email = @Email",
+        return await db.QueryFirstOrDefaultAsync<Account>($"SELECT * FROM Users WHERE Email = @Email",
             new {Email = email})!;
     }
     
@@ -34,27 +34,27 @@ public class UserRepository : IUserRepository
         return await db.ExecuteScalarAsync<int>("SELECT COUNT(*) FROM Users WHERE Role = 1")!;
     }
     
-    public async Task<List<User>> GetUsersAsync(int offset, int limit)
+    public async Task<List<Account>> GetUsersAsync(int offset, int limit)
     {
         using IDbConnection db = new MySqlConnection(_connectionString);
-        return (await db.QueryAsync<User>(@$"SELECT * FROM Users WHERE Role = 0 
+        return (await db.QueryAsync<Account>(@$"SELECT * FROM Users WHERE Role = 0 
         LIMIT {limit} OFFSET {offset}")!)!.ToList();
     }
 
-    public async Task<List<User>> GetAdminsAsync(int offset, int limit)
+    public async Task<List<Account>> GetAdminsAsync(int offset, int limit)
     {
         using IDbConnection db = new MySqlConnection(_connectionString);
-        return (await db.QueryAsync<User>(@$"SELECT * FROM Users WHERE Role = 1 
+        return (await db.QueryAsync<Account>(@$"SELECT * FROM Users WHERE Role = 1 
         LIMIT {limit} OFFSET {offset}")!)!.ToList();
     }
 
-    public async Task CreateAsync(User user)
+    public async Task CreateAsync(Account account)
     {
-        if (user == null) throw new ArgumentNullException(nameof(user));
+        if (account == null) throw new ArgumentNullException(nameof(account));
         using IDbConnection db = new MySqlConnection(_connectionString);
         await db.ExecuteAsync(@"INSERT INTO Users (Name, Email, Password, Role) 
             VALUES (@Name, @Email, @Password, @Role)", 
-            new {user.Name, user.Email, user.Password, user.Role})!;
+            new {account.Name, account.Email, account.Password, account.Role})!;
     }
     
     public async Task UpdateAsync(string email, int role)

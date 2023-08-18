@@ -14,18 +14,18 @@ public class CartItemRepository : ICartItemRepository
     public CartItemRepository(string connectionString, Cart cart)
     {
         _connectionString = connectionString;
-        _cart = cart;
+        _cart = cart ?? throw new ArgumentNullException(nameof(cart));
     }
 
     public async Task<CartItem> FindAsync(int id)
     {
-        EnsureCartNotNull();
         using IDbConnection db = new MySqlConnection(_connectionString);
-        return await db.QueryFirstAsync<CartItem>($@"SELECT CartItems.*, Guitars.*
+        CartItem item =  await db.QueryFirstOrDefaultAsync<CartItem>($@"SELECT CartItems.*, Guitars.*
         FROM CartItems 
         LEFT JOIN Guitars ON CartItems.Prod_Id = Guitars.Id
         WHERE CartItems.Cart_Id = '{_cart!.Id}' 
         AND CartItems.Prod_Id = @Id AND Guitars.IsDeleted = 0 ", new {id})!;
+        return item;
     }
 
     public async Task<int> GetProductQuantityAsync(int id)
@@ -38,7 +38,6 @@ public class CartItemRepository : ICartItemRepository
 
     public async Task<List<CartItem>> GetAllAsync()
     {
-        EnsureCartNotNull();
         using IDbConnection db = new MySqlConnection(_connectionString);
         return (await db.QueryAsync<CartItem, Guitar, CartItem>(@$"SELECT CartItems.*, Guitars.*
         FROM CartItems 
@@ -53,48 +52,39 @@ public class CartItemRepository : ICartItemRepository
 
     public async Task CreateAsync(CartItem item)
     {
-        EnsureCartNotNull();
         item = item ?? throw new ArgumentNullException(nameof(item));
         item.Product = item.Product ?? throw new ArgumentNullException(nameof(item.Product));
-        using IDbConnection db = new MySqlConnection(_connectionString);
-        await db.ExecuteAsync(@"INSERT INTO CartItems (Cart_Id, Prod_Id, Quantity) 
+        if (!_cart.Products.Contains(item))
+        {
+            using IDbConnection db = new MySqlConnection(_connectionString);
+            await db.ExecuteAsync(@"INSERT INTO CartItems (Cart_Id, Prod_Id, Quantity) 
                 VALUES (@Cart_Id, @Prod_Id, @Quantity)",
-            new
-            {
-                Cart_Id = _cart!.Id,
-                Prod_Id = item.Product.Id,
-                item.Quantity
-            }
-        )!;
+                new
+                {
+                    Cart_Id = _cart!.Id,
+                    Prod_Id = item.Product.Id,
+                    item.Quantity
+                }
+            )!; 
+        }
     }
     
     public async Task UpdateQuantityAsync(int id, int quantity)
     {
-        EnsureCartNotNull();
         using IDbConnection db = new MySqlConnection(_connectionString);
         await db.ExecuteAsync($@"UPDATE CartItems SET Quantity = {quantity}
-        WHERE Cart_Id = {_cart!.Id} AND Prod_Id = {id}")!;
+        WHERE Cart_Id = '{_cart!.Id}' AND Prod_Id = {id}")!;
     }
 
     public async Task DeleteAsync(int id)
     {
-        EnsureCartNotNull();
         using IDbConnection db = new MySqlConnection(_connectionString);
-        await db.ExecuteAsync($"DELETE FROM CartItems WHERE Cart_ID = {_cart!.Id} AND Prod_Id = {id}")!;
+        await db.ExecuteAsync($"DELETE FROM CartItems WHERE Cart_ID = '{_cart!.Id}' AND Prod_Id = {id}")!;
     }
 
     public async Task DeleteAllAsync()
     {
-        EnsureCartNotNull();
         using IDbConnection db = new MySqlConnection(_connectionString);
-        await db.ExecuteAsync($@"DELETE FROM CartItems WHERE Cart_ID = {_cart!.Id}")!;
-    }
-
-    private void EnsureCartNotNull()
-    {
-        if (_cart == null)
-        {
-            throw new ArgumentNullException(nameof(_cart));
-        }
+        await db.ExecuteAsync($@"DELETE FROM CartItems WHERE Cart_ID = '{_cart!.Id}'")!;
     }
 }

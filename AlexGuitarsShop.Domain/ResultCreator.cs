@@ -9,7 +9,7 @@ internal static class ResultCreator
         return new Result<T>
         {
             IsSuccess = false,
-            Description = message
+            Error = message
         };
     }
     

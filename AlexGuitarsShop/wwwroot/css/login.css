@@ -47,3 +47,8 @@
     border-radius: 0;
     text-align: center;
 }
+
+.login-submit:disabled{
+    background: gray;
+    color: lavender;
+}

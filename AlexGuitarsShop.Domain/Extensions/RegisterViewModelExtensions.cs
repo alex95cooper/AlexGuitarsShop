@@ -6,10 +6,10 @@ namespace AlexGuitarsShop.Domain.Extensions;
 
 public static class RegisterViewModelExtensions
 {
-    public static User ToUser(this RegisterViewModel model)
+    public static Account ToUser(this RegisterViewModel model)
     {
         if (model == null) throw new ArgumentNullException(nameof(model));
-        return new User(model.Name, model.Email, 
+        return new Account(model.Name, model.Email, 
             PasswordHasher.HashPassword(model.Password), Role.User);
     }
 }

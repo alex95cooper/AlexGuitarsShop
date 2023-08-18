@@ -1,3 +1,8 @@
 namespace AlexGuitarsShop.Domain.ViewModels;
 
-public record PaginationViewModel(Title Title, int PageCount, int CurrentPage);
+public class PaginationViewModel
+{
+    public Title Title { get; set; }
+    public int PageCount { get; set; }
+    public int CurrentPage { get; set; }
+}

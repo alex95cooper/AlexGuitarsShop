@@ -4,7 +4,7 @@ namespace AlexGuitarsShop.Domain.Interfaces.Guitar;
 
 public interface IGuitarsProvider
 {
-    Task<IResult<List<DAL.Models.Guitar>>> GetGuitarsByLimitAsync(int offset, int fetchRows);
+    Task<IResult<List<DAL.Models.Guitar>>> GetGuitarsByLimitAsync(int offset, int limit);
 
     Task<IResult<GuitarViewModel>> GetGuitarAsync(int id);
 
