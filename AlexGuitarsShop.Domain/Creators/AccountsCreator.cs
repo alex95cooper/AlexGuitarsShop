@@ -3,15 +3,14 @@ using AlexGuitarsShop.DAL.Models;
 using AlexGuitarsShop.Domain.Extensions;
 using AlexGuitarsShop.Domain.Interfaces;
 using AlexGuitarsShop.Domain.Interfaces.Account;
-using AlexGuitarsShop.Domain.ViewModels;
+using AlexGuitarsShop.Domain.Models;
 
-namespace AlexGuitarsShop.Domain.BLLClasses.Creators;
+namespace AlexGuitarsShop.Domain.Creators;
 
 public class AccountsCreator : IAccountsCreator
 {
     private const string ExistEmailErrorMessage = "User with this e-mail already exists";
     
-        
     private readonly IAccountRepository _accountRepository;
 
     public AccountsCreator(IAccountRepository accountRepository)
@@ -19,19 +18,16 @@ public class AccountsCreator : IAccountsCreator
         _accountRepository = accountRepository;
     }
 
-    public async Task<IResult<Account>> AddAccountAsync(RegisterViewModel model)
+    public async Task<IResult<Account>> AddAccountAsync(Register register)
     {
-        if (_accountRepository == null) throw new ArgumentNullException(nameof(_accountRepository));
-        if (model == null) throw new ArgumentNullException(nameof(model));
-        var user = await _accountRepository.FindAsync(model.Email)!;
-        if (user != null)
+        register = register ?? throw new ArgumentNullException(nameof(register));
+        var account = await _accountRepository.FindAsync(register.Email);
+        if (account != null)
         {
             return ResultCreator.GetInvalidResult<Account>(ExistEmailErrorMessage);
         }
-
-        user = model.ToUser();
-        await _accountRepository.CreateAsync(user)!;
-        return ResultCreator.GetValidResult(user);
+        
+        await _accountRepository.CreateAsync(register.ToAccount());
+        return ResultCreator.GetValidResult(register.ToAccount());
     }
-    
 }

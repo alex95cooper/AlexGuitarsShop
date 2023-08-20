@@ -1,10 +1,8 @@
-using AlexGuitarsShop.Domain.ViewModels;
-
 namespace AlexGuitarsShop.Domain.Interfaces.Guitar;
 
 public interface IGuitarsUpdater
 {
-    Task UpdateGuitarAsync(GuitarViewModel model);
+    Task UpdateGuitarAsync(DAL.Models.Guitar guitar);
 
     Task DeleteGuitarAsync(int id);
 }

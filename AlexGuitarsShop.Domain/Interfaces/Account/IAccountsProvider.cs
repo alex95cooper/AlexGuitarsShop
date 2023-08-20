@@ -1,11 +1,10 @@
-using AlexGuitarsShop.DAL.Models;
-using AlexGuitarsShop.Domain.ViewModels;
+using AlexGuitarsShop.Domain.Models;
 
 namespace AlexGuitarsShop.Domain.Interfaces.Account;
 
 public interface IAccountsProvider
 {
-    Task<IResult<DAL.Models.Account>> GetAccountAsync(LoginViewModel model);
+    Task<IResult<DAL.Models.Account>> GetAccountAsync(Login login);
 
     Task<IResult<List<DAL.Models.Account>>> GetUsersAsync(int offset, int limit);
 

@@ -1,18 +1,17 @@
-using AlexGuitarsShop;
 using AlexGuitarsShop.DAL.Models;
 using AlexGuitarsShop.Extensions;
 using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder();
+
 builder.Services.AddMvc();
 builder.Services.AddControllersWithViews();
 
 string connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie(options  =>
+    .AddCookie(options =>
     {
-        options = options ?? throw new ArgumentNullException(nameof(options));
         options.LoginPath = new PathString("/Account/Login");
         options.AccessDeniedPath = new PathString("/Account/Login");
     });

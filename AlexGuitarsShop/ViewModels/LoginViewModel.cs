@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace AlexGuitarsShop.Domain.ViewModels;
+namespace AlexGuitarsShop.ViewModels;
 
 public class LoginViewModel
 {

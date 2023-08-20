@@ -5,11 +5,11 @@ namespace AlexGuitarsShop.DAL.Interfaces;
 public interface IAccountRepository
 {
     Task<Account> FindAsync(string email);
-    
+
     Task<int> GetUsersCountAsync();
 
     Task<int> GetAdminsCountAsync();
-    
+
     Task<List<Account>> GetUsersAsync(int offset, int limit);
 
     Task<List<Account>> GetAdminsAsync(int offset, int limit);

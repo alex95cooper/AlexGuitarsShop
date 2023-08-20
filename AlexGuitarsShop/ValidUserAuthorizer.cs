@@ -7,24 +7,25 @@ namespace AlexGuitarsShop;
 
 public class ValidUserAuthorizer : IAuthorizer
 {
-    private readonly HttpContext _context;
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
     public ValidUserAuthorizer(IHttpContextAccessor httpContextAccessor)
     {
-        httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
-        _context = httpContextAccessor.HttpContext;
+        _httpContextAccessor = httpContextAccessor;
     }
+
+    private HttpContext Context => _httpContextAccessor.HttpContext;
 
     public async Task SignIn(Account account)
     {
         ClaimsIdentity claimsIdentity = Authenticate(account);
-        await _context!.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, 
-            new ClaimsPrincipal(claimsIdentity!));
+        await Context.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
+            new ClaimsPrincipal(claimsIdentity));
     }
 
     public async Task SignOut()
     {
-        await _context!.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        await Context.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
     }
 
     private static ClaimsIdentity Authenticate(Account account)
@@ -34,12 +35,13 @@ public class ValidUserAuthorizer : IAuthorizer
         {
             throw new ArgumentNullException(nameof(account.Email));
         }
-        
+
         var claims = new List<Claim>
         {
             new(ClaimsIdentity.DefaultNameClaimType, account.Email),
             new(ClaimsIdentity.DefaultRoleClaimType, account.Role.ToString())
         };
+
         return new ClaimsIdentity(claims, "ApplicationCookie",
             ClaimsIdentity.DefaultNameClaimType, ClaimsIdentity.DefaultRoleClaimType);
     }

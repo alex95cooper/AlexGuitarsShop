@@ -1,9 +1,8 @@
-using AlexGuitarsShop.DAL.Models;
-using AlexGuitarsShop.Domain.ViewModels;
+using AlexGuitarsShop.Domain.Models;
 
 namespace AlexGuitarsShop.Domain.Interfaces.Account;
 
 public interface IAccountsCreator
 {
-    Task<IResult<DAL.Models.Account>> AddAccountAsync(RegisterViewModel model);
+    Task<IResult<DAL.Models.Account>> AddAccountAsync(Register register);
 }

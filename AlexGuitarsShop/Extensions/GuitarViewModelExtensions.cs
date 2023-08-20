@@ -1,14 +1,13 @@
 using AlexGuitarsShop.DAL.Models;
-using AlexGuitarsShop.Domain.ViewModels;
+using AlexGuitarsShop.ViewModels;
 
-namespace AlexGuitarsShop.Domain.Extensions;
+namespace AlexGuitarsShop.Extensions;
 
 public static class GuitarViewModelExtensions
 {
     public static Guitar ToGuitar(this GuitarViewModel model)
     {
-        if (model == null) throw new ArgumentNullException(nameof(model));
-        return new Guitar(model.Id, model.Name, 
+        return new Guitar(model.Id, model.Name,
             model.Price, model.Description, model.Image, model.IsDeleted);
     }
 }

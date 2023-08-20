@@ -1,10 +1,10 @@
 using AlexGuitarsShop.DAL.Models;
 using AlexGuitarsShop.Domain;
-using AlexGuitarsShop.Domain.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using AlexGuitarsShop.Domain.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using AlexGuitarsShop.Domain.Interfaces.Account;
+using AlexGuitarsShop.Extensions;
+using AlexGuitarsShop.ViewModels;
 
 namespace AlexGuitarsShop.Controllers;
 
@@ -16,16 +16,14 @@ public class AccountController : Controller
     private readonly IAccountsProvider _accountsProvider;
     private readonly IAccountsUpdater _accountsUpdater;
     private readonly IAuthorizer _authorizer;
-    private readonly Paginator _paginator;
-    
+
     public AccountController(IAccountsCreator accountsCreator, IAccountsProvider accountsProvider,
         IAccountsUpdater accountsUpdater, IAuthorizer authorizer)
     {
-        _accountsCreator = accountsCreator ?? throw new ArgumentNullException(nameof(accountsCreator));
-        _accountsProvider = accountsProvider ?? throw new ArgumentNullException(nameof(accountsProvider));
-        _accountsUpdater = accountsUpdater ?? throw new ArgumentNullException(nameof(accountsUpdater));
-        _authorizer = authorizer ?? throw new ArgumentNullException(nameof(authorizer));
-        _paginator = new Paginator(Limit);
+        _accountsCreator = accountsCreator;
+        _accountsProvider = accountsProvider;
+        _accountsUpdater = accountsUpdater;
+        _authorizer = authorizer;
     }
 
     [HttpGet]
@@ -34,17 +32,14 @@ public class AccountController : Controller
     [HttpPost]
     public async Task<IActionResult> Register(RegisterViewModel model)
     {
-        var result = await _accountsCreator.AddAccountAsync(model)!;
-        result = result ?? throw new ArgumentNullException(nameof(result));
+        var result = await _accountsCreator.AddAccountAsync(model.ToRegister());
         if (result.IsSuccess)
         {
             await _authorizer.SignIn(result.Data);
             return RedirectToAction("Index", "Home");
         }
 
-        ModelState.AddModelError("",
-            result.Error ?? throw new ArgumentNullException(nameof(result.Error)));
-
+        ModelState.AddModelError("", result.Error);
         return View(model);
     }
 
@@ -55,17 +50,14 @@ public class AccountController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Login(LoginViewModel model)
     {
-        var result = await _accountsProvider.GetAccountAsync(model)!;
-        result = result ?? throw new ArgumentNullException(nameof(result));
+        var result = await _accountsProvider.GetAccountAsync(model.ToLogin());
         if (result.IsSuccess)
         {
             await _authorizer.SignIn(result.Data);
             return RedirectToAction("Index", "Home");
         }
 
-        ModelState.AddModelError("",
-            result.Error ?? throw new ArgumentNullException(nameof(result.Error)));
-
+        ModelState.AddModelError("", result.Error);
         return View(model);
     }
 
@@ -76,40 +68,48 @@ public class AccountController : Controller
     }
 
     [HttpGet]
-    [Authorize(Roles = "SuperAdmin")]
+    [Authorize(Roles = Constants.Roles.AdminPlus)]
     public async Task<IActionResult> Admins(int pageNumber = 1)
     {
-        var countResult = await _accountsProvider.GetAdminsCountAsync()!;
-        _paginator.SetPaginationValues(pageNumber, countResult);
-        var result = await _accountsProvider.GetAdminsAsync(_paginator.OffSet, Limit)!;
-        result = result ?? throw new ArgumentNullException(nameof(result));
-        return View(_paginator.GetPaginatedList(
-            result.Data, Title.Admins, pageNumber));
+        int offset = (pageNumber - 1) * Limit;
+        int count = (await _accountsProvider.GetAdminsCountAsync()).Data;
+        List<Account> list = (await _accountsProvider.GetAdminsAsync(offset, Limit)).Data;
+        ListViewModel<Account> model = new ListViewModel<Account>
+        {
+            List = list, Title = Title.Admins,
+            TotalCount = count, CurrentPage = pageNumber
+        };
+
+        return View(model);
     }
 
     [HttpGet]
-    [Authorize(Roles = "SuperAdmin, Admin")]
+    [Authorize(Roles = Constants.Roles.AdminPlus)]
     public async Task<IActionResult> Users(int pageNumber = 1)
     {
-        var countResult = await _accountsProvider.GetUsersCountAsync()!;
-        _paginator.SetPaginationValues(pageNumber, countResult);
-        var result = await _accountsProvider.GetUsersAsync(_paginator.OffSet, Limit)!;
-        result = result ?? throw new ArgumentNullException(nameof(result));
-        return View(_paginator.GetPaginatedList(
-            result.Data, Title.Users, pageNumber));
+        int offset = (pageNumber - 1) * Limit;
+        int count = (await _accountsProvider.GetUsersCountAsync()).Data;
+        List<Account> list = (await _accountsProvider.GetUsersAsync(offset, Limit)).Data;
+        ListViewModel<Account> model = new ListViewModel<Account>
+        {
+            List = list, Title = Title.Users,
+            TotalCount = count, CurrentPage = pageNumber
+        };
+
+        return View(model);
     }
 
     [Authorize(Roles = "SuperAdmin")]
     public async Task<IActionResult> MakeAdmin(string email)
     {
-        await _accountsUpdater.SetAdminRightsAsync(email)!;
+        await _accountsUpdater.SetAdminRightsAsync(email);
         return RedirectToAction("Users");
     }
 
     [Authorize(Roles = "SuperAdmin")]
     public async Task<IActionResult> MakeUser(string email)
     {
-        await _accountsUpdater.RemoveAdminRightsAsync(email)!;
+        await _accountsUpdater.RemoveAdminRightsAsync(email);
         return RedirectToAction("Admins");
     }
 }

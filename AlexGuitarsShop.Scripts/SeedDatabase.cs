@@ -29,7 +29,7 @@ public static class SeedDatabase
             FillGuitars(db);
         }
     }
-    
+
     private static void FillGuitars(IDbConnection db)
     {
         string currentPath = Directory.GetCurrentDirectory().Replace("\\", "\\\\");

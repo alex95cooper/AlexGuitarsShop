@@ -1,18 +1,13 @@
-@model AlexGuitarsShop.Domain.ViewModels.ListViewModel<AlexGuitarsShop.DAL.Models.Guitar>;
+@model AlexGuitarsShop.ViewModels.ListViewModel<AlexGuitarsShop.DAL.Models.Guitar>;
 
 @{
     const string textTitle = "Catalog";
     ViewData["Title"] = textTitle;
-
 }
 
 <div class="catalog-page-container">
     <div class="catalog-page-background-container">
         <div class="catalog-content">
-            @if (Model == null)
-            {
-                throw new ArgumentNullException(nameof(Model));
-            }
             @if (User.IsInRole("Admin") || User.IsInRole("SuperAdmin"))
             {
                 <div class="add-button">
@@ -21,56 +16,52 @@
                     </a>
                 </div>
             }
-            @{
-                if (Model == null) throw new ArgumentNullException(nameof(Model));
-                if (Model.List == null) throw new ArgumentNullException(nameof(Model.List));
-                @if (Model.List.Count > 0)
-                {
-                    <div class="guitars-container">
-                        @foreach (var guitar in Model.List)
-                        {
-                            if (guitar == null) throw new ArgumentNullException(nameof(guitar));
-                            <div class="model-container">
-                                <div class="image-container">
-                                    @if (guitar.Image == null)
+            @if (Model.List.Count > 0)
+            {
+                <div class="guitars-container">
+                    @foreach (var guitar in Model.List)
+                    {
+                        if (guitar == null) throw new ArgumentNullException(nameof(guitar));
+                        <div class="model-container">
+                            <div class="image-container">
+                                @if (guitar.Image == null)
+                                {
+                                    <img class="guitar-img" src="/images/guitar-logo.jpg" alt="Guitar"/>
+                                }
+                                else
+                                {
+                                    <img class="guitar-img" src="data:image;base64,@Convert.ToBase64String(guitar.Image)" alt="Guitar"/>
+                                }
+                            </div>
+                            <div class="model-info-container">
+                                <h2 class="name">@guitar.Name</h2>
+                                <p class="price">$ @guitar.Price.ToString()</p>
+                                <p class="description">@guitar.Description</p>
+                                <div class="model-buttons-container">
+                                    <a class="add-button-content" asp-controller="Catalog" asp-action="AddToCart" asp-route-prodId="@guitar.Id">
+                                        Add to Cart
+                                    </a>
+                                    @if (User.IsInRole("Admin") || User.IsInRole("SuperAdmin"))
                                     {
-                                        <img class="guitar-img" src="/images/guitar-logo.jpg" alt="Guitar"/>
-                                    }
-                                    else
-                                    {
-                                        <img class="guitar-img" src="data:image;base64,@Convert.ToBase64String(guitar.Image)" alt="Guitar"/>
-                                    }
-                                </div>
-                                <div class="model-info-container">
-                                    <h2 class="name">@guitar.Name</h2>
-                                    <p class="price">$ @guitar.Price.ToString()</p>
-                                    <p class="description">@guitar.Description</p>
-                                    <div class="model-buttons-container">
-                                        <a class="add-button-content" asp-controller="Catalog" asp-action="AddToCart" asp-route-prodId="@guitar.Id">
-                                            Add to Cart
+                                        <a class="change-button" asp-controller="Catalog" asp-route-id="@guitar.Id" asp-action="Update">
+                                            Change
                                         </a>
-                                        @if (User.IsInRole("Admin") || User.IsInRole("SuperAdmin"))
-                                        {
-                                            <a class="change-button" asp-controller="Catalog" asp-route-id="@guitar.Id" asp-action="Update">
-                                                Change
-                                            </a>
-                                            <a class="delete-button" asp-controller="Catalog" asp-action="Delete" asp-route-id="@guitar.Id">
-                                                Delete
-                                            </a>
-                                        }
-                                    </div>
+                                        <a class="delete-button" asp-controller="Catalog" asp-action="Delete" asp-route-id="@guitar.Id">
+                                            Delete
+                                        </a>
+                                    }
                                 </div>
                             </div>
-                        }
-                        @Html.Partial("_Pagination", Model)
-                    </div>
-                }
-                else
-                {
-                    <div class="notification-header">
-                        <h1>Catalog is empty</h1>
-                    </div>
-                }
+                        </div>
+                    }
+                    @Html.Partial("_Pagination", Model)
+                </div>
+            }
+            else
+            {
+                <div class="notification-header">
+                    <h1>Catalog is empty</h1>
+                </div>
             }
         </div>
     </div>

@@ -1,10 +1,9 @@
 using AlexGuitarsShop.DAL.Models;
 using AlexGuitarsShop.Domain;
-using AlexGuitarsShop.Domain.Extensions;
 using AlexGuitarsShop.Domain.Interfaces.CartItem;
 using AlexGuitarsShop.Domain.Interfaces.Guitar;
-using AlexGuitarsShop.Domain.ViewModels;
 using AlexGuitarsShop.Extensions;
+using AlexGuitarsShop.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,99 +19,98 @@ public class CatalogController : Controller
     private readonly ICartItemsCreator _cartItemsCreator;
     private readonly ICartItemsProvider _cartItemsProvider;
     private readonly ICartItemsUpdater _cartItemsUpdater;
-    private readonly Paginator _paginator;
 
     public CatalogController(IGuitarsCreator guitarsCreator,
         IGuitarsProvider guitarsProvider, IGuitarsUpdater guitarsUpdater,
         ICartItemsCreator cartItemsCreator, ICartItemsProvider cartItemsProvider,
-        ICartItemsUpdater cartItemsUpdater, Cart cart)
+        ICartItemsUpdater cartItemsUpdater)
     {
-        _guitarsCreator = guitarsCreator ?? throw new ArgumentNullException(nameof(guitarsCreator));
-        _guitarsProvider = guitarsProvider ?? throw new ArgumentNullException(nameof(guitarsProvider));
-        _guitarsUpdater = guitarsUpdater ?? throw new ArgumentNullException(nameof(guitarsUpdater));
-        _cartItemsCreator = cartItemsCreator ?? throw new ArgumentNullException(nameof(cartItemsCreator));
-        _cartItemsProvider = cartItemsProvider ?? throw new ArgumentNullException(nameof(cartItemsProvider));
-        _cartItemsUpdater = cartItemsUpdater ?? throw new ArgumentNullException(nameof(cartItemsUpdater));
-        _paginator = new Paginator(Limit);
+        _guitarsCreator = guitarsCreator;
+        _guitarsProvider = guitarsProvider;
+        _guitarsUpdater = guitarsUpdater;
+        _cartItemsCreator = cartItemsCreator;
+        _cartItemsProvider = cartItemsProvider;
+        _cartItemsUpdater = cartItemsUpdater;
     }
 
     [HttpGet]
     public async Task<IActionResult> Index(int pageNumber = 1)
     {
-        var countResult = await _guitarsProvider.GetCountAsync()!;
-        _paginator.SetPaginationValues(pageNumber, countResult);
-        var result = await _guitarsProvider.GetGuitarsByLimitAsync(_paginator.OffSet, Limit)!;
-        result = result ?? throw new ArgumentNullException(nameof(result));
-        return View(_paginator.GetPaginatedList(
-            result.Data, Title.Catalog, pageNumber));
+        int offset = (pageNumber - 1) * Limit;
+        int count = (await _guitarsProvider.GetCountAsync()).Data;
+        List<Guitar> list = (await _guitarsProvider.GetGuitarsByLimitAsync(offset, Limit)).Data;
+        ListViewModel<Guitar> model = new ListViewModel<Guitar>
+        {
+            List = list, Title = Title.Catalog,
+            TotalCount = count, CurrentPage = pageNumber
+        };
+
+        return View(model);
     }
 
     [HttpGet]
-    [Authorize(Roles = "SuperAdmin, Admin")]
+    [Authorize(Roles = "SuperAdmin")]
     public IActionResult Add()
     {
         return View(new GuitarViewModel());
     }
 
     [HttpGet]
-    [Authorize(Roles = "SuperAdmin, Admin")]
+    [Authorize(Roles = Constants.Roles.AdminPlus)]
     public async Task<IActionResult> Update(int id)
     {
-        var result = await _guitarsProvider.GetGuitarAsync(id)!;
-        result = result ?? throw new ArgumentNullException(nameof(id));
-        return View(result.Data);
+        var result = await _guitarsProvider.GetGuitarAsync(id);
+        GuitarViewModel model = result.Data.ToGuitarViewModel();
+        return View(model);
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    [Authorize(Roles = "SuperAdmin, Admin")]
+    [Authorize(Roles = Constants.Roles.AdminPlus)]
     public async Task<IActionResult> Add(GuitarViewModel model)
     {
         model = model ?? throw new ArgumentNullException(nameof(model));
         model.Image = model.Avatar == null ? model.Image : model.Avatar.ToByteArray();
-        await _guitarsCreator.AddGuitarAsync(model)!;
+        await _guitarsCreator.AddGuitarAsync(model.ToGuitar());
         return RedirectToAction("Index");
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    [Authorize(Roles = "SuperAdmin, Admin")]
+    [Authorize(Roles = Constants.Roles.AdminPlus)]
     public async Task<IActionResult> Update(GuitarViewModel model)
     {
         model = model ?? throw new ArgumentNullException(nameof(model));
         model.Image = model.Avatar == null ? model.Image : model.Avatar.ToByteArray();
-        await _guitarsUpdater.UpdateGuitarAsync(model)!;
+        await _guitarsUpdater.UpdateGuitarAsync(model.ToGuitar());
         return RedirectToAction("Index");
     }
 
-
     public async Task<RedirectToActionResult> AddToCart(int prodId)
     {
-        var cartResult = await _cartItemsProvider.GetCartItemAsync(prodId)!;
-        cartResult = cartResult ?? throw new ArgumentNullException(nameof(cartResult));
+        var cartResult = await _cartItemsProvider.GetCartItemAsync(prodId);
         if (cartResult.Data == null)
         {
             await AddNewItemToCart(prodId);
         }
         else
         {
-            await _cartItemsUpdater.IncrementAsync(prodId)!;
+            await _cartItemsUpdater.IncrementAsync(prodId);
         }
 
         return RedirectToAction("Index");
     }
 
-    [Authorize(Roles = "SuperAdmin, Admin")]
+    [Authorize(Roles = Constants.Roles.AdminPlus)]
     public async Task<IActionResult> Delete(int id)
     {
-        await _guitarsUpdater.DeleteGuitarAsync(id)!;
+        await _guitarsUpdater.DeleteGuitarAsync(id);
         return RedirectToAction("Index");
     }
 
     private async Task AddNewItemToCart(int prodId)
     {
-        var guitarResult = await _guitarsProvider.GetGuitarAsync(prodId)!;
-        guitarResult = guitarResult ?? throw new ArgumentNullException(nameof(guitarResult));
+        var guitarResult = await _guitarsProvider.GetGuitarAsync(prodId);
         await _cartItemsCreator.AddNewCartItemAsync(guitarResult.Data);
     }
 }

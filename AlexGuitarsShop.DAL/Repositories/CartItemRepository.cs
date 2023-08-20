@@ -14,26 +14,25 @@ public class CartItemRepository : ICartItemRepository
     public CartItemRepository(string connectionString, Cart cart)
     {
         _connectionString = connectionString;
-        _cart = cart ?? throw new ArgumentNullException(nameof(cart));
+        _cart = cart;
     }
 
     public async Task<CartItem> FindAsync(int id)
     {
         using IDbConnection db = new MySqlConnection(_connectionString);
-        CartItem item =  await db.QueryFirstOrDefaultAsync<CartItem>($@"SELECT CartItems.*, Guitars.*
+        CartItem item = await db.QueryFirstOrDefaultAsync<CartItem>($@"SELECT CartItems.*, Guitars.*
         FROM CartItems 
         LEFT JOIN Guitars ON CartItems.Prod_Id = Guitars.Id
-        WHERE CartItems.Cart_Id = '{_cart!.Id}' 
-        AND CartItems.Prod_Id = @Id AND Guitars.IsDeleted = 0 ", new {id})!;
+        WHERE CartItems.Cart_Id = '{_cart.Id}' 
+        AND CartItems.Prod_Id = @Id AND Guitars.IsDeleted = 0 ", new {id});
         return item;
     }
 
     public async Task<int> GetProductQuantityAsync(int id)
     {
-        if (_cart == null) throw new ArgumentNullException(nameof(_cart));
         using IDbConnection db = new MySqlConnection(_connectionString);
         return await db.ExecuteScalarAsync<int>(@$"SELECT Quantity FROM CartItems 
-        WHERE Cart_Id = '{_cart.Id}' AND Prod_Id = {id}")!;
+        WHERE Cart_Id = '{_cart.Id}' AND Prod_Id = {id}");
     }
 
     public async Task<List<CartItem>> GetAllAsync()
@@ -42,18 +41,16 @@ public class CartItemRepository : ICartItemRepository
         return (await db.QueryAsync<CartItem, Guitar, CartItem>(@$"SELECT CartItems.*, Guitars.*
         FROM CartItems 
         LEFT JOIN Guitars ON CartItems.Prod_Id = Guitars.Id
-        WHERE CartItems.Cart_Id = '{_cart!.Id}' AND Guitars.IsDeleted = 0 ", (item, product) =>
+        WHERE CartItems.Cart_Id = '{_cart.Id}' AND Guitars.IsDeleted = 0 ", (item, product) =>
         {
-
-            item!.Product = product;
+            item.Product = product;
             return item;
-        })!)!.ToList();
+        })).ToList();
     }
 
     public async Task CreateAsync(CartItem item)
     {
         item = item ?? throw new ArgumentNullException(nameof(item));
-        item.Product = item.Product ?? throw new ArgumentNullException(nameof(item.Product));
         if (!_cart.Products.Contains(item))
         {
             using IDbConnection db = new MySqlConnection(_connectionString);
@@ -61,30 +58,30 @@ public class CartItemRepository : ICartItemRepository
                 VALUES (@Cart_Id, @Prod_Id, @Quantity)",
                 new
                 {
-                    Cart_Id = _cart!.Id,
+                    Cart_Id = _cart.Id,
                     Prod_Id = item.Product.Id,
                     item.Quantity
                 }
-            )!; 
+            );
         }
     }
-    
+
     public async Task UpdateQuantityAsync(int id, int quantity)
     {
         using IDbConnection db = new MySqlConnection(_connectionString);
         await db.ExecuteAsync($@"UPDATE CartItems SET Quantity = {quantity}
-        WHERE Cart_Id = '{_cart!.Id}' AND Prod_Id = {id}")!;
+        WHERE Cart_Id = '{_cart.Id}' AND Prod_Id = {id}");
     }
 
     public async Task DeleteAsync(int id)
     {
         using IDbConnection db = new MySqlConnection(_connectionString);
-        await db.ExecuteAsync($"DELETE FROM CartItems WHERE Cart_ID = '{_cart!.Id}' AND Prod_Id = {id}")!;
+        await db.ExecuteAsync($"DELETE FROM CartItems WHERE Cart_ID = '{_cart.Id}' AND Prod_Id = {id}");
     }
 
     public async Task DeleteAllAsync()
     {
         using IDbConnection db = new MySqlConnection(_connectionString);
-        await db.ExecuteAsync($@"DELETE FROM CartItems WHERE Cart_ID = '{_cart!.Id}'")!;
+        await db.ExecuteAsync($@"DELETE FROM CartItems WHERE Cart_ID = '{_cart.Id}'");
     }
 }

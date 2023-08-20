@@ -12,7 +12,7 @@ internal static class ResultCreator
             Error = message
         };
     }
-    
+
     public static IResult<T> GetValidResult<T>(T data)
     {
         return new Result<T>

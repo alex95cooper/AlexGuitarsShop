@@ -1,6 +1,4 @@
-using Microsoft.AspNetCore.Http;
-
-namespace AlexGuitarsShop.Domain.ViewModels;
+namespace AlexGuitarsShop.ViewModels;
 
 public class GuitarViewModel
 {

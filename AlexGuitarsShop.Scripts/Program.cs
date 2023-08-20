@@ -1,11 +1,9 @@
-using AlexGuitarsShop.Scripts;
+﻿using AlexGuitarsShop.Scripts;
 
-var builder = WebApplication.CreateBuilder(args);
-
-string connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+IConfigurator configurator = new Configurator();
+string connectionString = configurator.GetConnectionString();
 SeedDatabase.Init(connectionString);
-var app = builder.Build();
 
-app.MapGet("/", () => "Hello World!");
-
-app.Run();
+Console.ForegroundColor = ConsoleColor.Green;
+Console.WriteLine("Tables are created successfully!");
+Console.ReadKey();

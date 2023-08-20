@@ -1,13 +1,12 @@
 using AlexGuitarsShop.DAL.Models;
-using AlexGuitarsShop.Domain.ViewModels;
+using AlexGuitarsShop.ViewModels;
 
-namespace AlexGuitarsShop.Domain.Extensions;
+namespace AlexGuitarsShop.Extensions;
 
 public static class GuitarExtensions
 {
     public static GuitarViewModel ToGuitarViewModel(this Guitar guitar)
     {
-        if (guitar == null) throw new ArgumentNullException(nameof(guitar));
         return new GuitarViewModel
         {
             Id = guitar.Id, Name = guitar.Name, Price = guitar.Price,

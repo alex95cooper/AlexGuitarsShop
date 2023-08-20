@@ -13,16 +13,15 @@ public class CartController : Controller
     public CartController(ICartItemsProvider cartItemsProvider,
         ICartItemsUpdater cartItemsUpdater, Cart cart)
     {
-        _cartItemsProvider = cartItemsProvider ?? throw new ArgumentNullException(nameof(cartItemsProvider));
-        _cartItemsUpdater = cartItemsUpdater ?? throw new ArgumentNullException(nameof(cartItemsUpdater));
-        _cart = cart ?? throw new ArgumentNullException(nameof(cart));
+        _cartItemsProvider = cartItemsProvider;
+        _cartItemsUpdater = cartItemsUpdater;
+        _cart = cart;
     }
 
     [HttpGet]
     public async Task<IActionResult> Index()
     {
-        var result = await _cartItemsProvider.GetCartItemsAsync()!;
-        result = result ?? throw new ArgumentNullException(nameof(result));
+        var result = await _cartItemsProvider.GetCartItemsAsync();
         _cart.Products = result.Data;
         return View(_cart);
     }
@@ -30,28 +29,28 @@ public class CartController : Controller
     [HttpGet]
     public async Task<IActionResult> Remove(int id)
     {
-        await _cartItemsUpdater.RemoveAsync(id)!;
+        await _cartItemsUpdater.RemoveAsync(id);
         return RedirectToAction("Index");
     }
 
     [HttpGet]
     public async Task<IActionResult> Increment(int id)
     {
-        await _cartItemsUpdater.IncrementAsync(id)!;
+        await _cartItemsUpdater.IncrementAsync(id);
         return RedirectToAction("Index");
     }
 
     [HttpGet]
     public async Task<IActionResult> Decrement(int id)
     {
-        await _cartItemsUpdater.DecrementAsync(id)!;
+        await _cartItemsUpdater.DecrementAsync(id);
         return RedirectToAction("Index");
     }
 
     [HttpGet]
-    public async Task<IActionResult> Order(int id)
+    public async Task<IActionResult> Order()
     {
-        await _cartItemsUpdater.OrderAsync()!;
+        await _cartItemsUpdater.OrderAsync();
         ViewBag.Message = "Thank you for your purchase!";
         return View("Notification");
     }
