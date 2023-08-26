@@ -19,7 +19,7 @@ public class AccountsProvider : IAccountsProvider
     {
         login = login ?? throw new ArgumentNullException(nameof(login));
         var account = await _accountRepository.FindAsync(login.Email);
-        if (account == null || account.Password != login.Password)
+        if (account == null || account.Password != PasswordHasher.HashPassword(login.Password))
         {
             string message = account == null ? "User is not found" : "Invalid password or login";
             return ResultCreator.GetInvalidResult<Account>(message);
@@ -50,5 +50,11 @@ public class AccountsProvider : IAccountsProvider
     {
         int adminsCount = await _accountRepository.GetAdminsCountAsync();
         return ResultCreator.GetValidResult(adminsCount);
+    }
+    
+    public async Task<IResult<string>> GetCartId(string email)
+    {
+        var account = await _accountRepository.FindAsync(email);
+        return ResultCreator.GetValidResult(account.CartId);
     }
 }

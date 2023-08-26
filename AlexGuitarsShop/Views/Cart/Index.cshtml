@@ -1,5 +1,5 @@
 @using AlexGuitarsShop.DAL.Models
-@model AlexGuitarsShop.DAL.Models.Cart
+@model Cart
 
 @{
     ViewData["Title"] = "Cart";
@@ -20,7 +20,14 @@
                 {
                     <div class="cart-item-container">
                         <div class="cart-image-container" id="part">
-                            <img class="cart-guitar-img" src="data:image;base64,@Convert.ToBase64String(cartProduct.Product.Image)" alt="Guitar"/>
+                            @if (cartProduct.Product.Image == null)
+                            {
+                                <img class="cart-guitar-img" src="/images/guitar-logo.jpg" alt="Guitar"/>
+                            }
+                            else
+                            {
+                                <img class="cart-guitar-img" src="data:image;base64,@Convert.ToBase64String(cartProduct.Product.Image)" alt="Guitar"/>
+                            }
                         </div>
                         <div class="cart-item-info-container" id="part">
                             <div>
@@ -31,11 +38,21 @@
                             </div>
                             <div class="calculator">
                                 <span class="part">
-                                    <a class="minus-button" asp-controller="Cart" asp-route-id="@cartProduct.Product.Id" asp-action="Decrement">
-                                        <strong>-</strong>
-                                    </a>
+                                    @if (@cartProduct.Quantity == 1)
+                                    {
+                                        <a class="minus-button" style="cursor: pointer" onclick="showMessage(@cartProduct.Quantity, @cartProduct.Product.Id)">
+                                            <strong>-</strong>
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <a class="minus-button" asp-controller="Cart"
+                                           asp-route-id="@cartProduct.Product.Id" asp-action="Decrement">
+                                            <strong>-</strong>
+                                        </a>
+                                    }
                                 </span>
-                                <span class="part">
+                                <span class="part count">
                                     <input type="text" value="@cartProduct.Quantity" size="1" readonly/>
                                 </span>
                                 <span class="part">
@@ -64,3 +81,16 @@
         }
     </div>
 </div>
+
+@Html.Partial("_Popup")
+
+<script>
+function showMessage(quantity, route_id) {
+    if (quantity === 1){
+        $('.popup-bg').fadeIn(800);
+        $('html').addClass('no-scroll');
+        $('.popup-message').attr('data-content', 'Do you want to delete this product?');
+        $('.confirm-popup').attr('href', '/Cart/Remove/' + route_id);               
+    }
+}
+</script>

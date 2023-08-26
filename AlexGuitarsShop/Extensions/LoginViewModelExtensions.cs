@@ -8,6 +8,6 @@ public static class LoginViewModelExtensions
 {
     public static Login ToLogin(this LoginViewModel model)
     {
-        return new Login(model.Email, PasswordHasher.HashPassword(model.Password));
+        return new Login(model.Email, model.Password);
     }
 }

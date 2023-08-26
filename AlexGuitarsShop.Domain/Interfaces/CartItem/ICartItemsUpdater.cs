@@ -2,11 +2,11 @@ namespace AlexGuitarsShop.Domain.Interfaces.CartItem;
 
 public interface ICartItemsUpdater
 {
-    Task RemoveAsync(int id);
+    Task RemoveAsync(int id, string cartId);
 
-    Task IncrementAsync(int id);
+    Task IncrementAsync(int id, string cartId);
 
-    Task DecrementAsync(int id);
+    Task DecrementAsync(int id, string cartId);
 
-    Task OrderAsync();
+    Task OrderAsync(string cartId);
 }

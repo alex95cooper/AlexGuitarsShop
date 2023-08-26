@@ -13,4 +13,6 @@ public interface IAccountsProvider
     Task<IResult<int>> GetUsersCountAsync();
 
     Task<IResult<int>> GetAdminsCountAsync();
+
+    Task<IResult<string>> GetCartId(string email);
 }

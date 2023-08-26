@@ -4,17 +4,17 @@ namespace AlexGuitarsShop.DAL.Interfaces;
 
 public interface ICartItemRepository
 {
-    Task<CartItem> FindAsync(int id);
+    Task<CartItem> FindAsync(int id, string cartId);
 
-    Task<int> GetProductQuantityAsync(int id);
+    Task<int> GetProductQuantityAsync(int id, string cartId);
 
-    Task<List<CartItem>> GetAllAsync();
+    Task<List<CartItem>> GetAllAsync(string cartId);
 
-    Task CreateAsync(CartItem cartItem);
+    Task CreateAsync(CartItem cartItem, string cartId);
 
-    Task UpdateQuantityAsync(int id, int quantity);
+    Task UpdateQuantityAsync(int id, int quantity, string cartId);
 
-    Task DeleteAsync(int id);
+    Task DeleteAsync(int id, string cartId);
 
-    Task DeleteAllAsync();
+    Task DeleteAllAsync(string cartId);
 }

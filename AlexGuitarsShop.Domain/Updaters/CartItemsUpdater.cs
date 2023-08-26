@@ -15,33 +15,33 @@ public class CartItemsUpdater : ICartItemsUpdater
         _cartItemRepository = cartItemRepository;
     }
 
-    public async Task RemoveAsync(int id)
+    public async Task RemoveAsync(int id, string cartId)
     {
-        await _cartItemRepository.DeleteAsync(id);
+        await _cartItemRepository.DeleteAsync(id, cartId);
     }
 
-    public async Task IncrementAsync(int id)
+    public async Task IncrementAsync(int id, string cartId)
     {
-        int quantity = await _cartItemRepository.GetProductQuantityAsync(id);
+        int quantity = await _cartItemRepository.GetProductQuantityAsync(id, cartId);
         quantity++;
         if (quantity <= MaxQuantity)
         {
-            await _cartItemRepository.UpdateQuantityAsync(id, quantity);
+            await _cartItemRepository.UpdateQuantityAsync(id, quantity, cartId);
         }
     }
 
-    public async Task DecrementAsync(int id)
+    public async Task DecrementAsync(int id, string cartId)
     {
-        int quantity = await _cartItemRepository.GetProductQuantityAsync(id);
+        int quantity = await _cartItemRepository.GetProductQuantityAsync(id, cartId);
         quantity--;
         if (quantity >= MinQuantity)
         {
-            await _cartItemRepository.UpdateQuantityAsync(id, quantity);
+            await _cartItemRepository.UpdateQuantityAsync(id, quantity, cartId);
         }
     }
 
-    public async Task OrderAsync()
+    public async Task OrderAsync(string cartId)
     {
-        await _cartItemRepository.DeleteAllAsync();
+        await _cartItemRepository.DeleteAllAsync(cartId);
     }
 }

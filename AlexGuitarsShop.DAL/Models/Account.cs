@@ -1,8 +1,10 @@
 namespace AlexGuitarsShop.DAL.Models;
 
-public record Account(string Name,
-    string Email, string Password, Role Role)
+public class Account
 {
-    public Account() : this(default, default, default,
-        default) { }
+    public string Name { get; init; }
+    public string Email { get; init; }
+    public string Password { get; set; }
+    public string CartId { get; set; }
+    public Role Role { get; init; }
 }

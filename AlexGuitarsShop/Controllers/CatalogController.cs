@@ -1,6 +1,5 @@
 using AlexGuitarsShop.DAL.Models;
 using AlexGuitarsShop.Domain;
-using AlexGuitarsShop.Domain.Interfaces.CartItem;
 using AlexGuitarsShop.Domain.Interfaces.Guitar;
 using AlexGuitarsShop.Extensions;
 using AlexGuitarsShop.ViewModels;
@@ -11,45 +10,38 @@ namespace AlexGuitarsShop.Controllers;
 
 public class CatalogController : Controller
 {
-    private const int Limit = 10;
-
     private readonly IGuitarsCreator _guitarsCreator;
     private readonly IGuitarsProvider _guitarsProvider;
     private readonly IGuitarsUpdater _guitarsUpdater;
-    private readonly ICartItemsCreator _cartItemsCreator;
-    private readonly ICartItemsProvider _cartItemsProvider;
-    private readonly ICartItemsUpdater _cartItemsUpdater;
+    private readonly IGuitarValidator _guitarValidator;
 
     public CatalogController(IGuitarsCreator guitarsCreator,
-        IGuitarsProvider guitarsProvider, IGuitarsUpdater guitarsUpdater,
-        ICartItemsCreator cartItemsCreator, ICartItemsProvider cartItemsProvider,
-        ICartItemsUpdater cartItemsUpdater)
+        IGuitarsProvider guitarsProvider, IGuitarValidator guitarValidator, IGuitarsUpdater guitarsUpdater)
     {
         _guitarsCreator = guitarsCreator;
         _guitarsProvider = guitarsProvider;
         _guitarsUpdater = guitarsUpdater;
-        _cartItemsCreator = cartItemsCreator;
-        _cartItemsProvider = cartItemsProvider;
-        _cartItemsUpdater = cartItemsUpdater;
+        _guitarValidator = guitarValidator;
     }
 
     [HttpGet]
     public async Task<IActionResult> Index(int pageNumber = 1)
     {
-        int offset = (pageNumber - 1) * Limit;
-        int count = (await _guitarsProvider.GetCountAsync()).Data;
-        List<Guitar> list = (await _guitarsProvider.GetGuitarsByLimitAsync(offset, Limit)).Data;
-        ListViewModel<Guitar> model = new ListViewModel<Guitar>
+        if (!await _guitarValidator.CheckIfPageIsValid(pageNumber, Paginator.Limit))
         {
-            List = list, Title = Title.Catalog,
-            TotalCount = count, CurrentPage = pageNumber
-        };
-
+           ViewBag.Message = Constants.ErrorMessages.InvalidPage;
+           return View("Notification");
+        }
+        
+        int offset = Paginator.GetOffset(pageNumber);
+        int count = (await _guitarsProvider.GetCountAsync()).Data;
+        List<Guitar> list = (await _guitarsProvider.GetGuitarsByLimitAsync(offset, Paginator.Limit)).Data;
+        PaginatedListViewModel<Guitar> model = list.ToPaginatedList(Title.Catalog, count, pageNumber);
         return View(model);
     }
 
     [HttpGet]
-    [Authorize(Roles = "SuperAdmin")]
+    [Authorize(Roles = Constants.Roles.AdminPlus)]
     public IActionResult Add()
     {
         return View(new GuitarViewModel());
@@ -59,6 +51,12 @@ public class CatalogController : Controller
     [Authorize(Roles = Constants.Roles.AdminPlus)]
     public async Task<IActionResult> Update(int id)
     {
+        if (!await _guitarValidator.CheckIfGuitarExist(id))
+        {
+           ViewBag.Message = Constants.ErrorMessages.InvalidGuitarId;
+           return View("Notification");
+        }
+        
         var result = await _guitarsProvider.GetGuitarAsync(id);
         GuitarViewModel model = result.Data.ToGuitarViewModel();
         return View(model);
@@ -69,6 +67,12 @@ public class CatalogController : Controller
     [Authorize(Roles = Constants.Roles.AdminPlus)]
     public async Task<IActionResult> Add(GuitarViewModel model)
     {
+        if (!_guitarValidator.CheckIfGuitarIsValid(model.ToGuitar()))
+        {
+           ViewBag.Message = Constants.ErrorMessages.InvalidGuitar;
+           return View("Notification");
+        }
+        
         model = model ?? throw new ArgumentNullException(nameof(model));
         model.Image = model.Avatar == null ? model.Image : model.Avatar.ToByteArray();
         await _guitarsCreator.AddGuitarAsync(model.ToGuitar());
@@ -81,36 +85,28 @@ public class CatalogController : Controller
     public async Task<IActionResult> Update(GuitarViewModel model)
     {
         model = model ?? throw new ArgumentNullException(nameof(model));
+        if (!await _guitarValidator.CheckIfGuitarExist(model.Id) 
+            || !_guitarValidator.CheckIfGuitarIsValid(model.ToGuitar()))
+        {
+           ViewBag.Message = Constants.ErrorMessages.InvalidGuitar;
+           return View("Notification");
+        }
+        
         model.Image = model.Avatar == null ? model.Image : model.Avatar.ToByteArray();
         await _guitarsUpdater.UpdateGuitarAsync(model.ToGuitar());
         return RedirectToAction("Index");
     }
-
-    public async Task<RedirectToActionResult> AddToCart(int prodId)
-    {
-        var cartResult = await _cartItemsProvider.GetCartItemAsync(prodId);
-        if (cartResult.Data == null)
-        {
-            await AddNewItemToCart(prodId);
-        }
-        else
-        {
-            await _cartItemsUpdater.IncrementAsync(prodId);
-        }
-
-        return RedirectToAction("Index");
-    }
-
+    
     [Authorize(Roles = Constants.Roles.AdminPlus)]
     public async Task<IActionResult> Delete(int id)
     {
+        if (!await _guitarValidator.CheckIfGuitarExist(id))
+        {
+           ViewBag.Message = Constants.ErrorMessages.InvalidGuitarId;
+           return View("Notification");
+        }
+        
         await _guitarsUpdater.DeleteGuitarAsync(id);
         return RedirectToAction("Index");
-    }
-
-    private async Task AddNewItemToCart(int prodId)
-    {
-        var guitarResult = await _guitarsProvider.GetGuitarAsync(prodId);
-        await _cartItemsCreator.AddNewCartItemAsync(guitarResult.Data);
     }
 }

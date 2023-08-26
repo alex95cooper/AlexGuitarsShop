@@ -7,6 +7,7 @@ using AlexGuitarsShop.Domain.Interfaces.CartItem;
 using AlexGuitarsShop.Domain.Interfaces.Guitar;
 using AlexGuitarsShop.Domain.Providers;
 using AlexGuitarsShop.Domain.Updaters;
+using AlexGuitarsShop.Domain.Validators;
 
 namespace AlexGuitarsShop.Extensions;
 
@@ -18,9 +19,8 @@ public static class ServicesExtensions
             new GuitarRepository(connectionString));
         services.AddTransient<IAccountRepository, AccountRepository>(_ =>
             new AccountRepository(connectionString));
-        services.AddTransient<ICartItemRepository, CartItemRepository>(provider =>
-            new CartItemRepository(connectionString,
-                (provider ?? throw new ArgumentNullException(nameof(provider))).GetService<Cart>()));
+        services.AddTransient<ICartItemRepository, CartItemRepository>(_ =>
+            new CartItemRepository(connectionString));
     }
 
     public static void InitializeEntityHandlers(this IServiceCollection services)
@@ -36,9 +36,10 @@ public static class ServicesExtensions
         services.AddTransient<IGuitarsUpdater, GuitarsUpdater>();
     }
 
-    public static void InitializeAuthorizer(this IServiceCollection services)
+    public static void InitializeValidators(this IServiceCollection services)
     {
-        services.AddHttpContextAccessor();
-        services.AddTransient<IAuthorizer, ValidUserAuthorizer>();
+        services.AddTransient<IAccountValidator, AccountValidator>();
+        services.AddTransient<ICartItemValidator, CartItemValidator>();
+        services.AddTransient<IGuitarValidator, GuitarValidator>();
     }
 }

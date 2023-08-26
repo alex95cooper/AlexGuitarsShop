@@ -45,7 +45,7 @@
                         </div>
                         <div class="add-input-container">
                             <div class="error-field" id="error-price"></div>
-                            <input id="price" asp-for="Price" min="10"/>
+                            <input id="price" asp-for="Price" min="10" max="1000000"/>
                         </div>
                     </div>
                     <div class="form-group-row">
@@ -92,7 +92,7 @@ form.addEventListener('input', (e) => {
         error_Name.innerText = ''
         }
     
-    if (price.value < 10 || description.value > 1000000){
+    if (price.value < 10 || price.value > 1000000){
         error_Price.innerText = 'Price must be between 10 and 1 000 000 dollars'
         submit.disabled = true;
         }

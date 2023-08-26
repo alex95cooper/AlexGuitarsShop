@@ -1,8 +1,11 @@
 namespace AlexGuitarsShop.DAL.Models;
 
-public record Guitar(int Id, string Name,
-    ushort Price, string Description, byte[] Image, ushort IsDeleted)
+public class Guitar
 {
-    public Guitar() : this(default, default, default,
-        default, default, default) { }
+    public int Id { get; init; }
+    public string Name { get; init; }
+    public int Price { get; init; }
+    public string Description { get; init; }
+    public byte[] Image { get; init; }
+    public ushort IsDeleted { get; init; }
 }

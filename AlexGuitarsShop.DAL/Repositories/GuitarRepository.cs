@@ -20,13 +20,13 @@ public class GuitarRepository : IGuitarRepository
         using IDbConnection db = new MySqlConnection(_connectionString);
         return await db.QueryFirstOrDefaultAsync<Guitar>($"SELECT * FROM Guitars WHERE Id = {id}");
     }
-    
+
     public async Task<int> GetCountAsync()
     {
         using IDbConnection db = new MySqlConnection(_connectionString);
         return await db.ExecuteScalarAsync<int>("SELECT COUNT(*) FROM Guitars WHERE IsDeleted = 0");
     }
-    
+
     public async Task<List<Guitar>> GetAllAsync(int offset, int limit)
     {
         using IDbConnection db = new MySqlConnection(_connectionString);
@@ -36,7 +36,6 @@ public class GuitarRepository : IGuitarRepository
 
     public async Task AddAsync(Guitar guitar)
     {
-        guitar = guitar ?? throw new ArgumentNullException(nameof(guitar));
         using IDbConnection db = new MySqlConnection(_connectionString);
         await db.ExecuteAsync(@"INSERT INTO Guitars (Name, Price, Description, Image, IsDeleted) 
         VALUES (@Name, @Price, @Description, @Image, 0)",
@@ -45,7 +44,6 @@ public class GuitarRepository : IGuitarRepository
 
     public async Task UpdateAsync(Guitar guitar)
     {
-        guitar = guitar ?? throw new ArgumentNullException(nameof(guitar));
         using IDbConnection db = new MySqlConnection(_connectionString);
         await db.ExecuteAsync(@"UPDATE Guitars SET Name = @Name, Price = @Price, 
                    Description = @Description, Image = @Image WHERE Id = @ID",

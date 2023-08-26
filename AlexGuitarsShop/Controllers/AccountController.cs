@@ -10,28 +10,42 @@ namespace AlexGuitarsShop.Controllers;
 
 public class AccountController : Controller
 {
-    private const int Limit = 10;
-
     private readonly IAccountsCreator _accountsCreator;
     private readonly IAccountsProvider _accountsProvider;
     private readonly IAccountsUpdater _accountsUpdater;
+    private readonly IAccountValidator _accountValidator;
     private readonly IAuthorizer _authorizer;
 
     public AccountController(IAccountsCreator accountsCreator, IAccountsProvider accountsProvider,
-        IAccountsUpdater accountsUpdater, IAuthorizer authorizer)
+        IAccountsUpdater accountsUpdater, IAccountValidator accountValidator, IAuthorizer authorizer)
     {
         _accountsCreator = accountsCreator;
         _accountsProvider = accountsProvider;
         _accountsUpdater = accountsUpdater;
+        _accountValidator = accountValidator;
         _authorizer = authorizer;
     }
 
     [HttpGet]
-    public IActionResult Register() => View();
+    public IActionResult Register()
+    {
+        return GetViewOrRedirect();
+    }
 
     [HttpPost]
     public async Task<IActionResult> Register(RegisterViewModel model)
     {
+        if (!_accountValidator.CheckIfRegisterIsValid(model.ToRegister()))
+        {
+            ViewBag.Message = Constants.ErrorMessages.InvalidAccount;
+            return View("Notification");
+        }
+
+        if (User.Identity is {IsAuthenticated: true})
+        {
+            return RedirectToAction("Index", "Home");
+        }
+
         var result = await _accountsCreator.AddAccountAsync(model.ToRegister());
         if (result.IsSuccess)
         {
@@ -44,12 +58,21 @@ public class AccountController : Controller
     }
 
     [HttpGet]
-    public IActionResult Login() => View();
+    public IActionResult Login()
+    {
+        return GetViewOrRedirect();
+    }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Login(LoginViewModel model)
     {
+        if (!_accountValidator.CheckIfLoginIsValid(model.ToLogin()))
+        {
+            ViewBag.Message = Constants.ErrorMessages.InvalidAccount;
+            return View("Notification");
+        }
+
         var result = await _accountsProvider.GetAccountAsync(model.ToLogin());
         if (result.IsSuccess)
         {
@@ -71,15 +94,16 @@ public class AccountController : Controller
     [Authorize(Roles = Constants.Roles.AdminPlus)]
     public async Task<IActionResult> Admins(int pageNumber = 1)
     {
-        int offset = (pageNumber - 1) * Limit;
-        int count = (await _accountsProvider.GetAdminsCountAsync()).Data;
-        List<Account> list = (await _accountsProvider.GetAdminsAsync(offset, Limit)).Data;
-        ListViewModel<Account> model = new ListViewModel<Account>
+        if (!await _accountValidator.CheckIfAdminsPageIsValid(pageNumber, Paginator.Limit))
         {
-            List = list, Title = Title.Admins,
-            TotalCount = count, CurrentPage = pageNumber
-        };
+            ViewBag.Message = Constants.ErrorMessages.InvalidPage;
+            return View("Notification");
+        }
 
+        int offset = Paginator.GetOffset(pageNumber);
+        int count = (await _accountsProvider.GetAdminsCountAsync()).Data;
+        List<Account> list = (await _accountsProvider.GetAdminsAsync(offset, Paginator.Limit)).Data;
+        PaginatedListViewModel<Account> model = list.ToPaginatedList(Title.Admins, count, pageNumber);
         return View(model);
     }
 
@@ -87,29 +111,52 @@ public class AccountController : Controller
     [Authorize(Roles = Constants.Roles.AdminPlus)]
     public async Task<IActionResult> Users(int pageNumber = 1)
     {
-        int offset = (pageNumber - 1) * Limit;
-        int count = (await _accountsProvider.GetUsersCountAsync()).Data;
-        List<Account> list = (await _accountsProvider.GetUsersAsync(offset, Limit)).Data;
-        ListViewModel<Account> model = new ListViewModel<Account>
+        if (!await _accountValidator.CheckIfUsersPageIsValid(pageNumber, Paginator.Limit))
         {
-            List = list, Title = Title.Users,
-            TotalCount = count, CurrentPage = pageNumber
-        };
+            ViewBag.Message = Constants.ErrorMessages.InvalidPage;
+            return View("Notification");
+        }
 
+        int offset = Paginator.GetOffset(pageNumber);
+        int count = (await _accountsProvider.GetUsersCountAsync()).Data;
+        List<Account> list = (await _accountsProvider.GetUsersAsync(offset, Paginator.Limit)).Data;
+        PaginatedListViewModel<Account> model = list.ToPaginatedList(Title.Users, count, pageNumber);
         return View(model);
     }
 
-    [Authorize(Roles = "SuperAdmin")]
+    [Authorize(Roles = Constants.Roles.MainRole)]
     public async Task<IActionResult> MakeAdmin(string email)
     {
+        if (!await _accountValidator.CheckIfEmailExist(email))
+        {
+            ViewBag.Message = Constants.ErrorMessages.InvalidEmail;
+            return View("Notification");
+        }
+
         await _accountsUpdater.SetAdminRightsAsync(email);
-        return RedirectToAction("Users");
+        return RedirectToAction("Users", "Account");
     }
 
-    [Authorize(Roles = "SuperAdmin")]
+    [Authorize(Roles = Constants.Roles.MainRole)]
     public async Task<IActionResult> MakeUser(string email)
     {
+        if (!await _accountValidator.CheckIfEmailExist(email))
+        {
+            ViewBag.Message = Constants.ErrorMessages.InvalidEmail;
+            return View("Notification");
+        }
+
         await _accountsUpdater.RemoveAdminRightsAsync(email);
-        return RedirectToAction("Admins");
+        return RedirectToAction("Admins", "Account");
+    }
+
+    private IActionResult GetViewOrRedirect()
+    {
+        if (User.Identity is {IsAuthenticated: true})
+        {
+            return RedirectToAction("Index", "Home");
+        }
+
+        return View();
     }
 }

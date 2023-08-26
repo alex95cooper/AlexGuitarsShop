@@ -26,8 +26,10 @@ public class AccountsCreator : IAccountsCreator
         {
             return ResultCreator.GetInvalidResult<Account>(ExistEmailErrorMessage);
         }
-        
-        await _accountRepository.CreateAsync(register.ToAccount());
-        return ResultCreator.GetValidResult(register.ToAccount());
+
+        account = register.ToAccount();
+        account.Password = PasswordHasher.HashPassword(account.Password);
+        await _accountRepository.CreateAsync(account);
+        return ResultCreator.GetValidResult(account);
     }
 }

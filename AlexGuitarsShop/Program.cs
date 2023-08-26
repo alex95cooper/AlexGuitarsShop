@@ -1,8 +1,8 @@
-using AlexGuitarsShop.DAL.Models;
+using AlexGuitarsShop;
 using AlexGuitarsShop.Extensions;
 using Microsoft.AspNetCore.Authentication.Cookies;
 
-var builder = WebApplication.CreateBuilder();
+var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddMvc();
 builder.Services.AddControllersWithViews();
@@ -16,14 +16,17 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.AccessDeniedPath = new PathString("/Account/Login");
     });
 
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddMemoryCache();
 builder.Services.AddSession();
-builder.Services.AddScoped(sp => new Cart(sp));
-builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+builder.Services.AddScoped(provider => 
+    Cart.GetCart(provider.GetRequiredService<IHttpContextAccessor>()));
 
 builder.Services.InitializeRepositories(connectionString);
 builder.Services.InitializeEntityHandlers();
-builder.Services.InitializeAuthorizer();
+builder.Services.InitializeValidators();
+
+builder.Services.AddTransient<IAuthorizer, ValidUserAuthorizer>();
 
 var app = builder.Build();
 

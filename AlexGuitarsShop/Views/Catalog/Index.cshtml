@@ -1,4 +1,4 @@
-@model AlexGuitarsShop.ViewModels.ListViewModel<AlexGuitarsShop.DAL.Models.Guitar>;
+@model AlexGuitarsShop.ViewModels.PaginatedListViewModel<AlexGuitarsShop.DAL.Models.Guitar>;
 
 @{
     const string textTitle = "Catalog";
@@ -38,7 +38,8 @@
                                 <p class="price">$ @guitar.Price.ToString()</p>
                                 <p class="description">@guitar.Description</p>
                                 <div class="model-buttons-container">
-                                    <a class="add-button-content" asp-controller="Catalog" asp-action="AddToCart" asp-route-prodId="@guitar.Id">
+                                    <a class="add-button-content" asp-controller="Cart" asp-action="AddToCart" 
+                                    asp-route-prodId="@guitar.Id">
                                         Add to Cart
                                     </a>
                                     @if (User.IsInRole("Admin") || User.IsInRole("SuperAdmin"))
@@ -46,7 +47,7 @@
                                         <a class="change-button" asp-controller="Catalog" asp-route-id="@guitar.Id" asp-action="Update">
                                             Change
                                         </a>
-                                        <a class="delete-button" asp-controller="Catalog" asp-action="Delete" asp-route-id="@guitar.Id">
+                                        <a class="delete-button" style="cursor: pointer" onclick="showMessage(@guitar.Id, '@guitar.Name')">
                                             Delete
                                         </a>
                                     }
@@ -66,3 +67,14 @@
         </div>
     </div>
 </div>
+
+@Html.Partial("_Popup")
+
+<script>
+function showMessage(route_id, guitar_name) {
+    $('.popup-bg').fadeIn(800);
+    $('html').addClass('no-scroll');
+    $('.popup-message').attr('data-content', 'Do you want to delete ' + guitar_name + '?');
+    $('.confirm-popup').attr('href', '/Catalog/Delete/' + route_id);                  
+}
+</script>

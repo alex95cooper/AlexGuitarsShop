@@ -50,11 +50,10 @@ public class AccountRepository : IAccountRepository
 
     public async Task CreateAsync(Account account)
     {
-        account = account ?? throw new ArgumentNullException(nameof(account));
         using IDbConnection db = new MySqlConnection(_connectionString);
-        await db.ExecuteAsync(@"INSERT INTO Users (Name, Email, Password, Role) 
-            VALUES (@Name, @Email, @Password, @Role)",
-            new {account.Name, account.Email, account.Password, account.Role});
+        await db.ExecuteAsync(@"INSERT INTO Users (Name, Email, Password, CartId, Role) 
+            VALUES (@Name, @Email, @Password, @CartId, @Role)",
+            new {account.Name, account.Email, account.Password, account.CartId, account.Role});
     }
 
     public async Task UpdateAsync(string email, int role)
