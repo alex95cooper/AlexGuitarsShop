@@ -11,7 +11,7 @@
             @if (User.IsInRole("Admin") || User.IsInRole("SuperAdmin"))
             {
                 <div class="add-button">
-                    <a class="add-button-content" asp-controller="Catalog" asp-action="Add">
+                    <a class="add-button-content" asp-controller="Guitar" asp-action="Add">
                         <strong>+ Add new</strong>
                     </a>
                 </div>
@@ -38,13 +38,22 @@
                                 <p class="price">$ @guitar.Price.ToString()</p>
                                 <p class="description">@guitar.Description</p>
                                 <div class="model-buttons-container">
-                                    <a class="add-button-content" asp-controller="Cart" asp-action="AddToCart" 
-                                    asp-route-prodId="@guitar.Id">
-                                        Add to Cart
-                                    </a>
+                                    @if (User.Identity!.IsAuthenticated)
+                                    {
+                                        <a class="add-button-content" asp-controller="Cart" asp-route-id="@guitar.Id" 
+                                        asp-route-currentPage="@Model.CurrentPage" asp-action="Add">
+                                            Add to Cart
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <a class="add-button-content" asp-controller="CartSession" asp-route-id="@guitar.Id" asp-route-currentPage="@Model.CurrentPage" asp-action="Add">
+                                            Add to Cart
+                                        </a>
+                                    }
                                     @if (User.IsInRole("Admin") || User.IsInRole("SuperAdmin"))
                                     {
-                                        <a class="change-button" asp-controller="Catalog" asp-route-id="@guitar.Id" asp-action="Update">
+                                        <a class="change-button" asp-controller="Guitar" asp-route-id="@guitar.Id" asp-action="Update">
                                             Change
                                         </a>
                                         <a class="delete-button" style="cursor: pointer" onclick="showMessage(@guitar.Id, '@guitar.Name')">

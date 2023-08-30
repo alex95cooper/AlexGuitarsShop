@@ -1,3 +1,4 @@
+using AlexGuitarsShop.DAL.Models;
 using AlexGuitarsShop.Domain.Interfaces.Account;
 using AlexGuitarsShop.Domain.Interfaces.CartItem;
 using AlexGuitarsShop.Domain.Interfaces.Guitar;
@@ -8,7 +9,7 @@ namespace AlexGuitarsShop.Controllers;
 public class CartController : Controller
 {
     private const string ThanksMessage = "Thank you for your purchase!";
-    
+
     private readonly ICartItemsCreator _cartItemsCreator;
     private readonly ICartItemsProvider _cartItemsProvider;
     private readonly ICartItemsUpdater _cartItemsUpdater;
@@ -16,11 +17,10 @@ public class CartController : Controller
     private readonly IAccountsProvider _accountProvider;
     private readonly ICartItemValidator _cartItemValidator;
     private readonly IGuitarValidator _guitarValidator;
-    private readonly Cart _cart;
 
     public CartController(ICartItemsCreator cartItemsCreator, ICartItemsProvider cartItemsProvider,
         ICartItemsUpdater cartItemsUpdater, IGuitarsProvider guitarsProvider, IAccountsProvider accountProvider,
-        ICartItemValidator cartItemValidator, IGuitarValidator guitarValidator, Cart cart)
+        ICartItemValidator cartItemValidator, IGuitarValidator guitarValidator)
     {
         _cartItemsCreator = cartItemsCreator;
         _cartItemsProvider = cartItemsProvider;
@@ -29,107 +29,99 @@ public class CartController : Controller
         _accountProvider = accountProvider;
         _cartItemValidator = cartItemValidator;
         _guitarValidator = guitarValidator;
-        _cart = cart;
     }
 
     [HttpGet]
-    public async Task<IActionResult> Index()
+    public IActionResult Index()
     {
-        string cartId = GetCartId();
-        var result = await _cartItemsProvider.GetCartItemsAsync(cartId);
-        _cart.Products = result.Data;
-        return View(_cart);
+        int id = _accountProvider.GetId(User.Identity!.Name).Result.Data;
+        List<CartItem> cart = _cartItemsProvider.GetCartItemsAsync(id).Result.Data;
+        return View(cart);
     }
 
     [HttpGet]
-    public async Task<IActionResult> AddToCart(int prodId)
+    public async Task<IActionResult> Add(int id, int currentPage)
     {
-        if (!_guitarValidator.CheckIfGuitarExist(prodId).Result)
+        if (!_guitarValidator.CheckIfGuitarExist(id).Result)
         {
             ViewBag.Message = Constants.ErrorMessages.InvalidGuitarId;
             return View("Notification");
         }
 
-        string cartId = GetCartId();
-        var cartResult = await _cartItemsProvider.GetCartItemAsync(prodId, cartId);
-        if (cartResult.Data == null)
+        if (GetCartItem(id) == null)
         {
-            await AddNewItemToCart(prodId);
+            await AddNewItemToCart(id);
         }
         else
         {
-            await _cartItemsUpdater.IncrementAsync(prodId, cartId);
+            int accountId = _accountProvider.GetId(User.Identity!.Name).Result.Data;
+            await _cartItemsUpdater.IncrementAsync(id, accountId);
         }
 
-        return RedirectToAction("Index", "Catalog");
+        return RedirectToAction("Index", "Guitar", new {pageNumber = currentPage});
     }
 
     [HttpGet]
     public async Task<IActionResult> Remove(int id)
     {
-        string cartId = GetCartId();
-        if (!await _cartItemValidator.CheckIfCartItemExist(id, cartId))
+        int accountId = _accountProvider.GetId(User.Identity!.Name).Result.Data;
+        if (!await _cartItemValidator.CheckIfCartItemExist(id, accountId))
         {
             ViewBag.Message = Constants.ErrorMessages.InvalidProductId;
             return View("Notification");
         }
 
-        await _cartItemsUpdater.RemoveAsync(id, cartId);
+        await _cartItemsUpdater.RemoveAsync(id, accountId);
         return RedirectToAction("Index");
     }
 
     [HttpGet]
     public async Task<IActionResult> Increment(int id)
     {
-        string cartId = GetCartId();
-        if (!await _cartItemValidator.CheckIfCartItemExist(id, cartId))
+        int accountId = _accountProvider.GetId(User.Identity!.Name).Result.Data;
+        if (!await _cartItemValidator.CheckIfCartItemExist(id, accountId))
         {
             ViewBag.Message = Constants.ErrorMessages.InvalidProductId;
             return View("Notification");
         }
 
-        await _cartItemsUpdater.IncrementAsync(id, cartId);
+        await _cartItemsUpdater.IncrementAsync(id, accountId);
         return RedirectToAction("Index");
     }
 
     [HttpGet]
     public async Task<IActionResult> Decrement(int id)
     {
-        string cartId = GetCartId();
-        if (!await _cartItemValidator.CheckIfCartItemExist(id, cartId))
+        int accountId = _accountProvider.GetId(User.Identity!.Name).Result.Data;
+        if (!await _cartItemValidator.CheckIfCartItemExist(id, accountId))
         {
             ViewBag.Message = Constants.ErrorMessages.InvalidProductId;
             return View("Notification");
         }
 
-        await _cartItemsUpdater.DecrementAsync(id, cartId);
+        await _cartItemsUpdater.DecrementAsync(id, accountId);
         return RedirectToAction("Index");
     }
 
     [HttpGet]
     public async Task<IActionResult> Order()
     {
-        string cartId = GetCartId();
-        await _cartItemsUpdater.OrderAsync(cartId);
+        int id = _accountProvider.GetId(User.Identity!.Name).Result.Data;
+        await _cartItemsUpdater.OrderAsync(id);
         ViewBag.Message = ThanksMessage;
         return View("Notification");
     }
 
-    private async Task AddNewItemToCart(int prodId)
+    private CartItem GetCartItem(int id)
     {
-        string cartId = GetCartId();
-        var guitarResult = await _guitarsProvider.GetGuitarAsync(prodId);
-        await _cartItemsCreator.AddNewCartItemAsync(guitarResult.Data, cartId);
+        int accountId = _accountProvider.GetId(User.Identity!.Name).Result.Data;
+        return _cartItemsProvider.GetCartItemAsync(id, accountId).Result.Data;
     }
 
-    private string GetCartId()
+    private async Task AddNewItemToCart(int prodId)
     {
-        if (User.Identity is {IsAuthenticated: true})
-        {
-            string email = User.Identity.Name;
-            return _accountProvider.GetCartId(email).Result.Data;
-        }
-
-        return _cart.Id;
+        var guitarResult = await _guitarsProvider.GetGuitarAsync(prodId);
+        int id = _accountProvider.GetId(User.Identity!.Name).Result.Data;
+        await _cartItemsCreator.AddNewCartItemAsync(guitarResult.Data, id);
     }
 }

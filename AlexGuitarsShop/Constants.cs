@@ -5,8 +5,7 @@ public static class Constants
     public static class Roles
     {
         public const string AdminPlus = "SuperAdmin, Admin";
-        public const string MainRole = "SuperAdmin";
-        public const string StandardRole = "User";
+        public const string SuperAdmin = "SuperAdmin";
     }
 
     public static class ErrorMessages
@@ -17,6 +16,5 @@ public static class Constants
         public const string InvalidGuitarId = "Guitar by this id don't exist!";
         public const string InvalidProductId = "Item by this id don't exist in cart!";
         public const string InvalidPage = "Entered number of page don't exist!";
-        
     }
 }

@@ -20,7 +20,6 @@
     <link rel="stylesheet" href="~/css/register.css" asp-append-version="true"/>
     <link rel="stylesheet" href="~/css/users.css" asp-append-version="true"/>
     <script src="~/js/AddOrUpdate.js" asp-append-version="true"></script>
-    
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 </head>
 <body>
@@ -29,8 +28,11 @@
         <a class="home-button" asp-controller="Home" asp-action="Index">AlexGuitarsShop</a>
         <a class="menu-button" asp-controller="Home" asp-action="AboutUs">AboutUs</a>
         <a class="menu-button" asp-controller="Home" asp-action="Contacts">Contacts</a>
-        <a class="menu-button" asp-controller="Catalog" asp-action="Index">Catalog</a>
-        <a class="menu-button" asp-controller="Cart" asp-action="Index">Cart</a>
+        <a class="menu-button" asp-controller="Guitar" asp-action="Index">Catalog</a>
+        @{
+            string controller = User.Identity!.IsAuthenticated ? "Cart" : "CartSession";
+            <a class="menu-button" asp-controller="@controller" asp-action="Index">Cart</a>
+        }
         @{
             if (User.Identity == null) throw new ArgumentNullException(nameof(User.Identity));
             @if (!User.Identity.IsAuthenticated)

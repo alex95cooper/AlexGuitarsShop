@@ -3,6 +3,7 @@ using AlexGuitarsShop.Domain;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using AlexGuitarsShop.Domain.Interfaces.Account;
+using AlexGuitarsShop.Domain.Validators;
 using AlexGuitarsShop.Extensions;
 using AlexGuitarsShop.ViewModels;
 
@@ -35,7 +36,7 @@ public class AccountController : Controller
     [HttpPost]
     public async Task<IActionResult> Register(RegisterViewModel model)
     {
-        if (!_accountValidator.CheckIfRegisterIsValid(model.ToRegister()))
+        if (model == null || !_accountValidator.CheckIfRegisterIsValid(model.ToRegister()))
         {
             ViewBag.Message = Constants.ErrorMessages.InvalidAccount;
             return View("Notification");
@@ -67,7 +68,7 @@ public class AccountController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Login(LoginViewModel model)
     {
-        if (!_accountValidator.CheckIfLoginIsValid(model.ToLogin()))
+        if (model == null || !_accountValidator.CheckIfLoginIsValid(model.ToLogin()))
         {
             ViewBag.Message = Constants.ErrorMessages.InvalidAccount;
             return View("Notification");
@@ -94,14 +95,14 @@ public class AccountController : Controller
     [Authorize(Roles = Constants.Roles.AdminPlus)]
     public async Task<IActionResult> Admins(int pageNumber = 1)
     {
-        if (!await _accountValidator.CheckIfAdminsPageIsValid(pageNumber, Paginator.Limit))
+        int count = (await _accountsProvider.GetAdminsCountAsync()).Data;
+        if (!PageValidator.CheckIfPageIsValid(pageNumber, Paginator.Limit, count))
         {
             ViewBag.Message = Constants.ErrorMessages.InvalidPage;
             return View("Notification");
         }
 
         int offset = Paginator.GetOffset(pageNumber);
-        int count = (await _accountsProvider.GetAdminsCountAsync()).Data;
         List<Account> list = (await _accountsProvider.GetAdminsAsync(offset, Paginator.Limit)).Data;
         PaginatedListViewModel<Account> model = list.ToPaginatedList(Title.Admins, count, pageNumber);
         return View(model);
@@ -111,20 +112,20 @@ public class AccountController : Controller
     [Authorize(Roles = Constants.Roles.AdminPlus)]
     public async Task<IActionResult> Users(int pageNumber = 1)
     {
-        if (!await _accountValidator.CheckIfUsersPageIsValid(pageNumber, Paginator.Limit))
+        int count = (await _accountsProvider.GetUsersCountAsync()).Data;
+        if (!PageValidator.CheckIfPageIsValid(pageNumber, Paginator.Limit, count))
         {
             ViewBag.Message = Constants.ErrorMessages.InvalidPage;
             return View("Notification");
         }
 
         int offset = Paginator.GetOffset(pageNumber);
-        int count = (await _accountsProvider.GetUsersCountAsync()).Data;
         List<Account> list = (await _accountsProvider.GetUsersAsync(offset, Paginator.Limit)).Data;
         PaginatedListViewModel<Account> model = list.ToPaginatedList(Title.Users, count, pageNumber);
         return View(model);
     }
 
-    [Authorize(Roles = Constants.Roles.MainRole)]
+    [Authorize(Roles = Constants.Roles.SuperAdmin)]
     public async Task<IActionResult> MakeAdmin(string email)
     {
         if (!await _accountValidator.CheckIfEmailExist(email))
@@ -137,7 +138,7 @@ public class AccountController : Controller
         return RedirectToAction("Users", "Account");
     }
 
-    [Authorize(Roles = Constants.Roles.MainRole)]
+    [Authorize(Roles = Constants.Roles.SuperAdmin)]
     public async Task<IActionResult> MakeUser(string email)
     {
         if (!await _accountValidator.CheckIfEmailExist(email))

@@ -139,14 +139,18 @@ input, textarea {
     border: solid silver;
     background: rgba(0, 0, 0, 0.8);
     width: 300px;
-    height:80px;
+    height: 110px;
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
     padding: 20px;
 }
 
-.popup-buttons{
+.popup-message-container {
+    height: 70px;
+}
+
+.popup-buttons {
     left: 50%;
     transform: translate(0, -50%);
 }
@@ -158,11 +162,12 @@ input, textarea {
 .confirm-popup {
     margin-left: 70px;
 }
+
 .close-popup {
     margin-left: 170px;
 }
 
-.confirm-popup, .close-popup{
+.confirm-popup, .close-popup {
     position: absolute;
     cursor: pointer;
     border: solid silver;

@@ -19,8 +19,6 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddMemoryCache();
 builder.Services.AddSession();
-builder.Services.AddScoped(provider => 
-    Cart.GetCart(provider.GetRequiredService<IHttpContextAccessor>()));
 
 builder.Services.InitializeRepositories(connectionString);
 builder.Services.InitializeEntityHandlers();

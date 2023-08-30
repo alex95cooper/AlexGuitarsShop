@@ -50,6 +50,7 @@
         <_ContentIncludedByDefault Remove="wwwroot\images\products_images\ltd_f-200_black_satin.jpg" />
         <_ContentIncludedByDefault Remove="wwwroot\images\products_images\mayones-regius-6-gothic.jpg" />
         <_ContentIncludedByDefault Remove="wwwroot\images\products_images\mayones-regius-pro-6-gothic.jpg" />
+        <_ContentIncludedByDefault Remove="Views\Cart\Index.cshtml" />
     </ItemGroup>
 
     <ItemGroup>
@@ -131,6 +132,10 @@
         <Content Update="wwwroot\favicon.png">
           <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+      <AdditionalFiles Include="Views\Cart\Index.cshtml" />
     </ItemGroup>
 
 </Project>
