@@ -14,15 +14,15 @@ public class CartItemsProvider : ICartItemsProvider
         _cartItemRepository = cartItemRepository;
     }
 
-    public async Task<IResult<CartItem>> GetCartItemAsync(int id, string cartId)
+    public async Task<IResult<CartItem>> GetCartItemAsync(int id, int accountId)
     {
-        var item = await _cartItemRepository.FindAsync(id, cartId);
+        var item = await _cartItemRepository.FindAsync(id, accountId);
         return ResultCreator.GetValidResult(item);
     }
 
-    public async Task<IResult<List<CartItem>>> GetCartItemsAsync(string cartId)
+    public async Task<IResult<List<CartItem>>> GetCartItemsAsync(int accountId)
     {
-        var cartList = await _cartItemRepository.GetAllAsync(cartId);
+        var cartList = await _cartItemRepository.GetAllAsync(accountId);
         return ResultCreator.GetValidResult(cartList);
     }
 }

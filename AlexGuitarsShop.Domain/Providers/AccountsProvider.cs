@@ -52,9 +52,9 @@ public class AccountsProvider : IAccountsProvider
         return ResultCreator.GetValidResult(adminsCount);
     }
     
-    public async Task<IResult<string>> GetCartId(string email)
+    public async Task<IResult<int>> GetId(string email)
     {
         var account = await _accountRepository.FindAsync(email);
-        return ResultCreator.GetValidResult(account.CartId);
+        return ResultCreator.GetValidResult(account.Id);
     }
 }

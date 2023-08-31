@@ -10,13 +10,13 @@ public static class SeedDatabase
     {
         using IDbConnection db = new MySqlConnection(connectionString);
         InitGuitars(db);
-        InitUsers(db);
+        InitAccounts(db);
         InitCartItems(db);
     }
 
     private static void InitGuitars(IDbConnection db)
     {
-        db.Execute(@"CREATE TABLE IF NOT EXISTS Guitars
+        db.Execute(@"CREATE TABLE IF NOT EXISTS Guitar
         (Id INT AUTO_INCREMENT NOT NULL,
         Name VARCHAR (50),
         Price INT,
@@ -24,7 +24,7 @@ public static class SeedDatabase
         Image LONGBLOB,
         IsDeleted TINYINT,
         PRIMARY KEY (Id));");
-        if (db.ExecuteScalar<int>("SELECT COUNT(*) FROM Guitars") == 0)
+        if (db.ExecuteScalar<int>("SELECT COUNT(*) FROM Guitar") == 0)
         {
             FillGuitars(db);
         }
@@ -33,7 +33,7 @@ public static class SeedDatabase
     private static void FillGuitars(IDbConnection db)
     {
         string currentPath = Directory.GetCurrentDirectory().Replace("\\", "\\\\");
-        db.Execute($@"INSERT INTO Guitars 
+        db.Execute($@"INSERT INTO Guitar 
         (Name, Price, Description, Image, IsDeleted)
         VALUES 
         ('GIBSON 57 LES PAUL GOLDTOP', 5000, 
@@ -173,48 +173,47 @@ public static class SeedDatabase
          LOAD_FILE('{currentPath}\\products_images\\ltd_f-200_black_satin.jpg'), 0);");
     }
 
-    private static void InitUsers(IDbConnection db)
+    private static void InitAccounts(IDbConnection db)
     {
-        db.Execute(@"CREATE TABLE IF NOT EXISTS Users 
+        db.Execute(@"CREATE TABLE IF NOT EXISTS Account  
         (Id INT AUTO_INCREMENT NOT NULL,
          Name VARCHAR (15),
          Email VARCHAR (30) NOT NULL,
          Password VARCHAR (200),
-         CartId VARCHAR(200),
-         Role INT,
+         Role INT NOT NULL,
          PRIMARY KEY (Id));");
-        if (db.ExecuteScalar<int>("SELECT COUNT(*) FROM Users") == 0)
+        if (db.ExecuteScalar<int>("SELECT COUNT(*) FROM Account") == 0)
         {
-            FillUsers(db);
+            FillAccounts(db);
         }
     }
 
-    private static void FillUsers(IDbConnection db)
+    private static void FillAccounts(IDbConnection db)
     {
-        db.Execute(@"INSERT INTO Users 
-        (Name, Email, Password, CartId, Role)
+        db.Execute(@"INSERT INTO Account 
+        (Name, Email, Password, Role)
         VALUES 
-        ('Alex', 'lex95bond@gmail.com', 'f969fdbe811d8a66010d6f8973246763147a2a0914afc8087839e29b563a5af0', '65f0422a-f3ac-4cec-b3cb-b470d7261a2a', 2),
-        ('Anton', 'Anton@gmail.com', '65e84be33532fb784c48129675f9eff3a682b27168c0ea744b2cf58ee02337c5', '32d31cb1-97b6-42fc-927e-f32d43ba8d2e', 0),
-        ('Ben', 'Ben@gmail.com', '65e84be33532fb784c48129675f9eff3a682b27168c0ea744b2cf58ee02337c5', '7b5dd0d0-86e8-4789-b050-7ffe41f2c167', 0),
-        ('Catrin', 'Catrin@gmail.com', '65e84be33532fb784c48129675f9eff3a682b27168c0ea744b2cf58ee02337c5', 'ad5fc159-d966-4efc-88ff-efa99c6ade9b', 0),
-        ('Den', 'Den@gmail.com', '65e84be33532fb784c48129675f9eff3a682b27168c0ea744b2cf58ee02337c5', '27c3d76f-8db6-455e-8fb9-a264cb7ff848', 0),
-        ('Eric', 'Eric@gmail.com', '65e84be33532fb784c48129675f9eff3a682b27168c0ea744b2cf58ee02337c5', '9e338aa2-9f4c-4f7b-9bf8-3fbc35cb20d7', 0),
-        ('Freddy', 'Freddy@gmail.com', '65e84be33532fb784c48129675f9eff3a682b27168c0ea744b2cf58ee02337c5', '2cea0f16-c2d9-4cdf-a6d5-b7d64c43586a', 0),
-        ('Gven', 'Gven@gmail.com', '65e84be33532fb784c48129675f9eff3a682b27168c0ea744b2cf58ee02337c5', '4a066dc8-5234-46da-8771-9814f24944a8', 0),
-        ('Harry', 'Harry@gmail.com', '65e84be33532fb784c48129675f9eff3a682b27168c0ea744b2cf58ee02337c5', 'e99580ed-945e-4849-81bd-13675c2d4c72', 0),
-        ('John', 'John@gmail.com', '65e84be33532fb784c48129675f9eff3a682b27168c0ea744b2cf58ee02337c5', 'e64ee87f-1d81-4a8d-b599-ec908c9ec6c7', 0),
-        ('Olga', 'Olga@gmail.com', '65e84be33532fb784c48129675f9eff3a682b27168c0ea744b2cf58ee02337c5', 'bf49c79a-5616-4463-b794-bb6e4c21feca', 0),
-        ('Ned', 'Ned@gmail.com', '65e84be33532fb784c48129675f9eff3a682b27168c0ea744b2cf58ee02337c5', '4d32a889-443a-4545-b599-e0d24cf14c72', 0);");
+        ('Alex', 'lex95bond@gmail.com', 'f969fdbe811d8a66010d6f8973246763147a2a0914afc8087839e29b563a5af0', 2),
+        ('Anton', 'Anton@gmail.com', '65e84be33532fb784c48129675f9eff3a682b27168c0ea744b2cf58ee02337c5', 0),
+        ('Ben', 'Ben@gmail.com', '65e84be33532fb784c48129675f9eff3a682b27168c0ea744b2cf58ee02337c5', 0),
+        ('Catrin', 'Catrin@gmail.com', '65e84be33532fb784c48129675f9eff3a682b27168c0ea744b2cf58ee02337c5', 0),
+        ('Den', 'Den@gmail.com', '65e84be33532fb784c48129675f9eff3a682b27168c0ea744b2cf58ee02337c5', 0),
+        ('Eric', 'Eric@gmail.com', '65e84be33532fb784c48129675f9eff3a682b27168c0ea744b2cf58ee02337c5', 0),
+        ('Freddy', 'Freddy@gmail.com', '65e84be33532fb784c48129675f9eff3a682b27168c0ea744b2cf58ee02337c5', 0),
+        ('Gven', 'Gven@gmail.com', '65e84be33532fb784c48129675f9eff3a682b27168c0ea744b2cf58ee02337c5', 0),
+        ('Harry', 'Harry@gmail.com', '65e84be33532fb784c48129675f9eff3a682b27168c0ea744b2cf58ee02337c5', 0),
+        ('John', 'John@gmail.com', '65e84be33532fb784c48129675f9eff3a682b27168c0ea744b2cf58ee02337c5', 0),
+        ('Olga', 'Olga@gmail.com', '65e84be33532fb784c48129675f9eff3a682b27168c0ea744b2cf58ee02337c5', 0),
+        ('Ned', 'Ned@gmail.com', '65e84be33532fb784c48129675f9eff3a682b27168c0ea744b2cf58ee02337c5', 0);");
     }
 
     private static void InitCartItems(IDbConnection db)
     {
-        db.Execute(@"CREATE TABLE IF NOT EXISTS CartItems
+        db.Execute(@"CREATE TABLE IF NOT EXISTS CartItem
         (
          Id INT AUTO_INCREMENT NOT NULL,
-         Cart_Id VARCHAR (50) NOT NULL,
-         Prod_Id INT NOT NULL,
+         AccountId VARCHAR (50) NOT NULL,
+         ProductId INT NOT NULL,
          Quantity INT NOT NULL,
          PRIMARY KEY (Id)
         );");

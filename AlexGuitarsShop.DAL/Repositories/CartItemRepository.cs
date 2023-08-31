@@ -15,67 +15,67 @@ public class CartItemRepository : ICartItemRepository
         _connectionString = connectionString;
     }
 
-    public async Task<CartItem> FindAsync(int id, string cartId)
+    public async Task<CartItem> FindAsync(int id, int accountId)
     {
         using IDbConnection db = new MySqlConnection(_connectionString);
-        CartItem item = await db.QueryFirstOrDefaultAsync<CartItem>($@"SELECT CartItems.*, Guitars.*
-        FROM CartItems 
-        LEFT JOIN Guitars ON CartItems.Prod_Id = Guitars.Id
-        WHERE CartItems.Cart_Id = '{cartId}' 
-        AND CartItems.Prod_Id = @Id AND Guitars.IsDeleted = 0 ", new {id});
+        CartItem item = await db.QueryFirstOrDefaultAsync<CartItem>($@"SELECT CartItem.*, Guitar.*
+        FROM CartItem 
+        LEFT JOIN Guitar ON CartItem.ProductId = Guitar.Id
+        WHERE CartItem.AccountId = '{accountId}' 
+        AND CartItem.ProductId = @Id AND Guitar.IsDeleted = 0 ", new {id});
         return item;
     }
 
-    public async Task<int> GetProductQuantityAsync(int id, string cartId)
+    public async Task<int> GetProductQuantityAsync(int id, int accountId)
     {
         using IDbConnection db = new MySqlConnection(_connectionString);
-        return await db.ExecuteScalarAsync<int>(@$"SELECT Quantity FROM CartItems 
-        WHERE Cart_Id = '{cartId}' AND Prod_Id = {id}");
+        return await db.ExecuteScalarAsync<int>(@$"SELECT Quantity FROM CartItem 
+        WHERE AccountId = '{accountId}' AND ProductId = {id}");
     }
 
-    public async Task<List<CartItem>> GetAllAsync(string cartId)
+    public async Task<List<CartItem>> GetAllAsync(int accountId)
     {
         using IDbConnection db = new MySqlConnection(_connectionString);
-        return (await db.QueryAsync<CartItem, Guitar, CartItem>(@$"SELECT CartItems.*, Guitars.*
-        FROM CartItems 
-        LEFT JOIN Guitars ON CartItems.Prod_Id = Guitars.Id
-        WHERE CartItems.Cart_Id = '{cartId}' AND Guitars.IsDeleted = 0 ", (item, product) =>
+        return (await db.QueryAsync<CartItem, Guitar, CartItem>(@$"SELECT CartItem.*, Guitar.*
+        FROM CartItem 
+        LEFT JOIN Guitar ON CartItem.ProductId = Guitar.Id
+        WHERE CartItem.AccountId = '{accountId}' AND Guitar.IsDeleted = 0 ", (item, product) =>
         {
             item.Product = product;
             return item;
         })).ToList();
     }
 
-    public async Task CreateAsync(CartItem item, string cartId)
+    public async Task CreateAsync(CartItem item, int accountId)
     {
         using IDbConnection db = new MySqlConnection(_connectionString);
-        await db.ExecuteAsync(@"INSERT INTO CartItems (Cart_Id, Prod_Id, Quantity) 
-                VALUES (@Cart_Id, @Prod_Id, @Quantity)",
+        await db.ExecuteAsync(@"INSERT INTO CartItem (AccountId, ProductId, Quantity) 
+                VALUES (@AccountId, @ProdId, @Quantity)",
             new
             {
-                Cart_Id = cartId,
-                Prod_Id = item.Product.Id,
+                AccountId = accountId,
+                ProdId = item.Product.Id,
                 item.Quantity
             }
         );
     }
 
-    public async Task UpdateQuantityAsync(int id, int quantity, string cartId)
+    public async Task UpdateQuantityAsync(int id, int accountId, int quantity)
     {
         using IDbConnection db = new MySqlConnection(_connectionString);
-        await db.ExecuteAsync($@"UPDATE CartItems SET Quantity = {quantity}
-        WHERE Cart_Id = '{cartId}' AND Prod_Id = {id}");
+        await db.ExecuteAsync($@"UPDATE CartItem SET Quantity = {quantity}
+        WHERE AccountId = '{accountId}' AND ProductId = {id}");
     }
 
-    public async Task DeleteAsync(int id, string cartId)
+    public async Task DeleteAsync(int id, int accountId)
     {
         using IDbConnection db = new MySqlConnection(_connectionString);
-        await db.ExecuteAsync($"DELETE FROM CartItems WHERE Cart_ID = '{cartId}' AND Prod_Id = {id}");
+        await db.ExecuteAsync($"DELETE FROM CartItem WHERE AccountId = '{accountId}' AND ProductId = {id}");
     }
 
-    public async Task DeleteAllAsync(string cartId)
+    public async Task DeleteAllAsync(int accountId)
     {
         using IDbConnection db = new MySqlConnection(_connectionString);
-        await db.ExecuteAsync($@"DELETE FROM CartItems WHERE Cart_ID = '{cartId}'");
+        await db.ExecuteAsync($@"DELETE FROM CartItem WHERE AccountId = '{accountId}'");
     }
 }

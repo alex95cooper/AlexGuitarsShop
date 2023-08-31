@@ -18,46 +18,45 @@ public class GuitarValidator : IGuitarValidator
         return await _guitarRepository.GetAsync(id) != null;
     }
 
-    public async Task<bool> CheckIfPageIsValid(int pageNumber, int limit)
-    {
-        int count = await _guitarRepository.GetCountAsync();
-        int pageCount = GetPageCount(count, limit);
-        return pageNumber > 0 && pageNumber <= pageCount;
-    }
-
     public bool CheckIfGuitarIsValid(Guitar guitar)
     {
-        guitar = guitar ?? throw new ArgumentNullException(nameof(guitar));
-        return CheckIfNameIsValid(guitar.Name)
+        return guitar != null
+               && CheckIfNameIsValid(guitar.Name)
                && CheckIfPriceIsValid(guitar.Price)
                && CheckIfDescriptionIsValid(guitar.Description);
     }
 
-    private static int GetPageCount(int count, int limit)
+    public async Task<bool> CheckIfGuitarUpdateIsValid(Guitar guitar)
     {
-        if (count < limit)
-        {
-            return count == 0 ? 0 : 1;
-        }
-
-        int pageCount = count / limit;
-        return count % limit > 0 ? pageCount + 1 : pageCount;
+        return await CheckIfGuitarExist(guitar.Id)
+               && CheckIfGuitarIsValid(guitar);
     }
 
     private bool CheckIfNameIsValid(string name)
     {
-        name = name ?? throw new ArgumentNullException(nameof(name));
-        return name.Length is > 5 and < 50;
+        if (name == null)
+        {
+            return false;
+        }
+
+        return name.Length is >= Constants.Guitar.NameMinLength
+            and <= Constants.Guitar.NameMaxLength;
     }
 
-    private bool CheckIfPriceIsValid(int price)
+    private static bool CheckIfPriceIsValid(int price)
     {
-        return price is > 10 and < 1000000;
+        return price is >= Constants.Guitar.MinPrice
+            and <= Constants.Guitar.MaxPrice;
     }
 
-    private bool CheckIfDescriptionIsValid(string description)
+    private static bool CheckIfDescriptionIsValid(string description)
     {
-        description = description ?? throw new ArgumentNullException(nameof(description));
-        return description.Length is > 10 and < 600;
+        if (description == null)
+        {
+            return false;
+        }
+
+        return description.Length is >= Constants.Guitar.DescriptionMinLength
+            and <= Constants.Guitar.DescriptionMaxLength;
     }
 }

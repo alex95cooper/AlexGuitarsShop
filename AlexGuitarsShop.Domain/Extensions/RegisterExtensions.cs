@@ -13,7 +13,6 @@ public static class RegisterExtensions
             Name = register.Name,
             Email = register.Email,
             Password = register.Password,
-            CartId = Guid.NewGuid().ToString(),
             Role = Role.User
         };
     }

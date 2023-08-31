@@ -12,8 +12,8 @@ public class CartItemValidator : ICartItemValidator
         _cartItemRepository = cartItemRepository;
     }
 
-    public async Task<bool> CheckIfCartItemExist(int id, string cartId)
+    public async Task<bool> CheckIfCartItemExist(int id, int accountId)
     {
-        return await _cartItemRepository.FindAsync(id, cartId) != null;
+        return await _cartItemRepository.FindAsync(id, accountId) != null;
     }
 }

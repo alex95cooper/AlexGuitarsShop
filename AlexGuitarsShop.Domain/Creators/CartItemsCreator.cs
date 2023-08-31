@@ -13,14 +13,14 @@ public class CartItemsCreator : ICartItemsCreator
         _cartItemRepository = cartItemRepository;
     }
 
-    public async Task AddNewCartItemAsync(Guitar guitar, string cartId)
+    public async Task AddNewCartItemAsync(Guitar guitar, int accountId)
     {
         guitar = guitar ?? throw new ArgumentNullException(nameof(guitar));
-        CartItem item = _cartItemRepository.FindAsync(guitar.Id, cartId).Result;
+        CartItem item = _cartItemRepository.FindAsync(guitar.Id, accountId).Result;
         if (item == null)
         {
             item =  new CartItem {Quantity = 1, Product = guitar};
-            await _cartItemRepository.CreateAsync(item, cartId);
+            await _cartItemRepository.CreateAsync(item, accountId);
         }
     }
 }
