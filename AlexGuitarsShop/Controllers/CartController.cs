@@ -64,7 +64,7 @@ public class CartController : Controller
     public async Task<IActionResult> Remove(int id)
     {
         int accountId = GetAccountId();
-        if (await CheckIfDbCartItemExist( id,  accountId))
+        if (await CheckIfDbCartItemExist(id, accountId))
         {
             ViewBag.Message = Constants.ErrorMessages.InvalidProductId;
             return View("Notification");
@@ -78,7 +78,7 @@ public class CartController : Controller
     public async Task<IActionResult> Increment(int id)
     {
         int accountId = GetAccountId();
-        if (await CheckIfDbCartItemExist( id,  accountId))
+        if (await CheckIfDbCartItemExist(id, accountId))
         {
             ViewBag.Message = Constants.ErrorMessages.InvalidProductId;
             return View("Notification");
@@ -92,7 +92,7 @@ public class CartController : Controller
     public async Task<IActionResult> Decrement(int id)
     {
         int accountId = GetAccountId();
-        if (await CheckIfDbCartItemExist( id,  accountId))
+        if (await CheckIfDbCartItemExist(id, accountId))
         {
             ViewBag.Message = Constants.ErrorMessages.InvalidProductId;
             return View("Notification");
@@ -130,7 +130,7 @@ public class CartController : Controller
 
     private async Task<bool> CheckIfDbCartItemExist(int id, int accountId)
     {
-        return User.Identity is {IsAuthenticated: true} 
+        return User.Identity is {IsAuthenticated: true}
                && !await _cartItemValidator.CheckIfCartItemExist(id, accountId);
     }
 }

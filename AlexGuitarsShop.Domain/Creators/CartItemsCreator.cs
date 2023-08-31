@@ -21,7 +21,6 @@ public class CartItemsCreator : ICartItemsCreator
 
     private string CartString
     {
-        get => Context.Session.GetString(Constants.Cart.Key);
         set => Context.Session.SetString(Constants.Cart.Key, value);
     }
 
@@ -55,5 +54,4 @@ public class CartItemsCreator : ICartItemsCreator
             await _cartItemRepository.CreateAsync(item, accountId);
         }
     }
-
 }

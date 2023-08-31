@@ -20,12 +20,12 @@ public class CartItemsUpdater : ICartItemsUpdater
         _cartItemRepository = cartItemRepository;
         _httpContextAccessor = httpContextAccessor;
     }
-    
+
     private HttpContext Context => _httpContextAccessor.HttpContext;
+
     private string CartString
     {
         set => Context.Session.SetString(Constants.Cart.Key, value);
-        get => Context.Session.GetString(Constants.Cart.Key);
     }
 
     public async Task RemoveAsync(int id, int accountId)
@@ -109,7 +109,7 @@ public class CartItemsUpdater : ICartItemsUpdater
 
         CartString = JsonConvert.SerializeObject(cart);
     }
-    
+
     private void DecrementSessionCart(int id)
     {
         List<CartItem> cart = SessionCartProvider.GetCart(_httpContextAccessor);
