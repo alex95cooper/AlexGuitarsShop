@@ -68,14 +68,15 @@ public class GuitarController : Controller
     [Authorize(Roles = Constants.Roles.AdminPlus)]
     public async Task<IActionResult> Add(GuitarViewModel model)
     {
-        if (model == null || !_guitarValidator.CheckIfGuitarIsValid(model.ToGuitar()))
+        Guitar guitar = model.ToGuitar();
+        if (model == null || !_guitarValidator.CheckIfGuitarIsValid(guitar))
         {
            ViewBag.Message = Constants.ErrorMessages.InvalidGuitar;
            return View("Notification");
         }
         
         model.Image = model.Avatar == null ? model.Image : model.Avatar.ToByteArray();
-        await _guitarsCreator.AddGuitarAsync(model.ToGuitar());
+        await _guitarsCreator.AddGuitarAsync(guitar);
         return RedirectToAction("Index");
     }
 
@@ -84,14 +85,15 @@ public class GuitarController : Controller
     [Authorize(Roles = Constants.Roles.AdminPlus)]
     public async Task<IActionResult> Update(GuitarViewModel model)
     {
-        if (model == null || !await _guitarValidator.CheckIfGuitarUpdateIsValid(model.ToGuitar()))
+        Guitar guitar = model.ToGuitar();
+        if (model == null || !await _guitarValidator.CheckIfGuitarUpdateIsValid(guitar))
         {
            ViewBag.Message = Constants.ErrorMessages.InvalidGuitar;
            return View("Notification");
         }
         
         model.Image = model.Avatar == null ? model.Image : model.Avatar.ToByteArray();
-        await _guitarsUpdater.UpdateGuitarAsync(model.ToGuitar());
+        await _guitarsUpdater.UpdateGuitarAsync(guitar);
         return RedirectToAction("Index");
     }
     

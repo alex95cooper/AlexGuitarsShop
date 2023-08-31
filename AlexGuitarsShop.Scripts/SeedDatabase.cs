@@ -212,10 +212,12 @@ public static class SeedDatabase
         db.Execute(@"CREATE TABLE IF NOT EXISTS CartItem
         (
          Id INT AUTO_INCREMENT NOT NULL,
-         AccountId VARCHAR (50) NOT NULL,
+         AccountId INT NOT NULL,
          ProductId INT NOT NULL,
          Quantity INT NOT NULL,
-         PRIMARY KEY (Id)
+         PRIMARY KEY (Id),
+         FOREIGN KEY (AccountId) REFERENCES Account(Id),
+         FOREIGN KEY (ProductId) REFERENCES Guitar(Id)
         );");
     }
 }

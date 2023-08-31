@@ -38,19 +38,10 @@
                                 <p class="price">$ @guitar.Price.ToString()</p>
                                 <p class="description">@guitar.Description</p>
                                 <div class="model-buttons-container">
-                                    @if (User.Identity!.IsAuthenticated)
-                                    {
-                                        <a class="add-button-content" asp-controller="Cart" asp-route-id="@guitar.Id" 
-                                        asp-route-currentPage="@Model.CurrentPage" asp-action="Add">
-                                            Add to Cart
-                                        </a>
-                                    }
-                                    else
-                                    {
-                                        <a class="add-button-content" asp-controller="CartSession" asp-route-id="@guitar.Id" asp-route-currentPage="@Model.CurrentPage" asp-action="Add">
-                                            Add to Cart
-                                        </a>
-                                    }
+                                    <a class="add-button-content" asp-controller="Cart" asp-route-id="@guitar.Id"
+                                       asp-route-currentPage="@Model.CurrentPage" asp-action="Add">
+                                        Add to Cart
+                                    </a>
                                     @if (User.IsInRole("Admin") || User.IsInRole("SuperAdmin"))
                                     {
                                         <a class="change-button" asp-controller="Guitar" asp-route-id="@guitar.Id" asp-action="Update">

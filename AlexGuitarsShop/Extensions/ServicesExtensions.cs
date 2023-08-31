@@ -30,9 +30,6 @@ public static class ServicesExtensions
         services.AddTransient<ICartItemsCreator, CartItemsCreator>();
         services.AddTransient<ICartItemsProvider, CartItemsProvider>();
         services.AddTransient<ICartItemsUpdater, CartItemsUpdater>();
-        services.AddTransient<ICartItemsSessionCreator, CartItemsSessionCreator>();
-        services.AddTransient<ICartItemsSessionProvider, CartItemsSessionProvider>();
-        services.AddTransient<ICartItemsSessionUpdater, CartItemsSessionUpdater>();
         services.AddTransient<IGuitarsCreator, GuitarsCreator>();
         services.AddTransient<IGuitarsProvider, GuitarsProvider>();
         services.AddTransient<IGuitarsUpdater, GuitarsUpdater>();
