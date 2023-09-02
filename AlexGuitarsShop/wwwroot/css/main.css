@@ -176,6 +176,6 @@ input, textarea {
     text-align: center;
 }
 
-.popup-message::after {
-    content: attr(data-content);
+.popup-message{
+    color: lavender;
 }

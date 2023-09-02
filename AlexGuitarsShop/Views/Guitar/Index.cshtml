@@ -74,7 +74,7 @@
 function showMessage(route_id, guitar_name) {
     $('.popup-bg').fadeIn(800);
     $('html').addClass('no-scroll');
-    $('.popup-message').attr('data-content', 'Do you want to delete ' + guitar_name + '?');
+    $('.popup-message').text('Do you want to delete ' + guitar_name + '?');
     $('.confirm-popup').attr('href', '/Catalog/Delete/' + route_id);                  
 }
 </script>
