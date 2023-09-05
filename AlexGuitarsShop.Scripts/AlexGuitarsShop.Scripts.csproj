@@ -8,8 +8,10 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Dapper" Version="2.0.151" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.10" />
+      <PackageReference Include="MySql.EntityFrameworkCore" Version="7.0.5" />
       <PackageReference Include="MySqlConnector" Version="2.2.7" />
+      <PackageReference Include="SixLabors.ImageSharp" Version="3.0.2" />
     </ItemGroup>
 
     <ItemGroup>
@@ -111,6 +113,10 @@
       <Content Include="products_images\mayones-regius-pro-6-gothic.jpg">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\AlexGuitarsShop.DAL\AlexGuitarsShop.DAL.csproj" />
     </ItemGroup>
 
 </Project>

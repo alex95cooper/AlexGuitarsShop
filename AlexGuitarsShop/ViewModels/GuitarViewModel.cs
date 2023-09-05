@@ -7,6 +7,6 @@ public class GuitarViewModel
     public int Price { get; init; }
     public string Description { get; init; }
     public IFormFile Avatar { get; init; }
-    public byte[] Image { get; set; }
+    public string Image { get; init; }
     public ushort IsDeleted { get; init; }
 }

@@ -30,7 +30,7 @@
                                 }
                                 else
                                 {
-                                    <img class="guitar-img" src="data:image;base64,@Convert.ToBase64String(guitar.Image)" alt="Guitar"/>
+                                    <img class="guitar-img" src="data:image;base64,@guitar.Image" alt="Guitar" />
                                 }
                             </div>
                             <div class="model-info-container">
@@ -75,6 +75,6 @@ function showMessage(route_id, guitar_name) {
     $('.popup-bg').fadeIn(800);
     $('html').addClass('no-scroll');
     $('.popup-message').text('Do you want to delete ' + guitar_name + '?');
-    $('.confirm-popup').attr('href', '/Catalog/Delete/' + route_id);                  
+    $('.confirm-popup').attr('href', '/Guitar/Delete/' + route_id);                  
 }
 </script>

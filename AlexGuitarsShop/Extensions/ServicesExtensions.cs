@@ -12,14 +12,11 @@ namespace AlexGuitarsShop.Extensions;
 
 public static class ServicesExtensions
 {
-    public static void InitializeRepositories(this IServiceCollection services, string connectionString)
+    public static void InitializeRepositories(this IServiceCollection services)
     {
-        services.AddTransient<IGuitarRepository, GuitarRepository>(_ =>
-            new GuitarRepository(connectionString));
-        services.AddTransient<IAccountRepository, AccountRepository>(_ =>
-            new AccountRepository(connectionString));
-        services.AddTransient<ICartItemRepository, CartItemRepository>(_ =>
-            new CartItemRepository(connectionString));
+        services.AddScoped<IGuitarRepository, GuitarRepository>();
+        services.AddTransient<IAccountRepository, AccountRepository>();
+        services.AddTransient<ICartItemRepository, CartItemRepository>();
     }
 
     public static void InitializeEntityHandlers(this IServiceCollection services)

@@ -1,13 +1,17 @@
 using AlexGuitarsShop;
+using AlexGuitarsShop.DAL;
 using AlexGuitarsShop.Extensions;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.EntityFrameworkCore;
 
-var builder = WebApplication.CreateBuilder(args);
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddMvc();
 builder.Services.AddControllersWithViews();
 
 string connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+builder.Services.AddDbContext<AlexGuitarsShopDbContext>(options =>
+    options.UseMySQL(connectionString!));
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
@@ -20,13 +24,13 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddMemoryCache();
 builder.Services.AddSession();
 
-builder.Services.InitializeRepositories(connectionString);
+builder.Services.InitializeRepositories();
 builder.Services.InitializeEntityHandlers();
 builder.Services.InitializeValidators();
 
 builder.Services.AddTransient<IAuthorizer, ValidUserAuthorizer>();
 
-var app = builder.Build();
+WebApplication app = builder.Build();
 
 if (!app.Environment.IsDevelopment())
 {

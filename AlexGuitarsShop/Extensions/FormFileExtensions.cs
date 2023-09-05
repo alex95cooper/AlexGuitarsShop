@@ -2,9 +2,10 @@ namespace AlexGuitarsShop.Extensions;
 
 public static class FormFileExtensions
 {
-    public static byte[] ToByteArray(this IFormFile avatar)
+    public static string ToBase64String(this IFormFile avatar)
     {
         using var binaryReader = new BinaryReader(avatar.OpenReadStream());
-        return binaryReader.ReadBytes((int) avatar.Length);
+        byte[] bytes = binaryReader.ReadBytes((int) avatar.Length);
+        return  Convert.ToBase64String(bytes);
     }
 }

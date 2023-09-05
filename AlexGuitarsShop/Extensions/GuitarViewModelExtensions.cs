@@ -7,7 +7,7 @@ public static class GuitarViewModelExtensions
 {
     public static Guitar ToGuitar(this GuitarViewModel model)
     {
-        return new Guitar
+        return new Guitar()
         {
             Id = model.Id,
             Name = model.Name,
