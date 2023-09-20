@@ -1,6 +1,6 @@
-using AlexGuitarsShop.DAL;
-using AlexGuitarsShop.DAL.Models;
-using AlexGuitarsShop.Domain.Models;
+using AlexGuitarsShop.Common;
+using AlexGuitarsShop.Common.Models;
+using Account = AlexGuitarsShop.DAL.Models.Account;
 
 namespace AlexGuitarsShop.Domain.Extensions;
 

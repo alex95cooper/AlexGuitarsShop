@@ -1,15 +1,16 @@
-using AlexGuitarsShop.DAL.Models;
+using AlexGuitarsShop.Common;
 using AlexGuitarsShop.Domain.Interfaces.Account;
 using AlexGuitarsShop.Domain.Interfaces.CartItem;
 using AlexGuitarsShop.Domain.Interfaces.Guitar;
 using Microsoft.AspNetCore.Mvc;
+using CartItemDto = AlexGuitarsShop.Common.Models.CartItem;
 
 namespace AlexGuitarsShop.Controllers;
 
+[ApiController]
+[Route("[controller]")]
 public class CartController : Controller
 {
-    private const string ThanksMessage = "Thank you for your purchase!";
-
     private readonly ICartItemsCreator _cartItemsCreator;
     private readonly ICartItemsProvider _cartItemsProvider;
     private readonly ICartItemsUpdater _cartItemsUpdater;
@@ -31,106 +32,107 @@ public class CartController : Controller
         _guitarValidator = guitarValidator;
     }
 
-    [HttpGet]
-    public IActionResult Index()
+    [HttpGet("Index/{email}")]
+    public IResult<List<CartItemDto>> Index(string email)
     {
-        int accountId = GetAccountId();
-        List<CartItem> cart = _cartItemsProvider.GetCartAsync(accountId).Result.Data;
-        return View(cart);
+        var result = _accountProvider.GetId(email).Result;
+        if (result.IsSuccess)
+        {
+            List<CartItemDto> cart = _cartItemsProvider.GetCartAsync(result.Data).Result.Data;
+            return ResultCreator.GetValidResult(cart);
+        }
+        
+        return ResultCreator.GetInvalidResult<List<CartItemDto>>(Constants.ErrorMessages.InvalidEmail);
     }
 
-    [HttpGet]
-    public async Task<IActionResult> Add(int id, int currentPage)
+    [HttpGet("Add/id={id}&email={email}")]
+    public async Task<IResult<int>> Add(int id, string email)
     {
+        var result = GetAccountId(email);
+        if (!result.IsSuccess)
+        {
+            return ResultCreator.GetInvalidResult<int>(result.Error);
+        }
+        
         if (!_guitarValidator.CheckIfGuitarExist(id).Result)
         {
-            ViewBag.Message = Constants.ErrorMessages.InvalidGuitarId;
-            return View("Notification");
+            return ResultCreator.GetInvalidResult<int>(Constants.ErrorMessages.InvalidGuitarId);
         }
 
-        if (GetCartItem(id) == null)
+        var guitarResult = await _guitarsProvider.GetGuitarAsync(id);
+        await _cartItemsCreator.AddNewCartItemAsync(guitarResult.Data, result.Data);
+        return ResultCreator.GetValidResult(id);
+    }
+
+    [HttpGet("Remove/id={id}&email={email}")]
+    public async Task<IResult<int>> Remove(int id, string email)
+    {
+        var result = ValidateUpdateRequest(id, email).Result;
+        if (result.IsSuccess)
         {
-            await AddNewItemToCart(id);
+            await _cartItemsUpdater.RemoveAsync(id, result.Data);
         }
-        else
+
+        return result;
+    }
+
+    [HttpGet("Increment/id={id}&email={email}")]
+    public async Task<IResult<int>> Increment(int id, string email)
+    {
+        var result = ValidateUpdateRequest(id, email).Result;
+        if (result.IsSuccess)
         {
-            await _cartItemsUpdater.IncrementAsync(id, GetAccountId());
+            await _cartItemsUpdater.IncrementAsync(id, result.Data);
         }
 
-        return RedirectToAction("Index", "Guitar", new {pageNumber = currentPage});
+        return result;
     }
 
-    [HttpGet]
-    public async Task<IActionResult> Remove(int id)
+    [HttpGet("Decrement/id={id}&email={email}")]
+    public async Task<IResult<int>> Decrement(int id, string email)
     {
-        int accountId = GetAccountId();
-        if (await CheckIfDbCartItemExist(id, accountId))
+        var result = ValidateUpdateRequest(id, email).Result;
+        if (result.IsSuccess)
         {
-            ViewBag.Message = Constants.ErrorMessages.InvalidProductId;
-            return View("Notification");
+            await _cartItemsUpdater.DecrementAsync(id, result.Data);
         }
 
-        await _cartItemsUpdater.RemoveAsync(id, accountId);
-        return RedirectToAction("Index");
+        return result;
     }
 
-    [HttpGet]
-    public async Task<IActionResult> Increment(int id)
+    [HttpGet("Order/{email}")]
+    public async Task Order(string email)
     {
-        int accountId = GetAccountId();
-        if (await CheckIfDbCartItemExist(id, accountId))
+        var result = GetAccountId(email);
+        if (result.IsSuccess)
         {
-            ViewBag.Message = Constants.ErrorMessages.InvalidProductId;
-            return View("Notification");
+            await _cartItemsUpdater.OrderAsync(result.Data);
         }
-
-        await _cartItemsUpdater.IncrementAsync(id, accountId);
-        return RedirectToAction("Index");
     }
-
-    [HttpGet]
-    public async Task<IActionResult> Decrement(int id)
+    
+    private IResult<int> GetAccountId(string email)
     {
-        int accountId = GetAccountId();
-        if (await CheckIfDbCartItemExist(id, accountId))
-        {
-            ViewBag.Message = Constants.ErrorMessages.InvalidProductId;
-            return View("Notification");
-        }
-
-        await _cartItemsUpdater.DecrementAsync(id, accountId);
-        return RedirectToAction("Index");
-    }
-
-    [HttpGet]
-    public async Task<IActionResult> Order()
-    {
-        await _cartItemsUpdater.OrderAsync(GetAccountId());
-        ViewBag.Message = ThanksMessage;
-        return View("Notification");
-    }
-
-    private CartItem GetCartItem(int id)
-    {
-        return _cartItemsProvider.GetCartItemAsync(id, GetAccountId()).Result.Data;
-    }
-
-    private async Task AddNewItemToCart(int prodId)
-    {
-        var guitarResult = await _guitarsProvider.GetGuitarAsync(prodId);
-        await _cartItemsCreator.AddNewCartItemAsync(guitarResult.Data, GetAccountId());
-    }
-
-    private int GetAccountId()
-    {
-        return User.Identity is {IsAuthenticated: true}
-            ? _accountProvider.GetId(User.Identity.Name).Result.Data
-            : 0;
+        return _accountProvider.GetId(email).Result;
     }
 
     private async Task<bool> CheckIfDbCartItemExist(int id, int accountId)
     {
-        return User.Identity is {IsAuthenticated: true}
-               && !await _cartItemValidator.CheckIfCartItemExist(id, accountId);
+        return !await _cartItemValidator.CheckIfCartItemExist(id, accountId);
+    }
+    
+    private async Task<IResult<int>> ValidateUpdateRequest(int id, string email)
+    {
+        var result = GetAccountId(email);
+        if (!result.IsSuccess)
+        {
+            return ResultCreator.GetInvalidResult<int>(result.Error);
+        }
+        
+        if (await CheckIfDbCartItemExist(id, result.Data))
+        {
+            return ResultCreator.GetInvalidResult<int>(Constants.ErrorMessages.InvalidProductId);
+        }
+
+        return ResultCreator.GetValidResult(result.Data);
     }
 }

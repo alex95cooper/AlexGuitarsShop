@@ -4,139 +4,19 @@
         <TargetFramework>net7.0</TargetFramework>
         <Nullable>disable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
-        <LangVersion>10</LangVersion>
+        <RootNamespace>AlexGuitarsShop</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.10" />
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.4" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.11" />
         <PackageReference Include="MySql.EntityFrameworkCore" Version="7.0.5" />
-        <PackageReference Include="MySqlConnector" Version="2.2.7" />
-        <PackageReference Include="System.Data.SqlClient" Version="4.8.5" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\AlexGuitarsShop.Domain\AlexGuitarsShop.Domain.csproj" />
-        <ProjectReference Include="..\AlexGuitarsShop.Scripts\AlexGuitarsShop.Scripts.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <_ContentIncludedByDefault Remove="wwwroot\images\products_images\bc-rich-bich.jpg" />
-        <_ContentIncludedByDefault Remove="wwwroot\images\products_images\bc-rich-ironbird-mk2.jpg" />
-        <_ContentIncludedByDefault Remove="wwwroot\images\products_images\bc-rich-mockinbird.jpg" />
-        <_ContentIncludedByDefault Remove="wwwroot\images\products_images\bc-rich-warbeast.jpg" />
-        <_ContentIncludedByDefault Remove="wwwroot\images\products_images\bc-rich-warlock-mk1.jpg" />
-        <_ContentIncludedByDefault Remove="wwwroot\images\products_images\bc-rich-wbstgbk.jpg" />
-        <_ContentIncludedByDefault Remove="wwwroot\images\products_images\cort-cr250.jpg" />
-        <_ContentIncludedByDefault Remove="wwwroot\images\products_images\cort-kx-5.jpg" />
-        <_ContentIncludedByDefault Remove="wwwroot\images\products_images\cort-kx507-multi-scale.jpg" />
-        <_ContentIncludedByDefault Remove="wwwroot\images\products_images\cort-x-2.jpg" />
-        <_ContentIncludedByDefault Remove="wwwroot\images\products_images\cort-x-5.jpg" />
-        <_ContentIncludedByDefault Remove="wwwroot\images\products_images\esp-e-2-arrow.jpg" />
-        <_ContentIncludedByDefault Remove="wwwroot\images\products_images\esp-e-2-eclipse-ft.jpg" />
-        <_ContentIncludedByDefault Remove="wwwroot\images\products_images\fender-american-pro-telecaster.jpg" />
-        <_ContentIncludedByDefault Remove="wwwroot\images\products_images\fender-noventa-jazzmaster.jpg" />
-        <_ContentIncludedByDefault Remove="wwwroot\images\products_images\fender-player-stratocaster.jpg" />
-        <_ContentIncludedByDefault Remove="wwwroot\images\products_images\gibson-57-les-paul-goldtop.jpg" />
-        <_ContentIncludedByDefault Remove="wwwroot\images\products_images\gibson-es-335-figured-sixties-cherry.jpg" />
-        <_ContentIncludedByDefault Remove="wwwroot\images\products_images\gibson-explorer-70s-classic-white.jpg" />
-        <_ContentIncludedByDefault Remove="wwwroot\images\products_images\gibson-firebird-custom-natural.jpg" />
-        <_ContentIncludedByDefault Remove="wwwroot\images\products_images\gibson-sg-standard-heritage-cherry.jpg" />
-        <_ContentIncludedByDefault Remove="wwwroot\images\products_images\ibanez-rg370ahmz-bmt.jpg" />
-        <_ContentIncludedByDefault Remove="wwwroot\images\products_images\ibanez-rg421-mol.jpg" />
-        <_ContentIncludedByDefault Remove="wwwroot\images\products_images\ibanez-rg5121-bcf.jpg" />
-        <_ContentIncludedByDefault Remove="wwwroot\images\products_images\ibanez-rg8520sltd-ntf.jpg" />
-        <_ContentIncludedByDefault Remove="wwwroot\images\products_images\ibanez-rgms8-bk.jpg" />
-        <_ContentIncludedByDefault Remove="wwwroot\images\products_images\jackson-js32t-kelly.jpg" />
-        <_ContentIncludedByDefault Remove="wwwroot\images\products_images\jackson-rr3-roads.jpg" />
-        <_ContentIncludedByDefault Remove="wwwroot\images\products_images\ltd_f-200_black_satin.jpg" />
-        <_ContentIncludedByDefault Remove="wwwroot\images\products_images\mayones-regius-6-gothic.jpg" />
-        <_ContentIncludedByDefault Remove="wwwroot\images\products_images\mayones-regius-pro-6-gothic.jpg" />
-        <_ContentIncludedByDefault Remove="Views\Cart\Index.cshtml" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <Content Update="wwwroot\images\about_us_page.jpg">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Update="wwwroot\images\users_page.jpg">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Update="wwwroot\images\register_login_page.jpg">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Update="wwwroot\images\profile-icon.jpg">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Update="wwwroot\images\notify_page.jpg">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Update="wwwroot\images\home_page.jpg">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Update="wwwroot\images\contacts_page.jpg">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Update="wwwroot\images\guitar-logo.jpg">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Update="wwwroot\images\catalog_page.jpg">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Update="wwwroot\images\cart_page.jpeg">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Update="wwwroot\images\add_new_page.jpg">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Update="wwwroot\images\aboutUs.jpg">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Update="wwwroot\js\AddOrUpdate.js">
-          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Update="wwwroot\css\users.css">
-          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Update="wwwroot\css\register.css">
-          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Update="wwwroot\css\pagination.css">
-          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Update="wwwroot\css\notification.css">
-          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Update="wwwroot\css\main.css">
-          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Update="wwwroot\css\login.css">
-          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Update="wwwroot\css\home.css">
-          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Update="wwwroot\css\contacts.css">
-          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Update="wwwroot\css\catalog.css">
-          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Update="wwwroot\css\cart.css">
-          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Update="wwwroot\css\add_new.css">
-          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Update="wwwroot\css\about_us.css">
-          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Update="wwwroot\favicon.png">
-          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-    </ItemGroup>
-
-    <ItemGroup>
-      <AdditionalFiles Include="Views\Cart\Index.cshtml" />
+      <ProjectReference Include="..\AlexGuitarsShop.Common\AlexGuitarsShop.Common.csproj" />
+      <ProjectReference Include="..\AlexGuitarsShop.Domain\AlexGuitarsShop.Domain.csproj" />
     </ItemGroup>
 
 </Project>

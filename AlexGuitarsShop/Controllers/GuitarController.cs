@@ -1,14 +1,14 @@
-using AlexGuitarsShop.DAL.Models;
-using AlexGuitarsShop.Domain;
+using AlexGuitarsShop.Common;
+using AlexGuitarsShop.Common.Models;
 using AlexGuitarsShop.Domain.Interfaces.Guitar;
 using AlexGuitarsShop.Domain.Validators;
-using AlexGuitarsShop.Extensions;
-using AlexGuitarsShop.ViewModels;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using GuitarDto = AlexGuitarsShop.Common.Models.Guitar;
 
 namespace AlexGuitarsShop.Controllers;
 
+[ApiController]
+[Route("[controller]")]
 public class GuitarController : Controller
 {
     private readonly IGuitarsCreator _guitarsCreator;
@@ -25,88 +25,77 @@ public class GuitarController : Controller
         _guitarValidator = guitarValidator;
     }
 
-    [HttpGet]
-    public async Task<IActionResult> Index(int pageNumber = 1)
+    [HttpGet("Index/{pageNumber}")]
+    public async Task<IResult<PaginatedList<GuitarDto>>> Index(int pageNumber = 1)
     {
         int count = (await _guitarsProvider.GetCountAsync()).Data;
         if (!PageValidator.CheckIfPageIsValid(pageNumber, Paginator.Limit, count))
         {
-           ViewBag.Message = Constants.ErrorMessages.InvalidPage;
-           return View("Notification");
+            return ResultCreator.GetInvalidResult<PaginatedList<GuitarDto>>(
+                Constants.ErrorMessages.InvalidPage);
         }
-        
+
         int offset = Paginator.GetOffset(pageNumber);
-        List<Guitar> list = (await _guitarsProvider.GetGuitarsByLimitAsync(offset, Paginator.Limit)).Data;
-        PaginatedListViewModel<Guitar> model = list.ToPaginatedList(Title.Catalog, count, pageNumber);
-        return View(model);
-    }
-
-    [HttpGet]
-    [Authorize(Roles = Constants.Roles.AdminPlus)]
-    public IActionResult Add()
-    {
-        return View(new GuitarViewModel());
-    }
-
-    [HttpGet]
-    [Authorize(Roles = Constants.Roles.AdminPlus)]
-    public async Task<IActionResult> Update(int id)
-    {
-        if (!await _guitarValidator.CheckIfGuitarExist(id))
-        {
-           ViewBag.Message = Constants.ErrorMessages.InvalidGuitarId;
-           return View("Notification");
-        }
-        
-        var result = await _guitarsProvider.GetGuitarAsync(id);
-        GuitarViewModel model = result.Data.ToGuitarViewModel();
-        return View(model);
-    }
-
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    [Authorize(Roles = Constants.Roles.AdminPlus)]
-    public async Task<IActionResult> Add(GuitarViewModel model)
-    {
-        Guitar guitar = model?.ToGuitar();
-        if (model == null || !_guitarValidator.CheckIfGuitarIsValid(guitar))
-        {
-           ViewBag.Message = Constants.ErrorMessages.InvalidGuitar;
-           return View("Notification");
-        }
-        
-        guitar.Image = model.Avatar == null ? model.Image : model.Avatar.ToBase64String();
-        await _guitarsCreator.AddGuitarAsync(guitar);
-        return RedirectToAction("Index");
-    }
-
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    [Authorize(Roles = Constants.Roles.AdminPlus)]
-    public async Task<IActionResult> Update(GuitarViewModel model)
-    {
-        Guitar guitar = model?.ToGuitar();
-        if (model == null || !await _guitarValidator.CheckIfGuitarUpdateIsValid(guitar))
-        {
-           ViewBag.Message = Constants.ErrorMessages.InvalidGuitar;
-           return View("Notification");
-        }
-
-        guitar.Image = model.Avatar == null ? model.Image : model.Avatar.ToBase64String();
-        await _guitarsUpdater.UpdateGuitarAsync(guitar);
-        return RedirectToAction("Index");
+        List<GuitarDto> list = (await _guitarsProvider.GetGuitarsByLimitAsync(offset, Paginator.Limit)).Data;
+        return ResultCreator.GetValidResult(
+            new PaginatedList<GuitarDto>
+            {
+                CountOfAll = count,
+                LimitedList = list
+            });
     }
     
-    [Authorize(Roles = Constants.Roles.AdminPlus)]
-    public async Task<IActionResult> Delete(int id)
+    [HttpGet("Update/{id}")]
+    public async Task<IResult<GuitarDto>> Update(int id)
     {
         if (!await _guitarValidator.CheckIfGuitarExist(id))
         {
-           ViewBag.Message = Constants.ErrorMessages.InvalidGuitarId;
-           return View("Notification");
+            return ResultCreator.GetInvalidResult<GuitarDto>(
+                Constants.ErrorMessages.InvalidGuitarId);
+        }
+
+        var result = await _guitarsProvider.GetGuitarAsync(id);
+        return ResultCreator.GetValidResult(result.Data);
+    }
+
+    [HttpPost("Add")]
+    public async Task<IResult<GuitarDto>> Add(GuitarDto guitarDto)
+    {
+
+        if (guitarDto == null || !_guitarValidator.CheckIfGuitarIsValid(guitarDto))
+        {
+            return ResultCreator.GetInvalidResult<GuitarDto>(
+                Constants.ErrorMessages.InvalidGuitar);
         }
         
+        await _guitarsCreator.AddGuitarAsync(guitarDto);
+        return ResultCreator.GetValidResult(guitarDto);
+    }
+
+    [HttpPost("Update")]
+    public async Task<IResult<GuitarDto>> Update(GuitarDto guitarDto)
+    {
+
+        if (guitarDto == null || !await _guitarValidator.CheckIfGuitarUpdateIsValid(guitarDto))
+        {
+            return ResultCreator.GetInvalidResult<GuitarDto>(
+                Constants.ErrorMessages.InvalidGuitar);
+        }
+        
+        await _guitarsUpdater.UpdateGuitarAsync(guitarDto);
+        return ResultCreator.GetValidResult(guitarDto);
+    }
+
+    [HttpGet("Delete/{id}")]
+    public async Task<IResult<int>> Delete(int id)
+    {
+        if (!await _guitarValidator.CheckIfGuitarExist(id))
+        {
+            return ResultCreator.GetInvalidResult<int>(
+                Constants.ErrorMessages.InvalidGuitarId);
+        }
+
         await _guitarsUpdater.DeleteGuitarAsync(id);
-        return RedirectToAction("Index");
+        return ResultCreator.GetValidResult(id);
     }
 }

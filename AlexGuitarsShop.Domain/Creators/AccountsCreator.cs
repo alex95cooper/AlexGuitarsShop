@@ -1,9 +1,9 @@
+using AlexGuitarsShop.Common;
+using AlexGuitarsShop.Common.Models;
 using AlexGuitarsShop.DAL.Interfaces;
-using AlexGuitarsShop.DAL.Models;
 using AlexGuitarsShop.Domain.Extensions;
-using AlexGuitarsShop.Domain.Interfaces;
 using AlexGuitarsShop.Domain.Interfaces.Account;
-using AlexGuitarsShop.Domain.Models;
+using Account = AlexGuitarsShop.DAL.Models.Account;
 
 namespace AlexGuitarsShop.Domain.Creators;
 

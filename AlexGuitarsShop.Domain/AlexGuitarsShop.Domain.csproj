@@ -7,7 +7,9 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\AlexGuitarsShop.Common\AlexGuitarsShop.Common.csproj" />
       <ProjectReference Include="..\AlexGuitarsShop.DAL\AlexGuitarsShop.DAL.csproj" />
+      <ProjectReference Include="..\AlexGuitarsShop.Web.Domain\AlexGuitarsShop.Web.Domain.csproj" />
     </ItemGroup>
 
     <ItemGroup>

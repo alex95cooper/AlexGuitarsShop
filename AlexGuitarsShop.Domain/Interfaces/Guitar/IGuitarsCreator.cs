@@ -2,5 +2,5 @@ namespace AlexGuitarsShop.Domain.Interfaces.Guitar;
 
 public interface IGuitarsCreator
 {
-    Task AddGuitarAsync(DAL.Models.Guitar guitar);
+    Task AddGuitarAsync(Common.Models.Guitar guitar);
 }

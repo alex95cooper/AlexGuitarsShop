@@ -1,6 +1,7 @@
 using AlexGuitarsShop.DAL.Interfaces;
-using AlexGuitarsShop.DAL.Models;
+using AlexGuitarsShop.Domain.Extensions;
 using AlexGuitarsShop.Domain.Interfaces.Guitar;
+using GuitarDal = AlexGuitarsShop.DAL.Models.Guitar;
 
 namespace AlexGuitarsShop.Domain.Updaters;
 
@@ -13,10 +14,10 @@ public class GuitarsUpdater : IGuitarsUpdater
         _guitarRepository = guitarRepository;
     }
 
-    public async Task UpdateGuitarAsync(Guitar guitar)
+    public async Task UpdateGuitarAsync(Common.Models.Guitar guitar)
     {
-        guitar = guitar ?? throw new ArgumentNullException(nameof(guitar));
-        await _guitarRepository.UpdateAsync(guitar);
+        GuitarDal guitarDal = guitar.ToGuitarDal() ?? throw new ArgumentNullException(nameof(guitar));
+        await _guitarRepository.UpdateAsync(guitarDal);
     }
 
     public async Task DeleteGuitarAsync(int id)

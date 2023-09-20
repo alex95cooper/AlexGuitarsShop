@@ -1,5 +1,4 @@
 using AlexGuitarsShop.DAL.Interfaces;
-using AlexGuitarsShop.DAL.Models;
 using AlexGuitarsShop.Domain.Interfaces.Guitar;
 
 namespace AlexGuitarsShop.Domain.Validators;
@@ -18,7 +17,7 @@ public class GuitarValidator : IGuitarValidator
         return await _guitarRepository.GetAsync(id) != null;
     }
 
-    public bool CheckIfGuitarIsValid(Guitar guitar)
+    public bool CheckIfGuitarIsValid(Common.Models.Guitar guitar)
     {
         return guitar != null
                && CheckIfNameIsValid(guitar.Name)
@@ -26,27 +25,29 @@ public class GuitarValidator : IGuitarValidator
                && CheckIfDescriptionIsValid(guitar.Description);
     }
 
-    public async Task<bool> CheckIfGuitarUpdateIsValid(Guitar guitar)
+    public async Task<bool> CheckIfGuitarUpdateIsValid(Common.Models.Guitar guitar)
     {
         return await CheckIfGuitarExist(guitar.Id)
                && CheckIfGuitarIsValid(guitar);
     }
 
-    private bool CheckIfNameIsValid(string name)
+    private static bool CheckIfNameIsValid(string name)
     {
         if (name == null)
         {
             return false;
         }
 
-        return name.Length is >= Constants.Guitar.NameMinLength
+        bool nameIsGood = name.Length is >= Constants.Guitar.NameMinLength
             and <= Constants.Guitar.NameMaxLength;
+        return nameIsGood;
     }
 
     private static bool CheckIfPriceIsValid(int price)
     {
-        return price is >= Constants.Guitar.MinPrice
+        bool priceIsGood = price is >= Constants.Guitar.MinPrice
             and <= Constants.Guitar.MaxPrice;
+        return priceIsGood;
     }
 
     private static bool CheckIfDescriptionIsValid(string description)
@@ -56,7 +57,8 @@ public class GuitarValidator : IGuitarValidator
             return false;
         }
 
-        return description.Length is >= Constants.Guitar.DescriptionMinLength
+        bool descriptionIsGood = description.Length is >= Constants.Guitar.DescriptionMinLength
             and <= Constants.Guitar.DescriptionMaxLength;
+        return descriptionIsGood;
     }
 }

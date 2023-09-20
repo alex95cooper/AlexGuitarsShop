@@ -4,7 +4,7 @@ public interface IGuitarValidator
 {
     Task<bool> CheckIfGuitarExist(int id);
     
-    bool CheckIfGuitarIsValid(DAL.Models.Guitar guitar);
+    bool CheckIfGuitarIsValid(Common.Models.Guitar guitar);
 
-    Task<bool> CheckIfGuitarUpdateIsValid(DAL.Models.Guitar guitar);
+    Task<bool> CheckIfGuitarUpdateIsValid(Common.Models.Guitar guitar);
 }

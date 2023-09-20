@@ -20,9 +20,4 @@ public static class Constants
         public const int DescriptionMinLength = 10;
         public const int DescriptionMaxLength = 600;
     }
-
-    public static class Cart
-    {
-        public const string Key = "Cart";
-    }
 }

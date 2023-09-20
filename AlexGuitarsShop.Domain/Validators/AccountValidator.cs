@@ -1,7 +1,7 @@
 using System.Text.RegularExpressions;
+using AlexGuitarsShop.Common.Models;
 using AlexGuitarsShop.DAL.Interfaces;
 using AlexGuitarsShop.Domain.Interfaces.Account;
-using AlexGuitarsShop.Domain.Models;
 
 namespace AlexGuitarsShop.Domain.Validators;
 

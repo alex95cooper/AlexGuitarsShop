@@ -1,4 +1,4 @@
-using AlexGuitarsShop.Domain.Models;
+using AlexGuitarsShop.Common.Models;
 
 namespace AlexGuitarsShop.Domain.Interfaces.Account;
 

@@ -11,7 +11,5 @@ public class CartItem
     public int Quantity { get; set; }
     public Account Account{ get; set; }
     public Guitar Product { get; set; }
-    
-    
 }
 

@@ -1,8 +1,9 @@
+using AlexGuitarsShop.Common;
+using AlexGuitarsShop.Common.Models;
 using AlexGuitarsShop.DAL.Interfaces;
-using AlexGuitarsShop.DAL.Models;
-using AlexGuitarsShop.Domain.Interfaces;
 using AlexGuitarsShop.Domain.Interfaces.Account;
-using AlexGuitarsShop.Domain.Models;
+using AccountDal = AlexGuitarsShop.DAL.Models.Account;
+using AccountDto = AlexGuitarsShop.Common.Models.Account;
 
 namespace AlexGuitarsShop.Domain.Providers;
 
@@ -15,29 +16,29 @@ public class AccountsProvider : IAccountsProvider
         _accountRepository = accountRepository;
     }
 
-    public async Task<IResult<Account>> GetAccountAsync(Login login)
+    public async Task<IResult<AccountDal>> GetAccountAsync(Login login)
     {
         login = login ?? throw new ArgumentNullException(nameof(login));
         var account = await _accountRepository.FindAsync(login.Email);
         if (account == null || account.Password != PasswordHasher.HashPassword(login.Password))
         {
             string message = account == null ? "User is not found" : "Invalid password or login";
-            return ResultCreator.GetInvalidResult<Account>(message);
+            return ResultCreator.GetInvalidResult<AccountDal>(message);
         }
 
         return ResultCreator.GetValidResult(account);
     }
 
-    public async Task<IResult<List<Account>>> GetUsersAsync(int offset, int limit)
+    public async Task<IResult<List<AccountDto>>> GetUsersAsync(int offset, int limit)
     {
         var userList = await _accountRepository.GetUsersAsync(offset, limit)!;
-        return ResultCreator.GetValidResult(userList);
+        return ResultCreator.GetValidResult(ListMapper.ToDtoAccountList(userList));
     }
 
-    public async Task<IResult<List<Account>>> GetAdminsAsync(int offset, int limit)
+    public async Task<IResult<List<AccountDto>>> GetAdminsAsync(int offset, int limit)
     {
         var userList = await _accountRepository.GetAdminsAsync(offset, limit);
-        return ResultCreator.GetValidResult(userList);
+        return ResultCreator.GetValidResult(ListMapper.ToDtoAccountList(userList));
     }
 
     public async Task<IResult<int>> GetUsersCountAsync()

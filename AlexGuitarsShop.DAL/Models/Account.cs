@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using AlexGuitarsShop.Common;
 
 namespace AlexGuitarsShop.DAL.Models;
 
