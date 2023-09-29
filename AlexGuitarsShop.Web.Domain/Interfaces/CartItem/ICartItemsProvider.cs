@@ -1,10 +1,11 @@
 using AlexGuitarsShop.Common;
+using AlexGuitarsShop.Common.Models;
 
 namespace AlexGuitarsShop.Web.Domain.Interfaces.CartItem;
 
 public interface ICartItemsProvider
 {
-    Task<IResult<Common.Models.CartItem>> GetCartItemAsync(int id);
+    Task<IResult<CartItemDto>> GetCartItemAsync(int id);
     
-    Task<IResult<List<Common.Models.CartItem>>> GetCartAsync();
+    Task<IResult<List<CartItemDto>>> GetCartAsync();
 }

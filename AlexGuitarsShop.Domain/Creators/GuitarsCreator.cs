@@ -1,7 +1,10 @@
+using System.Net;
+using AlexGuitarsShop.Common;
+using AlexGuitarsShop.Common.Models;
 using AlexGuitarsShop.DAL.Interfaces;
 using AlexGuitarsShop.Domain.Extensions;
 using AlexGuitarsShop.Domain.Interfaces.Guitar;
-using GuitarDal = AlexGuitarsShop.DAL.Models.Guitar;
+using AlexGuitarsShop.DAL.Models;
 
 namespace AlexGuitarsShop.Domain.Creators;
 
@@ -14,9 +17,10 @@ public class GuitarsCreator : IGuitarsCreator
         _guitarRepository = guitarRepository;
     }
 
-    public async Task AddGuitarAsync(Common.Models.Guitar guitar)
+    public async Task<IResult<GuitarDto>> AddGuitarAsync(GuitarDto guitarDto)
     {
-        GuitarDal guitarDal = guitar.ToGuitarDal() ?? throw new ArgumentNullException(nameof(guitar));
+        Guitar guitarDal = guitarDto.ToGuitarDal();
         await _guitarRepository.AddAsync(guitarDal);
+        return ResultCreator.GetValidResult(guitarDto, HttpStatusCode.OK);
     }
 }

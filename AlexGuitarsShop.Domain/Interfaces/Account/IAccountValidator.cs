@@ -1,12 +1,13 @@
+using AlexGuitarsShop.Common;
 using AlexGuitarsShop.Common.Models;
 
 namespace AlexGuitarsShop.Domain.Interfaces.Account;
 
 public interface IAccountValidator
 {
-    Task<bool> CheckIfEmailExist(string email);
+    Task<IResult<AccountDto>> CheckIfEmailExist(string email);
     
-    bool CheckIfRegisterIsValid(Register register);
+    IResult<AccountDto> CheckIfRegisterIsValid(AccountDto accountDto);
 
-    bool CheckIfLoginIsValid(Login login);
+    IResult<AccountDto> CheckIfLoginIsValid(AccountDto accountDto);
 }

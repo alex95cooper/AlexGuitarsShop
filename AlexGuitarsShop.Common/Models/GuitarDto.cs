@@ -1,6 +1,6 @@
 namespace AlexGuitarsShop.Common.Models;
 
-public class Guitar
+public class GuitarDto
 {
     public int Id { get; init; }
     public string Name { get; init; }

@@ -1,10 +1,13 @@
+using AlexGuitarsShop.Common;
+using AlexGuitarsShop.Common.Models;
+
 namespace AlexGuitarsShop.Domain.Interfaces.Guitar;
 
 public interface IGuitarValidator
 {
-    Task<bool> CheckIfGuitarExist(int id);
+    Task<IResult<GuitarDto>> CheckIfGuitarExist(int id);
     
-    bool CheckIfGuitarIsValid(Common.Models.Guitar guitar);
+    IResult<GuitarDto> CheckIfGuitarIsValid(GuitarDto guitarDto);
 
-    Task<bool> CheckIfGuitarUpdateIsValid(Common.Models.Guitar guitar);
+    Task<IResult<GuitarDto>> CheckIfGuitarUpdateIsValid(GuitarDto guitarDto);
 }

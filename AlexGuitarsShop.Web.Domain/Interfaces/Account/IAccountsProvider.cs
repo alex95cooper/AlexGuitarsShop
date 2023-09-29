@@ -1,6 +1,6 @@
 using AlexGuitarsShop.Common;
+using AlexGuitarsShop.Common.Models;
 using AlexGuitarsShop.Web.Domain.ViewModels;
-using AccountDto = AlexGuitarsShop.Common.Models.Account;
 
 namespace AlexGuitarsShop.Web.Domain.Interfaces.Account;
 

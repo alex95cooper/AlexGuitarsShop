@@ -1,28 +1,30 @@
-using System.Text;
+using System.Net;
 using AlexGuitarsShop.Common;
 using AlexGuitarsShop.Common.Models;
 using AlexGuitarsShop.Web.Domain.Extensions;
 using AlexGuitarsShop.Web.Domain.Interfaces.Account;
 using AlexGuitarsShop.Web.Domain.ViewModels;
-using Newtonsoft.Json;
 
 namespace AlexGuitarsShop.Web.Domain.Creators;
 
 public class AccountsCreator : IAccountsCreator
 {
-    private readonly HttpClient _client;
+    private readonly IResponseMaker _responseMaker;
 
-    public AccountsCreator(HttpClient client)
+    public AccountsCreator(IResponseMaker responseMaker)
     {
-        _client = client;
+        _responseMaker = responseMaker;
     }
 
-    public async Task<IResult<Account>> AddAccountAsync(RegisterViewModel model)
+    public async Task<IResult<AccountDto>> AddAccountAsync(RegisterViewModel model)
     {
-        Register register = model.ToRegister() ?? throw new ArgumentNullException(nameof(model));
-        var objAsJson = JsonConvert.SerializeObject(register);
-        var content = new StringContent(objAsJson, Encoding.UTF8, "application/json");
-        using var response = await _client.PostAsync("http://localhost:5001/Account/Register", content);
-        return JsonConvert.DeserializeObject<Result<Account>>( await response.Content.ReadAsStringAsync());
+        if (model == null)
+        {
+            ResultCreator.GetInvalidResult<AccountDto>(
+                Constants.Account.IncorrectAccount, HttpStatusCode.BadRequest);
+        }
+        
+        AccountDto registerDto = model.ToAccountDto();
+        return await _responseMaker.PostAsync(registerDto, Constants.Routes.Register);
     }
 }

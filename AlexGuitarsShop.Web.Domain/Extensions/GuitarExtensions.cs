@@ -5,12 +5,12 @@ namespace AlexGuitarsShop.Web.Domain.Extensions;
 
 public static class GuitarExtensions
 {
-    public static GuitarViewModel ToGuitarViewModel(this Guitar guitar)
+    public static GuitarViewModel ToGuitarViewModel(this GuitarDto guitarDto)
     {
         return new GuitarViewModel
         {
-            Id = guitar.Id, Name = guitar.Name, Price = guitar.Price,
-            Description = guitar.Description, Image = guitar.Image, IsDeleted = guitar.IsDeleted
+            Id = guitarDto.Id, Name = guitarDto.Name, Price = guitarDto.Price,
+            Description = guitarDto.Description, Image = guitarDto.Image, IsDeleted = guitarDto.IsDeleted
         };
     }
 }

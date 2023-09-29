@@ -3,37 +3,29 @@ using AlexGuitarsShop.Common.Models;
 using AlexGuitarsShop.Web.Domain.Extensions;
 using AlexGuitarsShop.Web.Domain.Interfaces.Guitar;
 using AlexGuitarsShop.Web.Domain.ViewModels;
-using Newtonsoft.Json;
-using GuitarDto = AlexGuitarsShop.Common.Models.Guitar;
 
 namespace AlexGuitarsShop.Web.Domain.Providers;
 
 public class GuitarsProvider : IGuitarsProvider
 {
-    private readonly HttpClient _client;
+    private readonly IResponseMaker _responseMaker;
 
-    public GuitarsProvider(HttpClient client)
+    public GuitarsProvider(IResponseMaker responseMaker)
     {
-        _client = client;
+        _responseMaker = responseMaker;
     }
 
     public async Task<IResult<PaginatedListViewModel<GuitarDto>>> GetGuitarsByLimitAsync(int pageNumber)
     {
-        using var response = await _client.GetAsync($"http://localhost:5001/Guitar/Index/{pageNumber}");
-        var result = JsonConvert.DeserializeObject<Result<PaginatedList<GuitarDto>>>(await response.Content
-            .ReadAsStringAsync());
+        var result = await _responseMaker.GetListByLimitAsync<GuitarDto>(Constants.Routes.GetGuitars, pageNumber);
         return result is {IsSuccess: true}
-            ? ResultCreator.GetValidResult(result.Data.ToPaginatedListViewModel(Title.Catalog, pageNumber))
-            : ResultCreator.GetInvalidResult<PaginatedListViewModel<GuitarDto>>(result!.Error);
+            ? ResultCreator.GetValidResult(result.Data.ToPaginatedListViewModel(Title.Catalog, pageNumber),
+                result.StatusCode)
+            : ResultCreator.GetInvalidResult<PaginatedListViewModel<GuitarDto>>(result!.Error, result.StatusCode);
     }
 
     public async Task<IResult<GuitarViewModel>> GetGuitarAsync(int id)
     {
-        using var response = await _client.GetAsync($"http://localhost:5001/Guitar/Update/{id}");
-        var result = JsonConvert.DeserializeObject<Result<GuitarDto>>(await response.Content
-            .ReadAsStringAsync());
-        return result is {IsSuccess: true}
-            ? ResultCreator.GetValidResult(result.Data.ToGuitarViewModel())
-            : ResultCreator.GetInvalidResult<GuitarViewModel>(result!.Error);
+        return await _responseMaker.GetGuitarAsync(id);
     }
 }

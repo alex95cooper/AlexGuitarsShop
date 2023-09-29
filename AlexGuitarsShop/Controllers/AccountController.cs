@@ -1,10 +1,10 @@
+using System.Net;
 using AlexGuitarsShop.Common;
 using AlexGuitarsShop.Common.Models;
-using AlexGuitarsShop.Domain.Extensions;
 using AlexGuitarsShop.Domain.Interfaces.Account;
 using AlexGuitarsShop.Domain.Validators;
+using AlexGuitarsShop.Helpers;
 using Microsoft.AspNetCore.Mvc;
-using AccountDto = AlexGuitarsShop.Common.Models.Account;
 
 namespace AlexGuitarsShop.Controllers;
 
@@ -16,6 +16,7 @@ public class AccountController : Controller
     private readonly IAccountsProvider _accountsProvider;
     private readonly IAccountsUpdater _accountsUpdater;
     private readonly IAccountValidator _accountValidator;
+    private readonly ActionResultMaker _resultMaker;
 
     public AccountController(IAccountsCreator accountsCreator, IAccountsProvider accountsProvider,
         IAccountsUpdater accountsUpdater, IAccountValidator accountValidator)
@@ -24,113 +25,102 @@ public class AccountController : Controller
         _accountsProvider = accountsProvider;
         _accountsUpdater = accountsUpdater;
         _accountValidator = accountValidator;
+        _resultMaker = new ActionResultMaker();
     }
 
-    [HttpPost("Register")]
-    public async Task<IResult<AccountDto>> Register(Register register)
+    [HttpPost(Constants.Routes.Register)]
+    public async Task<ActionResult<Result<AccountDto>>> Register(AccountDto accountDto)
     {
-        if (register == null || !_accountValidator.CheckIfRegisterIsValid(register))
+        var validationResult = _accountValidator.CheckIfRegisterIsValid(accountDto);
+        if (!validationResult.IsSuccess)
         {
-            return ResultCreator.GetInvalidResult<AccountDto>(
-                Constants.ErrorMessages.InvalidAccount);
+            return _resultMaker.ResolveResult(validationResult);
         }
 
-        var result = await _accountsCreator.AddAccountAsync(register);
-        return result.IsSuccess
-            ? ResultCreator.GetValidResult(result.Data.ToAccount())
-            : ResultCreator.GetInvalidResult<AccountDto>(result.Error);
+        var result = await _accountsCreator.AddAccountAsync(accountDto);
+        return _resultMaker.ResolveResult(result);
     }
     
-    [HttpPost("Login")]
-    public async Task<IResult<AccountDto>> Login(Login login)
+    [HttpPost(Constants.Routes.Login)]
+    public async Task<ActionResult<Result<AccountDto>>> Login(AccountDto accountDto)
     {
-        if (login == null || !_accountValidator.CheckIfLoginIsValid(login))
+        var validationResult = _accountValidator.CheckIfLoginIsValid(accountDto);
+        if (!validationResult.IsSuccess)
         {
-            return ResultCreator.GetInvalidResult<AccountDto>(
-                Constants.ErrorMessages.InvalidAccount);
+            return _resultMaker.ResolveResult(validationResult);
         }
 
-        var result = await _accountsProvider.GetAccountAsync(login);
-        return result.IsSuccess
-            ? ResultCreator.GetValidResult(result.Data.ToAccount())
-            : ResultCreator.GetInvalidResult<AccountDto>(result.Error);
+        var result = await _accountsProvider.GetAccountAsync(accountDto);
+        return _resultMaker.ResolveResult(result);
     }
 
-    [HttpGet("Admins/{pageNumber}")]
-    public async Task<IResult<PaginatedList<AccountDto>>> Admins(int pageNumber = 1)
+    [HttpGet(Constants.Routes.Admins)]
+    public async Task<ActionResult<Result<PaginatedListDto<AccountDto>>>> Admins(int pageNumber = 1)
     {
         int count = (await _accountsProvider.GetAdminsCountAsync()).Data;
         if (count == 0)
         {
-            return ResultCreator.GetInvalidResult<PaginatedList<AccountDto>>(
-                Constants.ErrorMessages.NoAdmins);
+            return _resultMaker.ResolveResult(ResultCreator.GetValidResult(
+                new PaginatedListDto<AccountDto>(), HttpStatusCode.NoContent));
         }
-        
+
         if (!PageValidator.CheckIfPageIsValid(pageNumber, Paginator.Limit, count))
         {
-            return ResultCreator.GetInvalidResult<PaginatedList<AccountDto>>(
-                Constants.ErrorMessages.InvalidPage);
+            return _resultMaker.ResolveResult(ResultCreator.GetInvalidResult<PaginatedListDto<AccountDto>>(
+                Constants.ErrorMessages.InvalidPage, HttpStatusCode.BadRequest));
         }
-        
+
         int offset = Paginator.GetOffset(pageNumber);
         List<AccountDto> list = (await _accountsProvider.GetAdminsAsync(offset, Paginator.Limit)).Data;
-        return ResultCreator.GetValidResult(
-            new PaginatedList<AccountDto>
-            {
-                CountOfAll = count,
-                LimitedList = list
-            });
+        return _resultMaker.ResolveResult(ResultCreator.GetValidResult(
+            new PaginatedListDto<AccountDto> {CountOfAll = count, LimitedList = list}, HttpStatusCode.OK));
     }
 
-    [HttpGet("Users/{pageNumber}")]
-    public async Task<IResult<PaginatedList<AccountDto>>> Users(int pageNumber = 1)
+    [HttpGet(Constants.Routes.Users)]
+    public async Task<ActionResult<Result<PaginatedListDto<AccountDto>>>> Users(int pageNumber = 1)
     {
         int count = (await _accountsProvider.GetUsersCountAsync()).Data;
         if (count == 0)
         {
-            return ResultCreator.GetInvalidResult<PaginatedList<AccountDto>>(
-                Constants.ErrorMessages.NoUsers);
+            return _resultMaker.ResolveResult(ResultCreator.GetValidResult(
+                new PaginatedListDto<AccountDto>(), HttpStatusCode.NoContent));
         }
-        
+
         if (!PageValidator.CheckIfPageIsValid(pageNumber, Paginator.Limit, count))
         {
-            return ResultCreator.GetInvalidResult<PaginatedList<AccountDto>>(
-                Constants.ErrorMessages.InvalidPage);
+            return _resultMaker.ResolveResult(ResultCreator.GetInvalidResult<PaginatedListDto<AccountDto>>(
+                Constants.ErrorMessages.InvalidPage, HttpStatusCode.BadRequest));
         }
 
         int offset = Paginator.GetOffset(pageNumber);
         List<AccountDto> list = (await _accountsProvider.GetUsersAsync(offset, Paginator.Limit)).Data;
-        return ResultCreator.GetValidResult(
-            new PaginatedList<AccountDto>
-            {
-                CountOfAll = count,
-                LimitedList = list
-            });
+        return _resultMaker.ResolveResult(ResultCreator.GetValidResult(
+            new PaginatedListDto<AccountDto> {CountOfAll = count, LimitedList = list}, HttpStatusCode.OK));
     }
 
-    [HttpGet("MakeAdmin/{email}")]
-    public async Task<IResult<string>> MakeAdmin(string email)
+    [HttpPut(Constants.Routes.MakeAdmin)]
+    public async Task<ActionResult<Result<AccountDto>>> MakeAdmin(AccountDto account)
     {
-        if (!await _accountValidator.CheckIfEmailExist(email))
+        var validationResult = await _accountValidator.CheckIfEmailExist(account.Email);
+        if (!validationResult.IsSuccess)
         {
-            return ResultCreator.GetInvalidResult<string>(
-                Constants.ErrorMessages.InvalidEmail);
+            return _resultMaker.ResolveResult(validationResult);
         }
 
-        await _accountsUpdater.SetAdminRightsAsync(email);
-        return ResultCreator.GetValidResult(email);
+        var result = await _accountsUpdater.SetAdminRightsAsync(account.Email);
+        return _resultMaker.ResolveResult(result);
     }
 
-    [HttpGet("MakeUser/{email}")]
-    public async Task<IResult<string>> MakeUser(string email)
+    [HttpPut(Constants.Routes.MakeUser)]
+    public async Task<ActionResult<Result<AccountDto>>> MakeUser(AccountDto account)
     {
-        if (!await _accountValidator.CheckIfEmailExist(email))
+        var validationResult = await _accountValidator.CheckIfEmailExist(account.Email);
+        if (!validationResult.IsSuccess)
         {
-            return ResultCreator.GetInvalidResult<string>(
-                Constants.ErrorMessages.InvalidEmail);
+            return _resultMaker.ResolveResult(validationResult);
         }
 
-        await _accountsUpdater.RemoveAdminRightsAsync(email);
-        return ResultCreator.GetValidResult(email);
+        var result = await _accountsUpdater.RemoveAdminRightsAsync(account.Email);
+        return _resultMaker.ResolveResult(result);
     }
 }

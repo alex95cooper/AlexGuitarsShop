@@ -1,4 +1,4 @@
-@model AlexGuitarsShop.Web.Domain.ViewModels.PaginatedListViewModel<AlexGuitarsShop.Common.Models.Guitar>;
+@model AlexGuitarsShop.Web.Domain.ViewModels.PaginatedListViewModel<AlexGuitarsShop.Common.Models.GuitarDto>;
 
 @{
     const string textTitle = "Catalog";
@@ -19,9 +19,8 @@
             @if (Model.List.Count > 0)
             {
                 <div class="guitars-container">
-                    @foreach (var guitar in Model.List)
+                    @foreach (var guitar in Model.List.Where(guitar => guitar != null))
                     {
-                        if (guitar == null) throw new ArgumentNullException(nameof(guitar));
                         <div class="model-container">
                             <div class="image-container">
                                 @if (guitar.Image == null)

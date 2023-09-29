@@ -5,9 +5,9 @@ namespace AlexGuitarsShop.Web.Domain.Extensions;
 
 public static class RegisterViewModelExtensions
 {
-    public static Register ToRegister(this RegisterViewModel model)
+    public static AccountDto ToAccountDto(this RegisterViewModel model)
     {
-        return new Register
+        return new AccountDto
         {
             Name = model.Name, 
             Email = model.Email, 

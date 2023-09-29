@@ -5,13 +5,14 @@ namespace AlexGuitarsShop.Web.Domain.Extensions;
 
 public static class PaginatedListExtensions
 {
-    public static PaginatedListViewModel<T> ToPaginatedListViewModel<T>(this PaginatedList<T> list, Title title, int pageNumber)
+    public static PaginatedListViewModel<T> ToPaginatedListViewModel<T>(
+        this PaginatedListDto<T> listDto, Title title, int pageNumber)
     {
         return new PaginatedListViewModel<T>
         {
             Title = title,
-            List = list.LimitedList,
-            TotalCount = list.CountOfAll,
+            List = listDto.LimitedList,
+            TotalCount = listDto.CountOfAll,
             CurrentPage = pageNumber
         };
     }

@@ -16,9 +16,9 @@ public class ValidUserAuthorizer : IAuthorizer
 
     private HttpContext Context => _httpContextAccessor.HttpContext;
 
-    public async Task SignIn(Account account)
+    public async Task SignIn(AccountDto accountDto)
     {
-        ClaimsIdentity claimsIdentity = Authenticate(account);
+        ClaimsIdentity claimsIdentity = Authenticate(accountDto);
         await Context.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
             new ClaimsPrincipal(claimsIdentity));
     }
@@ -28,18 +28,12 @@ public class ValidUserAuthorizer : IAuthorizer
         await Context.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
     }
 
-    private static ClaimsIdentity Authenticate(Account account)
+    private static ClaimsIdentity Authenticate(AccountDto accountDto)
     {
-        account = account ?? throw new ArgumentNullException(nameof(account));
-        if (account.Email == null)
-        {
-            throw new ArgumentNullException(nameof(account.Email));
-        }
-
         var claims = new List<Claim>
         {
-            new(ClaimsIdentity.DefaultNameClaimType, account.Email),
-            new(ClaimsIdentity.DefaultRoleClaimType, account.Role.ToString())
+            new(ClaimsIdentity.DefaultNameClaimType, accountDto.Email),
+            new(ClaimsIdentity.DefaultRoleClaimType, accountDto.Role.ToString())
         };
 
         return new ClaimsIdentity(claims, "ApplicationCookie",

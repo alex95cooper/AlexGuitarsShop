@@ -1,3 +1,5 @@
+using System.Net;
+using AlexGuitarsShop.Common;
 using AlexGuitarsShop.Common.Models;
 using AlexGuitarsShop.Web.Domain.Extensions;
 using AlexGuitarsShop.Web.Domain.Interfaces.CartItem;
@@ -9,12 +11,13 @@ namespace AlexGuitarsShop.Web.Domain.Creators;
 
 public class CartItemsCreator : ICartItemsCreator
 {
-    private readonly HttpClient _client;
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IResponseMaker _responseMaker;
 
-    public CartItemsCreator(HttpClient client, IHttpContextAccessor httpContextAccessor)
+    public CartItemsCreator(IResponseMaker responseMaker,
+        IHttpContextAccessor httpContextAccessor)
     {
-        _client = client;
+        _responseMaker = responseMaker;
         _httpContextAccessor = httpContextAccessor;
     }
 
@@ -25,30 +28,30 @@ public class CartItemsCreator : ICartItemsCreator
         set => Context.Session.SetString(Constants.Cart.Key, value);
     }
 
-    public async Task AddNewCartItemAsync(GuitarViewModel model)
+    public async Task<IResult<CartItemDto>> AddNewCartItemAsync(GuitarViewModel model)
     {
-        Guitar guitar = model.ToGuitar() ?? throw new ArgumentNullException(nameof(model));
+        GuitarDto guitarDto = model.ToGuitar();
         if (Context.User.Identity is {IsAuthenticated: true})
         {
-            await AddToDbAsync(guitar.Id);
+            return await AddToDbAsync(guitarDto.Id);
         }
-        else
-        {
-            AddToSession(guitar);
-        }
+
+        return AddToSession(guitarDto);
     }
 
-    private void AddToSession(Guitar guitar)
+    private IResult<CartItemDto> AddToSession(GuitarDto guitarDto)
     {
-        List<CartItem> cart = SessionCartProvider.GetCart(_httpContextAccessor);
-        CartItem item = new() {Quantity = 1, Product = guitar};
-        cart.Add(item);
+        List<CartItemDto> cart = SessionCartProvider.GetCart(_httpContextAccessor);
+        CartItemDto itemDto = new() {Quantity = 1, Product = guitarDto};
+        cart.Add(itemDto);
         CartString = JsonConvert.SerializeObject(cart);
+        return ResultCreator.GetValidResult(itemDto, HttpStatusCode.OK);
     }
 
-    private async Task AddToDbAsync(int id)
+    private async Task<IResult<CartItemDto>> AddToDbAsync(int id)
     {
-         await _client.GetAsync(
-             $"http://localhost:5001/Cart/Add/id={id}&email={Context.User.Identity!.Name}");
+        CartItemDto item = new() {ProductId = id, BuyerEmail = Context.User.Identity!.Name, Quantity = 1};
+        var result = await _responseMaker.PostAsync(item, Constants.Routes.AddCartItem);
+        return result;
     }
 }

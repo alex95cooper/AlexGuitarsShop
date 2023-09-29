@@ -1,4 +1,4 @@
-using AlexGuitarsShop.Common.Models;
+using System.Net;
 using AlexGuitarsShop.Web.Domain.Interfaces.CartItem;
 using AlexGuitarsShop.Web.Domain.Interfaces.Guitar;
 using Microsoft.AspNetCore.Mvc;
@@ -26,10 +26,16 @@ public class CartController : Controller
     }
 
     [HttpGet]
-    public IActionResult Index()
+    public async Task<IActionResult> Index()
     {
-        List<CartItem> cart = _cartItemsProvider.GetCartAsync().Result.Data;
-        return View(cart);
+        var cartResult = await _cartItemsProvider.GetCartAsync();
+        if (cartResult.StatusCode == HttpStatusCode.OK)
+        {
+            return View(cartResult.Data);
+        }
+
+        ViewBag.Message = Constants.ErrorMessages.CartEmpty;
+        return View("Notification");
     }
 
     [HttpGet]

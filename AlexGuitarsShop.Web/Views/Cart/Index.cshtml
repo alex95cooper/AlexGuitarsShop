@@ -1,5 +1,5 @@
 @using AlexGuitarsShop.Common.Models
-@model List<CartItem>
+@model List<CartItemDto>
 
 @{
     ViewData["Title"] = "Cart";
@@ -16,7 +16,7 @@
         else
         {
             <div class="cart-content">
-                @foreach (CartItem cartProduct in Model)
+                @foreach (CartItemDto cartProduct in Model)
                 {
                     <div class="cart-item-container">
                         <div class="cart-image-container" id="part">

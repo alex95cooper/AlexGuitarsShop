@@ -1,3 +1,6 @@
+using System.Net;
+using AlexGuitarsShop.Common;
+using AlexGuitarsShop.Common.Models;
 using AlexGuitarsShop.DAL.Interfaces;
 using AlexGuitarsShop.Domain.Interfaces.Guitar;
 
@@ -12,23 +15,38 @@ public class GuitarValidator : IGuitarValidator
         _guitarRepository = guitarRepository;
     }
 
-    public async Task<bool> CheckIfGuitarExist(int id)
+    public async Task<IResult<GuitarDto>> CheckIfGuitarExist(int id)
     {
-        return await _guitarRepository.GetAsync(id) != null;
+        return await _guitarRepository.GetAsync(id) != null
+            ? ResultCreator.GetValidResult(new GuitarDto {Id = id}, HttpStatusCode.OK)
+            : ResultCreator.GetInvalidResult<GuitarDto>(
+                Constants.ErrorMessages.InvalidGuitarId, HttpStatusCode.BadRequest);
     }
 
-    public bool CheckIfGuitarIsValid(Common.Models.Guitar guitar)
+    public IResult<GuitarDto> CheckIfGuitarIsValid(GuitarDto guitarDto)
     {
-        return guitar != null
-               && CheckIfNameIsValid(guitar.Name)
-               && CheckIfPriceIsValid(guitar.Price)
-               && CheckIfDescriptionIsValid(guitar.Description);
+        if (guitarDto != null
+            && CheckIfNameIsValid(guitarDto.Name)
+            && CheckIfPriceIsValid(guitarDto.Price)
+            && CheckIfDescriptionIsValid(guitarDto.Description))
+        {
+            return ResultCreator.GetValidResult(guitarDto, HttpStatusCode.OK);
+        }
+
+        return ResultCreator.GetInvalidResult<GuitarDto>(
+            Constants.ErrorMessages.InvalidAccount, HttpStatusCode.BadRequest);
     }
 
-    public async Task<bool> CheckIfGuitarUpdateIsValid(Common.Models.Guitar guitar)
+    public async Task<IResult<GuitarDto>> CheckIfGuitarUpdateIsValid(GuitarDto guitarDto)
     {
-        return await CheckIfGuitarExist(guitar.Id)
-               && CheckIfGuitarIsValid(guitar);
+        var result = await CheckIfGuitarExist(guitarDto.Id);
+        if (result.IsSuccess && CheckIfGuitarIsValid(guitarDto).IsSuccess)
+        {
+            return ResultCreator.GetValidResult(guitarDto, HttpStatusCode.OK);
+        }
+
+        return ResultCreator.GetInvalidResult<GuitarDto>(
+            Constants.ErrorMessages.InvalidAccount, HttpStatusCode.BadRequest);
     }
 
     private static bool CheckIfNameIsValid(string name)

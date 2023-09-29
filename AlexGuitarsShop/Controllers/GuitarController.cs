@@ -1,9 +1,10 @@
+using System.Net;
 using AlexGuitarsShop.Common;
 using AlexGuitarsShop.Common.Models;
 using AlexGuitarsShop.Domain.Interfaces.Guitar;
 using AlexGuitarsShop.Domain.Validators;
+using AlexGuitarsShop.Helpers;
 using Microsoft.AspNetCore.Mvc;
-using GuitarDto = AlexGuitarsShop.Common.Models.Guitar;
 
 namespace AlexGuitarsShop.Controllers;
 
@@ -15,6 +16,7 @@ public class GuitarController : Controller
     private readonly IGuitarsProvider _guitarsProvider;
     private readonly IGuitarsUpdater _guitarsUpdater;
     private readonly IGuitarValidator _guitarValidator;
+    private readonly ActionResultMaker _resultMaker;
 
     public GuitarController(IGuitarsCreator guitarsCreator,
         IGuitarsProvider guitarsProvider, IGuitarValidator guitarValidator, IGuitarsUpdater guitarsUpdater)
@@ -23,79 +25,75 @@ public class GuitarController : Controller
         _guitarsProvider = guitarsProvider;
         _guitarsUpdater = guitarsUpdater;
         _guitarValidator = guitarValidator;
+        _resultMaker = new ActionResultMaker();
     }
 
-    [HttpGet("Index/{pageNumber}")]
-    public async Task<IResult<PaginatedList<GuitarDto>>> Index(int pageNumber = 1)
+    [HttpGet(Constants.Routes.GetGuitars)]
+    public async Task<ActionResult<Result<PaginatedListDto<GuitarDto>>>> Index(int pageNumber = 1)
     {
         int count = (await _guitarsProvider.GetCountAsync()).Data;
         if (!PageValidator.CheckIfPageIsValid(pageNumber, Paginator.Limit, count))
         {
-            return ResultCreator.GetInvalidResult<PaginatedList<GuitarDto>>(
-                Constants.ErrorMessages.InvalidPage);
+            return _resultMaker.ResolveResult(ResultCreator.GetInvalidResult<PaginatedListDto<GuitarDto>>(
+                Constants.ErrorMessages.InvalidPage, HttpStatusCode.BadRequest));
         }
 
         int offset = Paginator.GetOffset(pageNumber);
         List<GuitarDto> list = (await _guitarsProvider.GetGuitarsByLimitAsync(offset, Paginator.Limit)).Data;
-        return ResultCreator.GetValidResult(
-            new PaginatedList<GuitarDto>
-            {
-                CountOfAll = count,
-                LimitedList = list
-            });
+        return _resultMaker.ResolveResult(ResultCreator.GetValidResult(
+            new PaginatedListDto<GuitarDto> {CountOfAll = count, LimitedList = list}, HttpStatusCode.OK));
     }
     
-    [HttpGet("Update/{id}")]
-    public async Task<IResult<GuitarDto>> Update(int id)
+    [HttpGet(Constants.Routes.GetGuitar)]
+    public async Task<ActionResult<Result<GuitarDto>>> Get(int id)
     {
-        if (!await _guitarValidator.CheckIfGuitarExist(id))
+        var validationResult = await _guitarValidator.CheckIfGuitarExist(id);
+        if (validationResult.IsSuccess)
         {
-            return ResultCreator.GetInvalidResult<GuitarDto>(
-                Constants.ErrorMessages.InvalidGuitarId);
+            var result = await _guitarsProvider.GetGuitarAsync(id);
+            return _resultMaker.ResolveResult(result);
         }
 
-        var result = await _guitarsProvider.GetGuitarAsync(id);
-        return ResultCreator.GetValidResult(result.Data);
+        return _resultMaker.ResolveResult(validationResult);
     }
 
-    [HttpPost("Add")]
-    public async Task<IResult<GuitarDto>> Add(GuitarDto guitarDto)
+    [HttpPost(Constants.Routes.Add)]
+    public async Task<ActionResult<Result<GuitarDto>>> Add(GuitarDto guitarDtoDto)
     {
-
-        if (guitarDto == null || !_guitarValidator.CheckIfGuitarIsValid(guitarDto))
+        var validationResult = _guitarValidator.CheckIfGuitarIsValid(guitarDtoDto);
+        if (validationResult.IsSuccess)
         {
-            return ResultCreator.GetInvalidResult<GuitarDto>(
-                Constants.ErrorMessages.InvalidGuitar);
+            var result = await _guitarsCreator.AddGuitarAsync(guitarDtoDto);
+            return _resultMaker.ResolveResult(result);
         }
         
-        await _guitarsCreator.AddGuitarAsync(guitarDto);
-        return ResultCreator.GetValidResult(guitarDto);
+        return _resultMaker.ResolveResult(validationResult);
     }
 
-    [HttpPost("Update")]
-    public async Task<IResult<GuitarDto>> Update(GuitarDto guitarDto)
+    [HttpPut(Constants.Routes.UpdateGuitar)]
+    public async Task<ActionResult<Result<GuitarDto>>> Update(GuitarDto guitarDtoDto)
     {
-
-        if (guitarDto == null || !await _guitarValidator.CheckIfGuitarUpdateIsValid(guitarDto))
+        var validationResult = await _guitarValidator.CheckIfGuitarUpdateIsValid(guitarDtoDto);
+        if (validationResult.IsSuccess)
         {
-            return ResultCreator.GetInvalidResult<GuitarDto>(
-                Constants.ErrorMessages.InvalidGuitar);
+            var result = await _guitarsUpdater.UpdateGuitarAsync(guitarDtoDto);
+            return _resultMaker.ResolveResult(result);
         }
         
-        await _guitarsUpdater.UpdateGuitarAsync(guitarDto);
-        return ResultCreator.GetValidResult(guitarDto);
+        return _resultMaker.ResolveResult(validationResult);
     }
 
-    [HttpGet("Delete/{id}")]
-    public async Task<IResult<int>> Delete(int id)
+    [HttpDelete(Constants.Routes.DeleteGuitar)]
+    public async Task<ActionResult<Result<int>>> Delete(int id)
     {
-        if (!await _guitarValidator.CheckIfGuitarExist(id))
+        var validationResult = await _guitarValidator.CheckIfGuitarExist(id);
+        if (validationResult.IsSuccess)
         {
-            return ResultCreator.GetInvalidResult<int>(
-                Constants.ErrorMessages.InvalidGuitarId);
+            var result = await _guitarsUpdater.DeleteGuitarAsync(id);
+            return _resultMaker.ResolveResult(result);
         }
 
-        await _guitarsUpdater.DeleteGuitarAsync(id);
-        return ResultCreator.GetValidResult(id);
+        return _resultMaker.ResolveResult(ResultCreator.GetInvalidResult<int>(
+            Constants.ErrorMessages.InvalidGuitarId, HttpStatusCode.BadRequest));
     }
 }

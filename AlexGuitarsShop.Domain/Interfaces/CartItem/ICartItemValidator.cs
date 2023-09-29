@@ -1,6 +1,9 @@
+using AlexGuitarsShop.Common;
+using AlexGuitarsShop.Common.Models;
+
 namespace AlexGuitarsShop.Domain.Interfaces.CartItem;
 
 public interface ICartItemValidator
 {
-    Task<bool> CheckIfCartItemExist(int id, int accountId);
+    Task<IResult<CartItemDto>> CheckIfCartItemExist(int id, int accountId);
 }

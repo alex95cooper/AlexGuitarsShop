@@ -5,11 +5,11 @@ namespace AlexGuitarsShop.Domain.Interfaces.Account;
 
 public interface IAccountsProvider
 {
-    Task<IResult<DAL.Models.Account>> GetAccountAsync(Login login);
+    Task<IResult<AccountDto>> GetAccountAsync(AccountDto accountDto);
 
-    Task<IResult<List<Common.Models.Account>>> GetUsersAsync(int offset, int limit);
+    Task<IResult<List<AccountDto>>> GetUsersAsync(int offset, int limit);
 
-    Task<IResult<List<Common.Models.Account>>> GetAdminsAsync(int offset, int limit);
+    Task<IResult<List<AccountDto>>> GetAdminsAsync(int offset, int limit);
 
     Task<IResult<int>> GetUsersCountAsync();
 

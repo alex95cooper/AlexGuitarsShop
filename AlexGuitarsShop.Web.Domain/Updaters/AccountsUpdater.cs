@@ -1,29 +1,27 @@
 using AlexGuitarsShop.Common;
+using AlexGuitarsShop.Common.Models;
 using AlexGuitarsShop.Web.Domain.Interfaces.Account;
-using Newtonsoft.Json;
 
 namespace AlexGuitarsShop.Web.Domain.Updaters;
 
 public class AccountsUpdater : IAccountsUpdater
 {
-    private readonly HttpClient _client;
+    private readonly IResponseMaker _responseMaker;
 
-    public AccountsUpdater(HttpClient client)
+    public AccountsUpdater(IResponseMaker responseMaker)
     {
-        _client = client;
+        _responseMaker = responseMaker;
     }
 
-    public async Task<IResult<string>> SetAdminRightsAsync(string email)
+    public async Task<IResult<AccountDto>> SetAdminRightsAsync(string email)
     {
-        using var response = await _client.GetAsync($"http://localhost:5001/Account/MakeAdmin/{email}");
-        return JsonConvert.DeserializeObject<Result<string>>(await response.Content
-            .ReadAsStringAsync());
+        AccountDto accountDto = new AccountDto {Email = email};
+        return await _responseMaker.PutAsync(accountDto, Constants.Routes.MakeAdmin);
     }
 
-    public async Task<IResult<string>> RemoveAdminRightsAsync(string email)
+    public async Task<IResult<AccountDto>> RemoveAdminRightsAsync(string email)
     {
-        using var response = await _client.GetAsync($"http://localhost:5001/Account/MakeUser/{email}");
-        return JsonConvert.DeserializeObject<Result<string>>(await response.Content
-            .ReadAsStringAsync());
+        AccountDto accountDto = new AccountDto {Email = email};
+        return await _responseMaker.PutAsync(accountDto, Constants.Routes.MakeUser);
     }
 }

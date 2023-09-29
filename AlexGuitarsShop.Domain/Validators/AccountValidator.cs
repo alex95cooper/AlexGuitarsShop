@@ -1,4 +1,6 @@
+using System.Net;
 using System.Text.RegularExpressions;
+using AlexGuitarsShop.Common;
 using AlexGuitarsShop.Common.Models;
 using AlexGuitarsShop.DAL.Interfaces;
 using AlexGuitarsShop.Domain.Interfaces.Account;
@@ -14,29 +16,45 @@ public class AccountValidator : IAccountValidator
         _accountRepository = accountRepository;
     }
 
-    public async Task<bool> CheckIfEmailExist(string email)
+    public async Task<IResult<AccountDto>> CheckIfEmailExist(string email)
     {
         if (email == null)
         {
-            return false;
+            ResultCreator.GetInvalidResult<AccountDto>(
+                Constants.ErrorMessages.InvalidEmail, HttpStatusCode.BadRequest);
         }
 
-        return await _accountRepository.FindAsync(email) != null;
+        return await _accountRepository.FindAsync(email) != null
+            ? ResultCreator.GetValidResult(new AccountDto {Email = email}, HttpStatusCode.OK)
+            : ResultCreator.GetInvalidResult<AccountDto>(
+                Constants.ErrorMessages.InvalidEmail, HttpStatusCode.BadRequest);
     }
 
-    public bool CheckIfRegisterIsValid(Register register)
+    public IResult<AccountDto> CheckIfRegisterIsValid(AccountDto accountDto)
     {
-        return register != null
-               && CheckIfNameIsValid(register.Name)
-               && CheckIfEmailIsValid(register.Email)
-               && CheckIfPasswordIsValid(register.Password);
+        if (accountDto != null
+            && CheckIfNameIsValid(accountDto.Name)
+            && CheckIfEmailIsValid(accountDto.Email)
+            && CheckIfPasswordIsValid(accountDto.Password))
+        {
+            return ResultCreator.GetValidResult(accountDto, HttpStatusCode.OK);
+        }
+
+        return ResultCreator.GetInvalidResult<AccountDto>(
+            Constants.ErrorMessages.InvalidAccount, HttpStatusCode.BadRequest);
     }
 
-    public bool CheckIfLoginIsValid(Login login)
+    public IResult<AccountDto> CheckIfLoginIsValid(AccountDto accountDto)
     {
-        return login != null
-               && CheckIfEmailIsValid(login.Email)
-               && CheckIfPasswordIsValid(login.Password);
+        if (accountDto != null
+            && CheckIfEmailIsValid(accountDto.Email)
+            && CheckIfPasswordIsValid(accountDto.Password))
+        {
+            return ResultCreator.GetValidResult(accountDto, HttpStatusCode.OK);
+        }
+
+        return ResultCreator.GetInvalidResult<AccountDto>(
+            Constants.ErrorMessages.InvalidAccount, HttpStatusCode.BadRequest);
     }
 
     private static bool CheckIfNameIsValid(string name)

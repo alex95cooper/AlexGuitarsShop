@@ -5,11 +5,11 @@ namespace AlexGuitarsShop.Web.Domain.Extensions;
 
 public static class LoginViewModelExtensions
 {
-    public static Login ToLogin(this LoginViewModel model)
+    public static AccountDto ToAccountDto(this LoginViewModel model)
     {
-        return new Login
+        return new AccountDto
         {
-            Email = model.Email, 
+            Email = model.Email,
             Password = model.Password
         };
     }

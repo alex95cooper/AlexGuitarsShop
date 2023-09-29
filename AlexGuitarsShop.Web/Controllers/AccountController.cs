@@ -1,3 +1,4 @@
+using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using AlexGuitarsShop.Web.Domain.Interfaces.Account;
@@ -80,10 +81,18 @@ public class AccountController : Controller
         var result = await _accountsProvider.GetAdminsAsync(pageNumber);
         if (result.IsSuccess)
         {
-            return View(result.Data);
+            if (result.StatusCode == HttpStatusCode.OK)
+            {
+                return View(result.Data);
+            }
+            
+            ViewBag.Message = Constants.ErrorMessages.NoAdmins;
         }
-
-        ViewBag.Message = result.Error;
+        else
+        {
+            ViewBag.Message = result.Error;
+        }
+        
         return View("Notification");
     }
 
@@ -94,10 +103,18 @@ public class AccountController : Controller
         var result = await _accountsProvider.GetUsersAsync(pageNumber);
         if (result.IsSuccess)
         {
-            return View(result.Data);
+            if (result.StatusCode == HttpStatusCode.OK)
+            {
+                return View(result.Data);
+            }
+            
+            ViewBag.Message = Constants.ErrorMessages.NoUsers;
         }
-
-        ViewBag.Message = result.Error;
+        else
+        {
+            ViewBag.Message = result.Error;
+        }
+        
         return View("Notification");
     }
 

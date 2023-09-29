@@ -1,4 +1,4 @@
-@model AlexGuitarsShop.Web.Domain.ViewModels.PaginatedListViewModel<AlexGuitarsShop.Common.Models.Account>
+@model AlexGuitarsShop.Web.Domain.ViewModels.PaginatedListViewModel<AlexGuitarsShop.Common.Models.AccountDto>
 
 @{
     const string textTitle = "Users";
@@ -16,9 +16,8 @@
         else
         {
             <div class="users-content">
-                @foreach (var user in Model.List)
+                @foreach (var user in Model.List.Where(user => user != null))
                 {
-                    if (user == null) throw new ArgumentNullException(nameof(user));
                     <div class="user-container">
                         <div class="user-info">
                             <p>Name : @user.Name</p>

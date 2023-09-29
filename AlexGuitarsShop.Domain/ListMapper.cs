@@ -4,9 +4,9 @@ namespace AlexGuitarsShop.Domain;
 
 public static class ListMapper
 {
-    public static List<Common.Models.Account> ToDtoAccountList(IEnumerable<DAL.Models.Account> list)
+    public static List<Common.Models.AccountDto> ToDtoAccountList(IEnumerable<DAL.Models.Account> list)
     {
-        return list.Select(account => new Common.Models.Account
+        return list.Select(account => new Common.Models.AccountDto
         {
             Name = account.Name,
             Email = account.Email,
@@ -14,9 +14,9 @@ public static class ListMapper
         }).ToList();
     }
     
-    public static List<Common.Models.CartItem> ToDtoCartItemList(IEnumerable<DAL.Models.CartItem> list)
+    public static List<Common.Models.CartItemDto> ToDtoCartItemList(IEnumerable<DAL.Models.CartItem> list)
     {
-        return list.Select(cartItem => new Common.Models.CartItem
+        return list.Select(cartItem => new Common.Models.CartItemDto
         {
             ProductId = cartItem.ProductId,
             Quantity = cartItem.Quantity,
@@ -24,9 +24,9 @@ public static class ListMapper
         }).ToList();
     }
     
-    public static List<Common.Models.Guitar> ToDtoGuitarList(IEnumerable<DAL.Models.Guitar> list)
+    public static List<Common.Models.GuitarDto> ToDtoGuitarList(IEnumerable<DAL.Models.Guitar> list)
     {
-        return list.Select(guitar => new Common.Models.Guitar
+        return list.Select(guitar => new Common.Models.GuitarDto
         {
             Id = guitar.Id,
             Name = guitar.Name,

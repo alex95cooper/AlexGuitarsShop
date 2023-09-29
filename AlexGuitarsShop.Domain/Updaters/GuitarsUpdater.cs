@@ -1,7 +1,9 @@
+using System.Net;
+using AlexGuitarsShop.Common;
+using AlexGuitarsShop.Common.Models;
 using AlexGuitarsShop.DAL.Interfaces;
-using AlexGuitarsShop.Domain.Extensions;
 using AlexGuitarsShop.Domain.Interfaces.Guitar;
-using GuitarDal = AlexGuitarsShop.DAL.Models.Guitar;
+using AlexGuitarsShop.DAL.Models;
 
 namespace AlexGuitarsShop.Domain.Updaters;
 
@@ -14,14 +16,24 @@ public class GuitarsUpdater : IGuitarsUpdater
         _guitarRepository = guitarRepository;
     }
 
-    public async Task UpdateGuitarAsync(Common.Models.Guitar guitar)
+    public async Task<IResult<GuitarDto>> UpdateGuitarAsync(GuitarDto guitarDto)
     {
-        GuitarDal guitarDal = guitar.ToGuitarDal() ?? throw new ArgumentNullException(nameof(guitar));
+        Guitar guitarDal = _guitarRepository.GetAsync(guitarDto.Id).Result;
+        if (guitarDal != null)
+        {
+            guitarDal.Name = guitarDto.Name;
+            guitarDal.Price = guitarDto.Price;
+            guitarDal.Image = guitarDto.Image;
+            guitarDal.Description = guitarDto.Description;
+        }
+        
         await _guitarRepository.UpdateAsync(guitarDal);
+        return ResultCreator.GetValidResult(guitarDto, HttpStatusCode.OK);
     }
 
-    public async Task DeleteGuitarAsync(int id)
+    public async Task<IResult<int>> DeleteGuitarAsync(int id)
     {
         await _guitarRepository.DeleteAsync(id);
+        return ResultCreator.GetValidResult(id, HttpStatusCode.OK);
     }
 }

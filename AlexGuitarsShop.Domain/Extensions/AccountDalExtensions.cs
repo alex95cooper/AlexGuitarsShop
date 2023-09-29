@@ -1,13 +1,13 @@
-using AlexGuitarsShop.Common;
 using AlexGuitarsShop.Common.Models;
+using AlexGuitarsShop.DAL.Models;
 
 namespace AlexGuitarsShop.Domain.Extensions;
 
 public static class AccountDalExtensions
 {
-    public static Account ToAccount(this DAL.Models.Account account)
+    public static AccountDto ToAccountDto(this Account account)
     {
-        return new Account
+        return new AccountDto
         {
             Name = account.Name,
             Email = account.Email,

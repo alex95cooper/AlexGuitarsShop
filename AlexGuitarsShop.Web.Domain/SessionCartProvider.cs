@@ -6,12 +6,12 @@ namespace AlexGuitarsShop.Web.Domain;
 
 internal static class SessionCartProvider
 {
-    internal static List<CartItem> GetCart(IHttpContextAccessor httpContextAccessor)
+    internal static List<CartItemDto> GetCart(IHttpContextAccessor httpContextAccessor)
     {
         HttpContext context = httpContextAccessor.HttpContext;
         string cartString = context.Session.GetString(Constants.Cart.Key);
         return cartString == null
-            ? new List<CartItem>()
-            : JsonConvert.DeserializeObject<List<CartItem>>(cartString);
+            ? new List<CartItemDto>()
+            : JsonConvert.DeserializeObject<List<CartItemDto>>(cartString);
     }
 }

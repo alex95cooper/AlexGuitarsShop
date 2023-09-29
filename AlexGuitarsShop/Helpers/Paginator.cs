@@ -1,4 +1,4 @@
-namespace AlexGuitarsShop;
+namespace AlexGuitarsShop.Helpers;
 
 public static class Paginator
 {

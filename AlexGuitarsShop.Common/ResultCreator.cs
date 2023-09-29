@@ -1,20 +1,24 @@
+using System.Net;
+
 namespace AlexGuitarsShop.Common;
 
 public static class ResultCreator
 {
-    public static IResult<T> GetInvalidResult<T>(string message)
+    public static Result<T> GetInvalidResult<T>(string message, HttpStatusCode status)
     {
         return new Result<T>
         {
+            StatusCode = status,
             IsSuccess = false,
             Error = message
         };
     }
 
-    public static IResult<T> GetValidResult<T>(T data)
+    public static Result<T> GetValidResult<T>(T data, HttpStatusCode status)
     {
         return new Result<T>
         {
+            StatusCode = status,
             IsSuccess = true,
             Data = data
         };

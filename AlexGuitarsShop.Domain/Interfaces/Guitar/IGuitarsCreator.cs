@@ -1,6 +1,9 @@
+using AlexGuitarsShop.Common;
+using AlexGuitarsShop.Common.Models;
+
 namespace AlexGuitarsShop.Domain.Interfaces.Guitar;
 
 public interface IGuitarsCreator
 {
-    Task AddGuitarAsync(Common.Models.Guitar guitar);
+    Task<IResult<GuitarDto>> AddGuitarAsync(GuitarDto guitarDto);
 }

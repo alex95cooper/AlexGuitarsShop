@@ -1,4 +1,5 @@
 using AlexGuitarsShop.Web;
+using AlexGuitarsShop.Web.Domain;
 using AlexGuitarsShop.Web.Extensions;
 using Microsoft.AspNetCore.Authentication.Cookies;
 
@@ -6,6 +7,9 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddMvc();
 builder.Services.AddControllersWithViews();
+
+builder.Services.Configure<BackendUrls>(
+    builder.Configuration.GetSection("BackendUrls"));
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
@@ -19,6 +23,7 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddMemoryCache();
 builder.Services.AddSession();
 
+builder.Services.AddTransient<IResponseMaker, ResponseMaker>();
 builder.Services.InitializeEntityHandlers();
 builder.Services.InitializeValidators();
 

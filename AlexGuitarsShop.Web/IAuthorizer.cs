@@ -4,7 +4,7 @@ namespace AlexGuitarsShop.Web;
 
 public interface IAuthorizer
 {
-    Task SignIn(Account account);
+    Task SignIn(AccountDto accountDto);
 
     Task SignOut();
 }
