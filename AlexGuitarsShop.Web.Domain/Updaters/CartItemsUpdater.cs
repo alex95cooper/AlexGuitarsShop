@@ -1,4 +1,3 @@
-using System.Net;
 using AlexGuitarsShop.Common;
 using AlexGuitarsShop.Common.Models;
 using AlexGuitarsShop.Web.Domain.Interfaces.CartItem;
@@ -11,14 +10,14 @@ public class CartItemsUpdater : ICartItemsUpdater
 {
     private const int MinQuantity = 1;
     private const int MaxQuantity = 10;
-    
-    private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly IResponseMaker _responseMaker;
 
-    public CartItemsUpdater(IResponseMaker responseMaker,
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IShopBackendService _shopBackendService;
+
+    public CartItemsUpdater(IShopBackendService shopBackendService,
         IHttpContextAccessor httpContextAccessor)
     {
-        _responseMaker = responseMaker;
+        _shopBackendService = shopBackendService;
         _httpContextAccessor = httpContextAccessor;
     }
 
@@ -26,11 +25,11 @@ public class CartItemsUpdater : ICartItemsUpdater
 
     private string CartString
     {
-        set 
+        set
         {
             if (value == null)
             {
-               Context.Session.Remove(Constants.Cart.Key);
+                Context.Session.Remove(Constants.Cart.Key);
             }
             else
             {
@@ -39,68 +38,65 @@ public class CartItemsUpdater : ICartItemsUpdater
         }
     }
 
-    public async Task<IResult<int>> RemoveAsync(int id)
+    public async Task<IResultDto<int>> RemoveAsync(int id)
     {
         if (Context.User.Identity!.IsAuthenticated)
         {
-            return await _responseMaker.DeleteAsync(
+            return await _shopBackendService.DeleteAsync(
                 string.Format(Constants.Routes.DeleteCartItem, id, Context.User.Identity.Name));
         }
 
         return RemoveFromSessionCart(id);
     }
 
-    public async Task<IResult<CartItemDto>> IncrementAsync(int id)
+    public async Task<IResultDto<CartItemDto>> IncrementAsync(int id)
     {
         if (Context.User.Identity!.IsAuthenticated)
         {
             CartItemDto item = new() {ProductId = id, BuyerEmail = Context.User.Identity.Name};
-            return await _responseMaker.PutAsync(item, Constants.Routes.Increment);
+            return await _shopBackendService.PutAsync(item, Constants.Routes.Increment);
         }
 
         return IncrementSessionCart(id);
     }
 
-    public async Task<IResult<CartItemDto>> DecrementAsync(int id)
+    public async Task<IResultDto<CartItemDto>> DecrementAsync(int id)
     {
         if (Context.User.Identity!.IsAuthenticated)
         {
             CartItemDto item = new() {ProductId = id, BuyerEmail = Context.User.Identity.Name};
-            return await _responseMaker.PutAsync(item, Constants.Routes.Decrement);
+            return await _shopBackendService.PutAsync(item, Constants.Routes.Decrement);
         }
 
         return DecrementSessionCart(id);
     }
 
-    public async Task<IResult<int>> OrderAsync()
+    public async Task<IResultDto<AccountDto>> OrderAsync()
     {
         if (Context.User.Identity!.IsAuthenticated)
         {
-            return await _responseMaker.DeleteAsync(
-                string.Format(Constants.Routes.Order, Context.User.Identity.Name));
+            AccountDto account = new AccountDto {Email = Context.User.Identity.Name};
+            return await _shopBackendService.PutAsync(account, Constants.Routes.Order);
         }
-        else
-        {
-            CartString = null;
-            return ResultCreator.GetValidResult(0, HttpStatusCode.OK);
-        }
+
+        CartString = null;
+        return ResultDtoCreator.GetValidResult(new AccountDto());
     }
 
-    private IResult<int> RemoveFromSessionCart(int id)
+    private IResultDto<int> RemoveFromSessionCart(int id)
     {
         List<CartItemDto> cart = SessionCartProvider.GetCart(_httpContextAccessor);
         foreach (var cartItem in cart.Where(cartItem => cartItem.Product.Id == id))
         {
             cart.Remove(cartItem);
             CartString = JsonConvert.SerializeObject(cart);
-            return ResultCreator.GetValidResult(id, HttpStatusCode.OK);
+            return ResultDtoCreator.GetValidResult(id);
         }
 
-        return ResultCreator.GetInvalidResult<int>(
-            Constants.Cart.ItemNotExist, HttpStatusCode.BadRequest);
+        return ResultDtoCreator.GetInvalidResult<int>(Constants.Cart.ItemNotExist);
     }
 
-    private IResult<CartItemDto> IncrementSessionCart(int id)
+    private IResultDto<CartItemDto> IncrementSessionCart(int id)
     {
         List<CartItemDto> cart = SessionCartProvider.GetCart(_httpContextAccessor);
         foreach (var cartItem in cart.Where(cartItem => cartItem.Product.Id == id))
@@ -112,15 +108,14 @@ public class CartItemsUpdater : ICartItemsUpdater
             }
 
             CartString = JsonConvert.SerializeObject(cart);
-            return ResultCreator.GetValidResult(cartItem, HttpStatusCode.OK);
+            return ResultDtoCreator.GetValidResult(cartItem);
         }
 
         CartString = JsonConvert.SerializeObject(cart);
-        return ResultCreator.GetInvalidResult<CartItemDto>(
-            Constants.Cart.ItemNotExist, HttpStatusCode.BadRequest);
+        return ResultDtoCreator.GetInvalidResult<CartItemDto>(Constants.Cart.ItemNotExist);
     }
 
-    private Result<CartItemDto> DecrementSessionCart(int id)
+    private ResultDto<CartItemDto> DecrementSessionCart(int id)
     {
         List<CartItemDto> cart = SessionCartProvider.GetCart(_httpContextAccessor);
         foreach (var cartItem in cart.Where(cartItem => cartItem.Product.Id == id))
@@ -132,11 +127,11 @@ public class CartItemsUpdater : ICartItemsUpdater
             }
 
             CartString = JsonConvert.SerializeObject(cart);
-            return ResultCreator.GetValidResult(cartItem, HttpStatusCode.OK);
+            return ResultDtoCreator.GetValidResult(cartItem);
         }
 
         CartString = JsonConvert.SerializeObject(cart);
-        return ResultCreator.GetInvalidResult<CartItemDto>(
-            Constants.Cart.ItemNotExist, HttpStatusCode.BadRequest);
+        return ResultDtoCreator.GetInvalidResult<CartItemDto>(
+            Constants.Cart.ItemNotExist);
     }
 }

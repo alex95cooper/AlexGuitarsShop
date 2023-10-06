@@ -11,9 +11,9 @@ public static class GuitarViewModelExtensions
         {
             Id = model.Id,
             Name = model.Name,
-            Price = model.Price, 
-            Description = model.Description, 
-            Image = model.Image, 
+            Price = model.Price,
+            Description = model.Description,
+            Image = model.Image,
             IsDeleted = model.IsDeleted
         };
     }

@@ -6,22 +6,22 @@ namespace AlexGuitarsShop.Web.Domain.Updaters;
 
 public class AccountsUpdater : IAccountsUpdater
 {
-    private readonly IResponseMaker _responseMaker;
+    private readonly IShopBackendService _shopBackendService;
 
-    public AccountsUpdater(IResponseMaker responseMaker)
+    public AccountsUpdater(IShopBackendService shopBackendService)
     {
-        _responseMaker = responseMaker;
+        _shopBackendService = shopBackendService;
     }
 
-    public async Task<IResult<AccountDto>> SetAdminRightsAsync(string email)
+    public async Task<IResultDto<AccountDto>> SetAdminRightsAsync(string email)
     {
         AccountDto accountDto = new AccountDto {Email = email};
-        return await _responseMaker.PutAsync(accountDto, Constants.Routes.MakeAdmin);
+        return await _shopBackendService.PutAsync(accountDto, Constants.Routes.MakeAdmin);
     }
 
-    public async Task<IResult<AccountDto>> RemoveAdminRightsAsync(string email)
+    public async Task<IResultDto<AccountDto>> RemoveAdminRightsAsync(string email)
     {
         AccountDto accountDto = new AccountDto {Email = email};
-        return await _responseMaker.PutAsync(accountDto, Constants.Routes.MakeUser);
+        return await _shopBackendService.PutAsync(accountDto, Constants.Routes.MakeUser);
     }
 }

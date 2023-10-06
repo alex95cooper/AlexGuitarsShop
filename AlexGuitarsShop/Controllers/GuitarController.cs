@@ -1,6 +1,7 @@
 using System.Net;
 using AlexGuitarsShop.Common;
 using AlexGuitarsShop.Common.Models;
+using AlexGuitarsShop.Domain;
 using AlexGuitarsShop.Domain.Interfaces.Guitar;
 using AlexGuitarsShop.Domain.Validators;
 using AlexGuitarsShop.Helpers;
@@ -9,7 +10,6 @@ using Microsoft.AspNetCore.Mvc;
 namespace AlexGuitarsShop.Controllers;
 
 [ApiController]
-[Route("[controller]")]
 public class GuitarController : Controller
 {
     private readonly IGuitarsCreator _guitarsCreator;
@@ -28,10 +28,17 @@ public class GuitarController : Controller
         _resultMaker = new ActionResultMaker();
     }
 
-    [HttpGet(Constants.Routes.GetGuitars)]
-    public async Task<ActionResult<Result<PaginatedListDto<GuitarDto>>>> Index(int pageNumber = 1)
+    [HttpGet("guitars")]
+    public async Task<ActionResult<ResultDto<PaginatedListDto<GuitarDto>>>> GetAll([FromQuery] int pageNumber = 1)
     {
         int count = (await _guitarsProvider.GetCountAsync()).Data;
+        if (count == 0)
+        {
+            return _resultMaker.ResolveResult(ResultCreator.GetValidResult(
+                new PaginatedListDto<AccountDto> {CountOfAll = 0, LimitedList = new List<AccountDto>()},
+                HttpStatusCode.NoContent));
+        }
+
         if (!PageValidator.CheckIfPageIsValid(pageNumber, Paginator.Limit, count))
         {
             return _resultMaker.ResolveResult(ResultCreator.GetInvalidResult<PaginatedListDto<GuitarDto>>(
@@ -43,9 +50,9 @@ public class GuitarController : Controller
         return _resultMaker.ResolveResult(ResultCreator.GetValidResult(
             new PaginatedListDto<GuitarDto> {CountOfAll = count, LimitedList = list}, HttpStatusCode.OK));
     }
-    
-    [HttpGet(Constants.Routes.GetGuitar)]
-    public async Task<ActionResult<Result<GuitarDto>>> Get(int id)
+
+    [HttpGet("guitars/{id}")]
+    public async Task<ActionResult<ResultDto<GuitarDto>>> Get([FromRoute] int id)
     {
         var validationResult = await _guitarValidator.CheckIfGuitarExist(id);
         if (validationResult.IsSuccess)
@@ -57,8 +64,8 @@ public class GuitarController : Controller
         return _resultMaker.ResolveResult(validationResult);
     }
 
-    [HttpPost(Constants.Routes.Add)]
-    public async Task<ActionResult<Result<GuitarDto>>> Add(GuitarDto guitarDtoDto)
+    [HttpPost("guitars/add")]
+    public async Task<ActionResult<ResultDto<GuitarDto>>> Add([FromBody] GuitarDto guitarDtoDto)
     {
         var validationResult = _guitarValidator.CheckIfGuitarIsValid(guitarDtoDto);
         if (validationResult.IsSuccess)
@@ -66,12 +73,12 @@ public class GuitarController : Controller
             var result = await _guitarsCreator.AddGuitarAsync(guitarDtoDto);
             return _resultMaker.ResolveResult(result);
         }
-        
+
         return _resultMaker.ResolveResult(validationResult);
     }
 
-    [HttpPut(Constants.Routes.UpdateGuitar)]
-    public async Task<ActionResult<Result<GuitarDto>>> Update(GuitarDto guitarDtoDto)
+    [HttpPut("guitars/update")]
+    public async Task<ActionResult<ResultDto<GuitarDto>>> Update([FromBody] GuitarDto guitarDtoDto)
     {
         var validationResult = await _guitarValidator.CheckIfGuitarUpdateIsValid(guitarDtoDto);
         if (validationResult.IsSuccess)
@@ -79,12 +86,12 @@ public class GuitarController : Controller
             var result = await _guitarsUpdater.UpdateGuitarAsync(guitarDtoDto);
             return _resultMaker.ResolveResult(result);
         }
-        
+
         return _resultMaker.ResolveResult(validationResult);
     }
 
-    [HttpDelete(Constants.Routes.DeleteGuitar)]
-    public async Task<ActionResult<Result<int>>> Delete(int id)
+    [HttpDelete("guitars/{id}/delete")]
+    public async Task<ActionResult<ResultDto<int>>> Delete([FromRoute] int id)
     {
         var validationResult = await _guitarValidator.CheckIfGuitarExist(id);
         if (validationResult.IsSuccess)

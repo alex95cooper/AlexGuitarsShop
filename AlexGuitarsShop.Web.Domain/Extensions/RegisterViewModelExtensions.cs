@@ -9,8 +9,8 @@ public static class RegisterViewModelExtensions
     {
         return new AccountDto
         {
-            Name = model.Name, 
-            Email = model.Email, 
+            Name = model.Name,
+            Email = model.Email,
             Password = model.Password
         };
     }

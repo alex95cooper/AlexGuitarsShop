@@ -5,7 +5,7 @@ namespace AlexGuitarsShop.Web.Domain.Interfaces.CartItem;
 
 public interface ICartItemsProvider
 {
-    Task<IResult<CartItemDto>> GetCartItemAsync(int id);
-    
-    Task<IResult<List<CartItemDto>>> GetCartAsync();
+    Task<IResultDto<CartItemDto>> GetCartItemAsync(int id);
+
+    Task<IResultDto<List<CartItemDto>>> GetCartAsync();
 }

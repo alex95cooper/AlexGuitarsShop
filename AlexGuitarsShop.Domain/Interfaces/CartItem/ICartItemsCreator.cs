@@ -1,4 +1,3 @@
-using AlexGuitarsShop.Common;
 using AlexGuitarsShop.Common.Models;
 
 namespace AlexGuitarsShop.Domain.Interfaces.CartItem;

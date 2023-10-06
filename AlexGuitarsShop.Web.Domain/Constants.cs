@@ -24,8 +24,6 @@ public static class Constants
         public const string ServerError = "An unexpected problem has occurred. Try again later!";
     }
     
-    
-
     public static class HttpClient
     {
         public const string MediaType = "application/json";
@@ -33,22 +31,22 @@ public static class Constants
     
     public static class Routes
     {
-        public const string AddCartItem = "cart/status-action=add";
-        public const string GetCart = "cart/index/{0}";
-        public const string Increment = "cart/status-action=increment-cart-item";
-        public const string Decrement = "cart/status-action=decrement-cart-item";
-        public const string DeleteCartItem = "cart/id={0}&email={1}/status-action=delete-cart-item";
-        public const string Order = "cart/order/{0}";
-        public const string GetGuitars = "guitar/index/{0}";
-        public const string GetGuitar = "guitar/{0}";
-        public const string AddGuitar = "guitar/status-action=add";
-        public const string UpdateGuitar = "guitar/status-action=update-guitar";  
-        public const string DeleteGuitar = "guitar/{0}/status-action=delete-guitar";
-        public const string Admins = "account/admins/{0}";
-        public const string Users = "account/users/{0}";
-        public const string Login = "account/login";  
-        public const string Register = "account/register";  
-        public const string MakeAdmin = "account/status-action=make-admin"; 
-        public const string MakeUser = "account/status-action=make-user";  
+        public const string AddCartItem = "carts/add";
+        public const string GetCart = "carts?email={0}";
+        public const string Increment = "carts/increment";
+        public const string Decrement = "carts/decrement";
+        public const string DeleteCartItem = "carts/delete?id={0}&email={1}";
+        public const string Order = "carts/order";
+        public const string GetGuitars = "guitars?page-number={0}";
+        public const string GetGuitar = "guitars/{0}";
+        public const string AddGuitar = "guitars/add";
+        public const string UpdateGuitar = "guitars/update";
+        public const string DeleteGuitar = "guitars/{0}/delete";
+        public const string Admins = "accounts/admins?page-number={0}";
+        public const string Users = "accounts/users?page-number={0}";
+        public const string Login = "accounts/login";  
+        public const string Register = "accounts/register";  
+        public const string MakeAdmin = "accounts/make-admin"; 
+        public const string MakeUser = "accounts/make-user";  
     }
 }

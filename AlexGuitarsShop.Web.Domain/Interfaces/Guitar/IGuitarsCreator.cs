@@ -6,5 +6,5 @@ namespace AlexGuitarsShop.Web.Domain.Interfaces.Guitar;
 
 public interface IGuitarsCreator
 {
-    Task<IResult<GuitarDto>> AddGuitarAsync(GuitarViewModel model);
+    Task<IResultDto<GuitarDto>> AddGuitarAsync(GuitarViewModel model);
 }

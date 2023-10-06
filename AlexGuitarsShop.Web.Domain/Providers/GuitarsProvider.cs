@@ -8,24 +8,27 @@ namespace AlexGuitarsShop.Web.Domain.Providers;
 
 public class GuitarsProvider : IGuitarsProvider
 {
-    private readonly IResponseMaker _responseMaker;
+    private readonly IShopBackendService _shopBackendService;
 
-    public GuitarsProvider(IResponseMaker responseMaker)
+    public GuitarsProvider(IShopBackendService shopBackendService)
     {
-        _responseMaker = responseMaker;
+        _shopBackendService = shopBackendService;
     }
 
-    public async Task<IResult<PaginatedListViewModel<GuitarDto>>> GetGuitarsByLimitAsync(int pageNumber)
+    public async Task<IResultDto<PaginatedListViewModel<GuitarDto>>> GetGuitarsByLimitAsync(int pageNumber)
     {
-        var result = await _responseMaker.GetListByLimitAsync<GuitarDto>(Constants.Routes.GetGuitars, pageNumber);
+        var result = await _shopBackendService.GetAsync<PaginatedListDto<GuitarDto>, int>(
+            Constants.Routes.GetGuitars, pageNumber);
         return result is {IsSuccess: true}
-            ? ResultCreator.GetValidResult(result.Data.ToPaginatedListViewModel(Title.Catalog, pageNumber),
-                result.StatusCode)
-            : ResultCreator.GetInvalidResult<PaginatedListViewModel<GuitarDto>>(result!.Error, result.StatusCode);
+            ? ResultDtoCreator.GetValidResult(result.Data.ToPaginatedListViewModel(Title.Catalog, pageNumber))
+            : ResultDtoCreator.GetInvalidResult<PaginatedListViewModel<GuitarDto>>(result!.Error);
     }
 
-    public async Task<IResult<GuitarViewModel>> GetGuitarAsync(int id)
+    public async Task<IResultDto<GuitarViewModel>> GetGuitarAsync(int id)
     {
-        return await _responseMaker.GetGuitarAsync(id);
+        var result = await _shopBackendService.GetAsync<GuitarDto, int>(Constants.Routes.GetGuitar, id);
+        return result is {IsSuccess: true}
+            ? ResultDtoCreator.GetValidResult(result.Data.ToGuitarViewModel())
+            : ResultDtoCreator.GetInvalidResult<GuitarViewModel>(result!.Error);
     }
 }

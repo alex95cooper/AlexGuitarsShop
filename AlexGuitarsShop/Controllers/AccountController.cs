@@ -1,6 +1,7 @@
 using System.Net;
 using AlexGuitarsShop.Common;
 using AlexGuitarsShop.Common.Models;
+using AlexGuitarsShop.Domain;
 using AlexGuitarsShop.Domain.Interfaces.Account;
 using AlexGuitarsShop.Domain.Validators;
 using AlexGuitarsShop.Helpers;
@@ -9,7 +10,6 @@ using Microsoft.AspNetCore.Mvc;
 namespace AlexGuitarsShop.Controllers;
 
 [ApiController]
-[Route("[controller]")]
 public class AccountController : Controller
 {
     private readonly IAccountsCreator _accountsCreator;
@@ -28,8 +28,8 @@ public class AccountController : Controller
         _resultMaker = new ActionResultMaker();
     }
 
-    [HttpPost(Constants.Routes.Register)]
-    public async Task<ActionResult<Result<AccountDto>>> Register(AccountDto accountDto)
+    [HttpPost("accounts/register")]
+    public async Task<ActionResult<ResultDto<AccountDto>>> Register([FromBody] AccountDto accountDto)
     {
         var validationResult = _accountValidator.CheckIfRegisterIsValid(accountDto);
         if (!validationResult.IsSuccess)
@@ -40,9 +40,9 @@ public class AccountController : Controller
         var result = await _accountsCreator.AddAccountAsync(accountDto);
         return _resultMaker.ResolveResult(result);
     }
-    
-    [HttpPost(Constants.Routes.Login)]
-    public async Task<ActionResult<Result<AccountDto>>> Login(AccountDto accountDto)
+
+    [HttpPost("accounts/login")]
+    public async Task<ActionResult<ResultDto<AccountDto>>> Login([FromBody] AccountDto accountDto)
     {
         var validationResult = _accountValidator.CheckIfLoginIsValid(accountDto);
         if (!validationResult.IsSuccess)
@@ -54,14 +54,15 @@ public class AccountController : Controller
         return _resultMaker.ResolveResult(result);
     }
 
-    [HttpGet(Constants.Routes.Admins)]
-    public async Task<ActionResult<Result<PaginatedListDto<AccountDto>>>> Admins(int pageNumber = 1)
+    [HttpGet("accounts/admins")]
+    public async Task<ActionResult<ResultDto<PaginatedListDto<AccountDto>>>> Admins([FromQuery] int pageNumber = 1)
     {
         int count = (await _accountsProvider.GetAdminsCountAsync()).Data;
         if (count == 0)
         {
             return _resultMaker.ResolveResult(ResultCreator.GetValidResult(
-                new PaginatedListDto<AccountDto>(), HttpStatusCode.NoContent));
+                new PaginatedListDto<AccountDto> {CountOfAll = 0, LimitedList = new List<AccountDto>()},
+                HttpStatusCode.NoContent));
         }
 
         if (!PageValidator.CheckIfPageIsValid(pageNumber, Paginator.Limit, count))
@@ -76,14 +77,15 @@ public class AccountController : Controller
             new PaginatedListDto<AccountDto> {CountOfAll = count, LimitedList = list}, HttpStatusCode.OK));
     }
 
-    [HttpGet(Constants.Routes.Users)]
-    public async Task<ActionResult<Result<PaginatedListDto<AccountDto>>>> Users(int pageNumber = 1)
+    [HttpGet("accounts/users")]
+    public async Task<ActionResult<ResultDto<PaginatedListDto<AccountDto>>>> Users([FromQuery] int pageNumber = 1)
     {
         int count = (await _accountsProvider.GetUsersCountAsync()).Data;
         if (count == 0)
         {
             return _resultMaker.ResolveResult(ResultCreator.GetValidResult(
-                new PaginatedListDto<AccountDto>(), HttpStatusCode.NoContent));
+                new PaginatedListDto<AccountDto> {CountOfAll = 0, LimitedList = new List<AccountDto>()},
+                HttpStatusCode.NoContent));
         }
 
         if (!PageValidator.CheckIfPageIsValid(pageNumber, Paginator.Limit, count))
@@ -98,8 +100,8 @@ public class AccountController : Controller
             new PaginatedListDto<AccountDto> {CountOfAll = count, LimitedList = list}, HttpStatusCode.OK));
     }
 
-    [HttpPut(Constants.Routes.MakeAdmin)]
-    public async Task<ActionResult<Result<AccountDto>>> MakeAdmin(AccountDto account)
+    [HttpPut("accounts/make-admin")]
+    public async Task<ActionResult<ResultDto<AccountDto>>> MakeAdmin([FromBody] AccountDto account)
     {
         var validationResult = await _accountValidator.CheckIfEmailExist(account.Email);
         if (!validationResult.IsSuccess)
@@ -111,8 +113,8 @@ public class AccountController : Controller
         return _resultMaker.ResolveResult(result);
     }
 
-    [HttpPut(Constants.Routes.MakeUser)]
-    public async Task<ActionResult<Result<AccountDto>>> MakeUser(AccountDto account)
+    [HttpPut("accounts/make-user")]
+    public async Task<ActionResult<ResultDto<AccountDto>>> MakeUser([FromBody] AccountDto account)
     {
         var validationResult = await _accountValidator.CheckIfEmailExist(account.Email);
         if (!validationResult.IsSuccess)

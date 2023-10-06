@@ -1,5 +1,4 @@
 using System.Net;
-using AlexGuitarsShop.Common;
 using AlexGuitarsShop.Common.Models;
 using AlexGuitarsShop.DAL.Interfaces;
 using AlexGuitarsShop.DAL.Models;
@@ -31,7 +30,7 @@ public class GuitarsProvider : IGuitarsProvider
         Guitar guitar = await _guitarRepository.GetAsync(id);
         return ResultCreator.GetValidResult(guitar.ToGuitarDto(), HttpStatusCode.OK);
     }
-    
+
     public async Task<IResult<Guitar>> GetReferenceGuitarAsync(int id)
     {
         Guitar guitar = await _guitarRepository.GetAsync(id);

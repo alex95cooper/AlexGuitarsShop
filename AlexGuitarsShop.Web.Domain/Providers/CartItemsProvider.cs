@@ -1,4 +1,3 @@
-using System.Net;
 using AlexGuitarsShop.Common;
 using AlexGuitarsShop.Common.Models;
 using AlexGuitarsShop.Web.Domain.Interfaces.CartItem;
@@ -10,66 +9,67 @@ namespace AlexGuitarsShop.Web.Domain.Providers;
 public class CartItemsProvider : ICartItemsProvider
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly IResponseMaker _responseMaker;
+    private readonly IShopBackendService _shopBackendService;
 
-    public CartItemsProvider(IResponseMaker responseMaker,
+    public CartItemsProvider(IShopBackendService shopBackendService,
         IHttpContextAccessor httpContextAccessor)
     {
-        _responseMaker = responseMaker;
+        _shopBackendService = shopBackendService;
         _httpContextAccessor = httpContextAccessor;
     }
 
     private HttpContext Context => _httpContextAccessor.HttpContext;
     private string CartString => Context.Session.GetString(Constants.Cart.Key);
 
-    public async Task<IResult<CartItemDto>> GetCartItemAsync(int id)
+    public async Task<IResultDto<CartItemDto>> GetCartItemAsync(int id)
     {
         return Context.User.Identity!.IsAuthenticated
             ? await GetDbCartItem(id)
             : GetSessionCartItem(id);
     }
 
-    public async Task<IResult<List<CartItemDto>>> GetCartAsync()
+    public async Task<IResultDto<List<CartItemDto>>> GetCartAsync()
     {
         if (Context.User.Identity is {IsAuthenticated: true})
         {
-            return await _responseMaker.GetCartAsync(Context.User.Identity.Name);
+            return await _shopBackendService.GetAsync<List<CartItemDto>, string>(
+                Constants.Routes.GetCart,Context.User.Identity.Name);
         }
 
-        return ResultCreator.GetValidResult(
-            SessionCartProvider.GetCart(_httpContextAccessor), HttpStatusCode.OK);
+        return ResultDtoCreator.GetValidResult(
+            SessionCartProvider.GetCart(_httpContextAccessor));
     }
 
-    private async Task<IResult<CartItemDto>> GetDbCartItem(int id)
+    private async Task<IResultDto<CartItemDto>> GetDbCartItem(int id)
     {
         var result = await GetCartAsync();
         if (result.Data == null)
         {
-            return ResultCreator.GetInvalidResult<CartItemDto>(
-                Constants.Cart.CartEmpty, HttpStatusCode.BadRequest);
+            return ResultDtoCreator.GetInvalidResult<CartItemDto>(
+                Constants.Cart.CartEmpty);
         }
 
         foreach (var item in result.Data.Where(item => item.ProductId == id))
         {
-            return ResultCreator.GetValidResult(item, HttpStatusCode.OK);
+            return ResultDtoCreator.GetValidResult(item);
         }
 
-        return ResultCreator.GetInvalidResult<CartItemDto>(
-            Constants.Cart.ItemNotExist, HttpStatusCode.BadRequest);
+        return ResultDtoCreator.GetInvalidResult<CartItemDto>(
+            Constants.Cart.ItemNotExist);
     }
 
-    private IResult<CartItemDto> GetSessionCartItem(int id)
+    private IResultDto<CartItemDto> GetSessionCartItem(int id)
     {
         if (CartString == null)
         {
-            return ResultCreator.GetInvalidResult<CartItemDto>(
-                Constants.Cart.ItemNotExist, HttpStatusCode.BadRequest);
+            return ResultDtoCreator.GetInvalidResult<CartItemDto>(
+                Constants.Cart.ItemNotExist);
         }
 
         List<CartItemDto> cart = JsonConvert.DeserializeObject<List<CartItemDto>>(CartString);
         CartItemDto itemDto = cart?.FirstOrDefault(item => item.Product.Id == id);
         return itemDto == null
-            ? ResultCreator.GetInvalidResult<CartItemDto>(Constants.Cart.ItemNotExist, HttpStatusCode.BadRequest)
-            : ResultCreator.GetValidResult(itemDto, HttpStatusCode.OK);
+            ? ResultDtoCreator.GetInvalidResult<CartItemDto>(Constants.Cart.ItemNotExist)
+            : ResultDtoCreator.GetValidResult(itemDto);
     }
 }

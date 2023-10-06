@@ -1,4 +1,3 @@
-using System.Net;
 using AlexGuitarsShop.Common;
 using AlexGuitarsShop.Common.Models;
 using AlexGuitarsShop.Web.Domain.Extensions;
@@ -11,28 +10,27 @@ public class GuitarsUpdater : IGuitarsUpdater
 {
     private const string ErrorMessage = "The information about the account is not filled correctly!";
 
-    private readonly IResponseMaker _responseMaker;
+    private readonly IShopBackendService _shopBackendService;
 
-    public GuitarsUpdater(IResponseMaker responseMaker)
+    public GuitarsUpdater(IShopBackendService shopBackendService)
     {
-        _responseMaker = responseMaker;
+        _shopBackendService = shopBackendService;
     }
 
-    public async Task<IResult<GuitarDto>> UpdateGuitarAsync(GuitarViewModel model)
+    public async Task<IResultDto<GuitarDto>> UpdateGuitarAsync(GuitarViewModel model)
     {
         if (model == null)
         {
-            return ResultCreator.GetInvalidResult<GuitarDto>(
-                ErrorMessage, HttpStatusCode.BadRequest);
+            return ResultDtoCreator.GetInvalidResult<GuitarDto>(ErrorMessage);
         }
 
         GuitarDto guitarDto = model.ToGuitar();
         guitarDto.Image = model.Avatar == null ? model.Image : model.Avatar.ToBase64String();
-        return await _responseMaker.PutAsync(guitarDto, Constants.Routes.UpdateGuitar);
+        return await _shopBackendService.PutAsync(guitarDto, Constants.Routes.UpdateGuitar);
     }
 
-    public async Task<IResult<int>> DeleteGuitarAsync(int id)
+    public async Task<IResultDto<int>> DeleteGuitarAsync(int id)
     {
-        return await _responseMaker.DeleteAsync(string.Format(Constants.Routes.DeleteGuitar, id));
+        return await _shopBackendService.DeleteAsync(string.Format(Constants.Routes.DeleteGuitar, id));
     }
 }

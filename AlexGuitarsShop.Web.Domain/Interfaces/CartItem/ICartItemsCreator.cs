@@ -6,5 +6,5 @@ namespace AlexGuitarsShop.Web.Domain.Interfaces.CartItem;
 
 public interface ICartItemsCreator
 {
-    Task<IResult<CartItemDto>> AddNewCartItemAsync(GuitarViewModel model);
+    Task<IResultDto<CartItemDto>> AddNewCartItemAsync(GuitarViewModel model);
 }

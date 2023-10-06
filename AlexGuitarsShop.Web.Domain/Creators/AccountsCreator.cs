@@ -1,4 +1,3 @@
-using System.Net;
 using AlexGuitarsShop.Common;
 using AlexGuitarsShop.Common.Models;
 using AlexGuitarsShop.Web.Domain.Extensions;
@@ -9,22 +8,21 @@ namespace AlexGuitarsShop.Web.Domain.Creators;
 
 public class AccountsCreator : IAccountsCreator
 {
-    private readonly IResponseMaker _responseMaker;
+    private readonly IShopBackendService _shopBackendService;
 
-    public AccountsCreator(IResponseMaker responseMaker)
+    public AccountsCreator(IShopBackendService shopBackendService)
     {
-        _responseMaker = responseMaker;
+        _shopBackendService = shopBackendService;
     }
 
-    public async Task<IResult<AccountDto>> AddAccountAsync(RegisterViewModel model)
+    public async Task<IResultDto<AccountDto>> AddAccountAsync(RegisterViewModel model)
     {
         if (model == null)
         {
-            ResultCreator.GetInvalidResult<AccountDto>(
-                Constants.Account.IncorrectAccount, HttpStatusCode.BadRequest);
+            ResultDtoCreator.GetInvalidResult<AccountDto>(Constants.Account.IncorrectAccount);
         }
-        
+
         AccountDto registerDto = model.ToAccountDto();
-        return await _responseMaker.PostAsync(registerDto, Constants.Routes.Register);
+        return await _shopBackendService.PostAsync(registerDto, Constants.Routes.Register);
     }
 }

@@ -1,4 +1,3 @@
-using System.Net;
 using AlexGuitarsShop.Common;
 using AlexGuitarsShop.Common.Models;
 using AlexGuitarsShop.Web.Domain.Extensions;
@@ -9,40 +8,39 @@ namespace AlexGuitarsShop.Web.Domain.Providers;
 
 public class AccountsProvider : IAccountsProvider
 {
-    private readonly IResponseMaker _responseMaker;
+    private readonly IShopBackendService _shopBackendService;
 
-    public AccountsProvider(IResponseMaker responseMaker)
+    public AccountsProvider(IShopBackendService shopBackendService)
     {
-        _responseMaker = responseMaker;
+        _shopBackendService = shopBackendService;
     }
 
-    public async Task<IResult<AccountDto>> GetAccountAsync(LoginViewModel model)
+    public async Task<IResultDto<AccountDto>> GetAccountAsync(LoginViewModel model)
     {
         if (model == null)
         {
-            return ResultCreator.GetInvalidResult<AccountDto>(
-                Constants.Account.IncorrectAccount, HttpStatusCode.BadRequest);
+            return ResultDtoCreator.GetInvalidResult<AccountDto>(Constants.Account.IncorrectAccount);
         }
 
         AccountDto accountDto = model.ToAccountDto();
-        return await _responseMaker.PostAsync(accountDto, Constants.Routes.Login);
+        return await _shopBackendService.PostAsync(accountDto, Constants.Routes.Login);
     }
 
-    public async Task<IResult<PaginatedListViewModel<AccountDto>>> GetAdminsAsync(int pageNumber)
+    public async Task<IResultDto<PaginatedListViewModel<AccountDto>>> GetAdminsAsync(int pageNumber)
     {
-        var result = await _responseMaker.GetListByLimitAsync<AccountDto>(Constants.Routes.Admins, pageNumber);
+        var result = await _shopBackendService.GetAsync<PaginatedListDto<AccountDto>, int>(
+            Constants.Routes.Admins, pageNumber);
         return result is {IsSuccess: true}
-            ? ResultCreator.GetValidResult(result.Data.ToPaginatedListViewModel(Title.Admins, pageNumber),
-                result.StatusCode)
-            : ResultCreator.GetInvalidResult<PaginatedListViewModel<AccountDto>>(result!.Error, result.StatusCode);
+            ? ResultDtoCreator.GetValidResult(result.Data.ToPaginatedListViewModel(Title.Admins, pageNumber))
+            : ResultDtoCreator.GetInvalidResult<PaginatedListViewModel<AccountDto>>(result!.Error);
     }
 
-    public async Task<IResult<PaginatedListViewModel<AccountDto>>> GetUsersAsync(int pageNumber)
+    public async Task<IResultDto<PaginatedListViewModel<AccountDto>>> GetUsersAsync(int pageNumber)
     {
-        var result = await _responseMaker.GetListByLimitAsync<AccountDto>(Constants.Routes.Users, pageNumber);
+        var result =
+            await _shopBackendService.GetAsync<PaginatedListDto<AccountDto>, int>(Constants.Routes.Users, pageNumber);
         return result is {IsSuccess: true}
-            ? ResultCreator.GetValidResult(result.Data.ToPaginatedListViewModel(Title.Users, pageNumber),
-                result.StatusCode)
-            : ResultCreator.GetInvalidResult<PaginatedListViewModel<AccountDto>>(result!.Error, result.StatusCode);
+            ? ResultDtoCreator.GetValidResult(result.Data.ToPaginatedListViewModel(Title.Users, pageNumber))
+            : ResultDtoCreator.GetInvalidResult<PaginatedListViewModel<AccountDto>>(result!.Error);
     }
 }

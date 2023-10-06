@@ -6,5 +6,5 @@ namespace AlexGuitarsShop.Web.Domain.Interfaces.Account;
 
 public interface IAccountsCreator
 {
-    Task<IResult<AccountDto>> AddAccountAsync(RegisterViewModel model);
+    Task<IResultDto<AccountDto>> AddAccountAsync(RegisterViewModel model);
 }

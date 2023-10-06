@@ -1,4 +1,3 @@
-using System.Net;
 using AlexGuitarsShop.Common;
 using AlexGuitarsShop.Common.Models;
 using AlexGuitarsShop.Web.Domain.Extensions;
@@ -9,23 +8,22 @@ namespace AlexGuitarsShop.Web.Domain.Creators;
 
 public class GuitarsCreator : IGuitarsCreator
 {
-    private readonly IResponseMaker _responseMaker;
+    private readonly IShopBackendService _shopBackendService;
 
-    public GuitarsCreator(IResponseMaker responseMaker)
+    public GuitarsCreator(IShopBackendService shopBackendService)
     {
-        _responseMaker = responseMaker;
+        _shopBackendService = shopBackendService;
     }
 
-    public async Task<IResult<GuitarDto>> AddGuitarAsync(GuitarViewModel model)
+    public async Task<IResultDto<GuitarDto>> AddGuitarAsync(GuitarViewModel model)
     {
         if (model == null)
         {
-            return ResultCreator.GetInvalidResult<GuitarDto>(
-                Constants.Guitar.IncorrectGuitar, HttpStatusCode.BadRequest);
+            return ResultDtoCreator.GetInvalidResult<GuitarDto>(Constants.Guitar.IncorrectGuitar);
         }
-        
+
         GuitarDto guitarDto = model.ToGuitar();
         guitarDto.Image = model!.Avatar == null ? model.Image : model.Avatar.ToBase64String();
-        return await _responseMaker.PostAsync(guitarDto, Constants.Routes.AddGuitar);
+        return await _shopBackendService.PostAsync(guitarDto, Constants.Routes.AddGuitar);
     }
 }

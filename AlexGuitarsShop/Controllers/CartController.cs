@@ -1,6 +1,7 @@
 using System.Net;
 using AlexGuitarsShop.Common;
 using AlexGuitarsShop.Common.Models;
+using AlexGuitarsShop.Domain;
 using AlexGuitarsShop.Domain.Interfaces.Account;
 using AlexGuitarsShop.Domain.Interfaces.CartItem;
 using AlexGuitarsShop.Domain.Interfaces.Guitar;
@@ -10,7 +11,6 @@ using Microsoft.AspNetCore.Mvc;
 namespace AlexGuitarsShop.Controllers;
 
 [ApiController]
-[Route("[controller]")]
 public class CartController : Controller
 {
     private readonly ICartItemsCreator _cartItemsCreator;
@@ -36,8 +36,9 @@ public class CartController : Controller
         _resultMaker = new ActionResultMaker();
     }
 
-    [HttpGet(Constants.Routes.GetCart)]
-    public async Task<ActionResult<Result<List<CartItemDto>>>> Index(string email)
+
+    [HttpGet("carts")]
+    public async Task<ActionResult<ResultDto<List<CartItemDto>>>> Get([FromQuery] string email)
     {
         var result = await _accountProvider.GetId(email);
         if (result.IsSuccess)
@@ -51,8 +52,8 @@ public class CartController : Controller
                 Constants.ErrorMessages.InvalidEmail, HttpStatusCode.OK));
     }
 
-    [HttpPost(Constants.Routes.Add)]
-    public async Task<ActionResult<Result<CartItemDto>>> Add(CartItemDto item)
+    [HttpPost("carts/add")]
+    public async Task<ActionResult<ResultDto<CartItemDto>>> Add([FromBody] CartItemDto item)
     {
         var result = GetAccountId(item.BuyerEmail);
         if (!result.IsSuccess)
@@ -73,53 +74,53 @@ public class CartController : Controller
         return _resultMaker.ResolveResult(cartResult);
     }
 
-    [HttpPut(Constants.Routes.Increment)]
-    public async Task<ActionResult<Result<CartItemDto>>> Increment(CartItemDto item)
+    [HttpPut("carts/increment")]
+    public async Task<ActionResult<ResultDto<CartItemDto>>> Increment([FromBody] CartItemDto item)
     {
         var validationResult = await ValidateUpdateRequest(item);
         if (validationResult.IsSuccess)
         {
             return _resultMaker.ResolveResult(
-                await _cartItemsUpdater.IncrementAsync(item.ProductId, 
+                await _cartItemsUpdater.IncrementAsync(item.ProductId,
                     validationResult.Data.BuyerId));
         }
 
         return _resultMaker.ResolveResult(validationResult);
     }
 
-    [HttpPut(Constants.Routes.Decrement)]
-    public async Task<ActionResult<Result<CartItemDto>>> Decrement(CartItemDto item)
+    [HttpPut("carts/decrement")]
+    public async Task<ActionResult<ResultDto<CartItemDto>>> Decrement([FromBody] CartItemDto item)
     {
         var validationResult = await ValidateUpdateRequest(item);
         if (validationResult.IsSuccess)
         {
             return _resultMaker.ResolveResult(
-                await _cartItemsUpdater.DecrementAsync(item.ProductId, 
+                await _cartItemsUpdater.DecrementAsync(item.ProductId,
                     validationResult.Data.BuyerId));
         }
 
         return _resultMaker.ResolveResult(validationResult);
     }
 
-    [HttpDelete(Constants.Routes.DeleteCartItem)]
-    public async Task<ActionResult<Result<int>>> Remove(int id, string email)
+    [HttpDelete("carts/delete")]
+    public async Task<ActionResult<ResultDto<int>>> Remove([FromQuery] int id, [FromQuery] string email)
     {
         CartItemDto item = new() {ProductId = id, BuyerEmail = email};
         var validationResult = await ValidateUpdateRequest(item);
         if (validationResult.IsSuccess)
         {
             return _resultMaker.ResolveResult(
-                await _cartItemsUpdater.RemoveAsync(item.ProductId, 
+                await _cartItemsUpdater.RemoveAsync(item.ProductId,
                     validationResult.Data.BuyerId));
         }
 
         return _resultMaker.ResolveResult(validationResult);
     }
 
-    [HttpDelete(Constants.Routes.Order)]
-    public async Task Order(string email)
+    [HttpPut("carts/order")]
+    public async Task Order([FromBody] AccountDto accountDto)
     {
-        var result = GetAccountId(email);
+        var result = GetAccountId(accountDto.Email);
         if (result.IsSuccess)
         {
             await _cartItemsUpdater.OrderAsync(result.Data);

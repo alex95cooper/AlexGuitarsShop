@@ -23,7 +23,7 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddMemoryCache();
 builder.Services.AddSession();
 
-builder.Services.AddTransient<IResponseMaker, ResponseMaker>();
+builder.Services.AddTransient<IShopBackendService, ShopBackendService>();
 builder.Services.InitializeEntityHandlers();
 builder.Services.InitializeValidators();
 

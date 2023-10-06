@@ -21,7 +21,7 @@ public class GuitarValidator : IGuitarValidator
     {
         string path = Path.Combine(_backendUrl.DefaultUrl, string.Format(Constants.Routes.GetGuitar, id));
         using var response = await _client.GetAsync(path.Replace('\\', '/'));
-        var result = JsonConvert.DeserializeObject<Result<GuitarDto>>(await response.Content
+        var result = JsonConvert.DeserializeObject<ResultDto<GuitarDto>>(await response.Content
             .ReadAsStringAsync());
         return result!.IsSuccess;
     }

@@ -1,6 +1,6 @@
 using System.Net;
 
-namespace AlexGuitarsShop.Common;
+namespace AlexGuitarsShop.Domain;
 
 public class Result<T> : IResult<T>
 {

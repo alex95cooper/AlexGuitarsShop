@@ -1,4 +1,3 @@
-using System.Net;
 using AlexGuitarsShop.Common;
 using AlexGuitarsShop.Common.Models;
 using AlexGuitarsShop.Web.Domain.Extensions;
@@ -12,12 +11,12 @@ namespace AlexGuitarsShop.Web.Domain.Creators;
 public class CartItemsCreator : ICartItemsCreator
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly IResponseMaker _responseMaker;
+    private readonly IShopBackendService _shopBackendService;
 
-    public CartItemsCreator(IResponseMaker responseMaker,
+    public CartItemsCreator(IShopBackendService shopBackendService,
         IHttpContextAccessor httpContextAccessor)
     {
-        _responseMaker = responseMaker;
+        _shopBackendService = shopBackendService;
         _httpContextAccessor = httpContextAccessor;
     }
 
@@ -28,7 +27,7 @@ public class CartItemsCreator : ICartItemsCreator
         set => Context.Session.SetString(Constants.Cart.Key, value);
     }
 
-    public async Task<IResult<CartItemDto>> AddNewCartItemAsync(GuitarViewModel model)
+    public async Task<IResultDto<CartItemDto>> AddNewCartItemAsync(GuitarViewModel model)
     {
         GuitarDto guitarDto = model.ToGuitar();
         if (Context.User.Identity is {IsAuthenticated: true})
@@ -39,19 +38,19 @@ public class CartItemsCreator : ICartItemsCreator
         return AddToSession(guitarDto);
     }
 
-    private IResult<CartItemDto> AddToSession(GuitarDto guitarDto)
+    private IResultDto<CartItemDto> AddToSession(GuitarDto guitarDto)
     {
         List<CartItemDto> cart = SessionCartProvider.GetCart(_httpContextAccessor);
         CartItemDto itemDto = new() {Quantity = 1, Product = guitarDto};
         cart.Add(itemDto);
         CartString = JsonConvert.SerializeObject(cart);
-        return ResultCreator.GetValidResult(itemDto, HttpStatusCode.OK);
+        return ResultDtoCreator.GetValidResult(itemDto);
     }
 
-    private async Task<IResult<CartItemDto>> AddToDbAsync(int id)
+    private async Task<IResultDto<CartItemDto>> AddToDbAsync(int id)
     {
         CartItemDto item = new() {ProductId = id, BuyerEmail = Context.User.Identity!.Name, Quantity = 1};
-        var result = await _responseMaker.PostAsync(item, Constants.Routes.AddCartItem);
+        var result = await _shopBackendService.PostAsync(item, Constants.Routes.AddCartItem);
         return result;
     }
 }

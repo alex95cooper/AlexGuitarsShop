@@ -8,6 +8,6 @@ public static class FormFileExtensions
     {
         using var binaryReader = new BinaryReader(avatar.OpenReadStream());
         byte[] bytes = binaryReader.ReadBytes((int) avatar.Length);
-        return  Convert.ToBase64String(bytes);
+        return Convert.ToBase64String(bytes);
     }
 }

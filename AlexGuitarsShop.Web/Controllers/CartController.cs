@@ -1,4 +1,3 @@
-using System.Net;
 using AlexGuitarsShop.Web.Domain.Interfaces.CartItem;
 using AlexGuitarsShop.Web.Domain.Interfaces.Guitar;
 using Microsoft.AspNetCore.Mvc;
@@ -29,7 +28,7 @@ public class CartController : Controller
     public async Task<IActionResult> Index()
     {
         var cartResult = await _cartItemsProvider.GetCartAsync();
-        if (cartResult.StatusCode == HttpStatusCode.OK)
+        if (cartResult.IsSuccess && cartResult.Data.Count > 0)
         {
             return View(cartResult.Data);
         }

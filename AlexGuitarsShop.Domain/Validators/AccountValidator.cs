@@ -1,6 +1,5 @@
 using System.Net;
 using System.Text.RegularExpressions;
-using AlexGuitarsShop.Common;
 using AlexGuitarsShop.Common.Models;
 using AlexGuitarsShop.DAL.Interfaces;
 using AlexGuitarsShop.Domain.Interfaces.Account;

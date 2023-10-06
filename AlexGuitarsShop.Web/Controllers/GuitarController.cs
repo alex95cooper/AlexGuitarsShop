@@ -1,4 +1,3 @@
-using System.Net;
 using AlexGuitarsShop.Web.Domain.Interfaces.Guitar;
 using AlexGuitarsShop.Web.Domain.ViewModels;
 using Microsoft.AspNetCore.Authorization;
@@ -23,23 +22,22 @@ public class GuitarController : Controller
     [HttpGet]
     public async Task<IActionResult> Index(int pageNumber = 1)
     {
-        
         var result = await _guitarsProvider.GetGuitarsByLimitAsync(pageNumber);
 
         if (result.IsSuccess)
         {
-            if (result.StatusCode == HttpStatusCode.OK)
+            if (result.Data.List.Count > 0)
             {
                 return View(result.Data);
             }
-            
+
             ViewBag.Message = Constants.ErrorMessages.CatalogEmpty;
         }
         else
         {
             ViewBag.Message = result.Error;
         }
-        
+
         return View("Notification");
     }
 

@@ -6,7 +6,7 @@ namespace AlexGuitarsShop.Web.Domain.Interfaces.Guitar;
 
 public interface IGuitarsProvider
 {
-    Task<IResult<PaginatedListViewModel<GuitarDto>>> GetGuitarsByLimitAsync(int pageNumber);
+    Task<IResultDto<PaginatedListViewModel<GuitarDto>>> GetGuitarsByLimitAsync(int pageNumber);
 
-    Task<IResult<GuitarViewModel>> GetGuitarAsync(int id);
+    Task<IResultDto<GuitarViewModel>> GetGuitarAsync(int id);
 }

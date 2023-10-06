@@ -13,7 +13,7 @@ public static class ListMapper
             Role = account.Role
         }).ToList();
     }
-    
+
     public static List<Common.Models.CartItemDto> ToDtoCartItemList(IEnumerable<DAL.Models.CartItem> list)
     {
         return list.Select(cartItem => new Common.Models.CartItemDto
@@ -23,7 +23,7 @@ public static class ListMapper
             Product = cartItem.Product.ToGuitarDto()
         }).ToList();
     }
-    
+
     public static List<Common.Models.GuitarDto> ToDtoGuitarList(IEnumerable<DAL.Models.Guitar> list)
     {
         return list.Select(guitar => new Common.Models.GuitarDto

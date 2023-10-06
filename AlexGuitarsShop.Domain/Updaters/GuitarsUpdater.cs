@@ -1,5 +1,4 @@
 using System.Net;
-using AlexGuitarsShop.Common;
 using AlexGuitarsShop.Common.Models;
 using AlexGuitarsShop.DAL.Interfaces;
 using AlexGuitarsShop.Domain.Interfaces.Guitar;
@@ -26,7 +25,7 @@ public class GuitarsUpdater : IGuitarsUpdater
             guitarDal.Image = guitarDto.Image;
             guitarDal.Description = guitarDto.Description;
         }
-        
+
         await _guitarRepository.UpdateAsync(guitarDal);
         return ResultCreator.GetValidResult(guitarDto, HttpStatusCode.OK);
     }
