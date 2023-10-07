@@ -17,10 +17,10 @@ public class CartItemsUpdater : ICartItemsUpdater
         _cartItemRepository = cartItemRepository;
     }
 
-    public async Task<IResult<int>> RemoveAsync(int id, int accountId)
+    public async Task<IResult<CartItemDto>> RemoveAsync(int id, int accountId)
     {
         await _cartItemRepository.DeleteAsync(id, accountId);
-        return ResultCreator.GetValidResult(id, HttpStatusCode.OK);
+        return ResultCreator.GetValidResult(new CartItemDto {ProductId = id}, HttpStatusCode.OK);
     }
 
     public async Task<IResult<CartItemDto>> IncrementAsync(int id, int accountId)

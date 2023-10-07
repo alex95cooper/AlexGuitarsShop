@@ -5,7 +5,7 @@ namespace AlexGuitarsShop.Web.Domain.Interfaces.CartItem;
 
 public interface ICartItemsUpdater
 {
-    Task<IResultDto<int>> RemoveAsync(int id);
+    Task<IResultDto<CartItemDto>> RemoveAsync(int id);
 
     Task<IResultDto<CartItemDto>> IncrementAsync(int id);
 

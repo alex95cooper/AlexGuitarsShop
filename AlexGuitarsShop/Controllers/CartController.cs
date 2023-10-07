@@ -102,10 +102,9 @@ public class CartController : Controller
         return _resultMaker.ResolveResult(validationResult);
     }
 
-    [HttpDelete("carts/delete")]
-    public async Task<ActionResult<ResultDto<int>>> Remove([FromQuery] int id, [FromQuery] string email)
+    [HttpPut("carts/delete")]
+    public async Task<ActionResult<ResultDto<CartItemDto>>> Remove([FromBody] CartItemDto item)
     {
-        CartItemDto item = new() {ProductId = id, BuyerEmail = email};
         var validationResult = await ValidateUpdateRequest(item);
         if (validationResult.IsSuccess)
         {

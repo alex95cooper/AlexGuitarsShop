@@ -77,7 +77,7 @@ public class GuitarController : Controller
         return _resultMaker.ResolveResult(validationResult);
     }
 
-    [HttpPut("guitars/update")]
+    [HttpPut("guitars/{id}/update")]
     public async Task<ActionResult<ResultDto<GuitarDto>>> Update([FromBody] GuitarDto guitarDtoDto)
     {
         var validationResult = await _guitarValidator.CheckIfGuitarUpdateIsValid(guitarDtoDto);

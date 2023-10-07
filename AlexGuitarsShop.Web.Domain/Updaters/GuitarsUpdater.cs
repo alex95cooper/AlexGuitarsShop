@@ -26,7 +26,8 @@ public class GuitarsUpdater : IGuitarsUpdater
 
         GuitarDto guitarDto = model.ToGuitar();
         guitarDto.Image = model.Avatar == null ? model.Image : model.Avatar.ToBase64String();
-        return await _shopBackendService.PutAsync(guitarDto, Constants.Routes.UpdateGuitar);
+        return await _shopBackendService.PutAsync(guitarDto, 
+            string.Format(Constants.Routes.UpdateGuitar, guitarDto.Id));
     }
 
     public async Task<IResultDto<int>> DeleteGuitarAsync(int id)

@@ -35,12 +35,12 @@ public static class Constants
         public const string GetCart = "carts?email={0}";
         public const string Increment = "carts/increment";
         public const string Decrement = "carts/decrement";
-        public const string DeleteCartItem = "carts/delete?id={0}&email={1}";
+        public const string DeleteCartItem = "carts/delete";
         public const string Order = "carts/order";
         public const string GetGuitars = "guitars?page-number={0}";
         public const string GetGuitar = "guitars/{0}";
         public const string AddGuitar = "guitars/add";
-        public const string UpdateGuitar = "guitars/update";
+        public const string UpdateGuitar = "guitars/{0}/update";
         public const string DeleteGuitar = "guitars/{0}/delete";
         public const string Admins = "accounts/admins?page-number={0}";
         public const string Users = "accounts/users?page-number={0}";

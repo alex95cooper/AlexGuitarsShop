@@ -20,13 +20,13 @@ public class ShopBackendService : IShopBackendService
     {
         try
         {
-            string path = GetPath(string.Format(route, parameter));
+            string path = BuildPath(string.Format(route, parameter));
             using var response = await _client.GetAsync(path);
-            return await Deserializable<TResult>(response);
+            return await Deserialize<TResult>(response);
         }
         catch
         {
-            return GetBadResult<TResult>();
+            return BuildBadResult<TResult>();
         }
     }
 
@@ -34,14 +34,14 @@ public class ShopBackendService : IShopBackendService
     {
         try
         {
-            var content = GetContent(modelDto);
-            string path = GetPath(route);
+            var content = BuildContent(modelDto);
+            string path = BuildPath(route);
             using var response = await _client.PostAsync(path, content);
-            return await Deserializable<T>(response);
+            return await Deserialize<T>(response);
         }
         catch
         {
-            return GetBadResult<T>();
+            return BuildBadResult<T>();
         }
     }
 
@@ -49,14 +49,14 @@ public class ShopBackendService : IShopBackendService
     {
         try
         {
-            var content = GetContent(modelDto);
-            string path = GetPath(route);
+            var content = BuildContent(modelDto);
+            string path = BuildPath(route);
             using var response = await _client.PutAsync(path, content);
-            return await Deserializable<T>(response);
+            return await Deserialize<T>(response);
         }
         catch
         {
-            return GetBadResult<T>();
+            return BuildBadResult<T>();
         }
     }
 
@@ -64,34 +64,34 @@ public class ShopBackendService : IShopBackendService
     {
         try
         {
-            string path = GetPath(route);
+            string path = BuildPath(route);
             using var response = await _client.DeleteAsync(path);
-            return await Deserializable<int>(response);
+            return await Deserialize<int>(response);
         }
         catch
         {
-            return GetBadResult<int>();
+            return BuildBadResult<int>();
         }
     }
 
-    private static StringContent GetContent<T>(T modelDto)
+    private static StringContent BuildContent<T>(T modelDto)
     {
         string objAsJson = JsonConvert.SerializeObject(modelDto);
         return new StringContent(objAsJson, Encoding.UTF8, Constants.HttpClient.MediaType);
     }
 
-    private string GetPath(string route)
+    private string BuildPath(string route)
     {
         string path = Path.Combine(_backendUrl.DefaultUrl, route);
         return path.Replace('\\', '/');
     }
 
-    private async Task<ResultDto<T>> Deserializable<T>(HttpResponseMessage response)
+    private static async Task<ResultDto<T>> Deserialize<T>(HttpResponseMessage response)
     {
         return JsonConvert.DeserializeObject<ResultDto<T>>(await response.Content.ReadAsStringAsync());
     }
 
-    private ResultDto<T> GetBadResult<T>()
+    private static ResultDto<T> BuildBadResult<T>()
     {
         return ResultDtoCreator.GetInvalidResult<T>(
             Constants.ErrorMessages.ServerError);
