@@ -1,4 +1,6 @@
-using AlexGuitarsShop.DAL;
+using System.Net;
+using AlexGuitarsShop.Common;
+using AlexGuitarsShop.Common.Models;
 using AlexGuitarsShop.DAL.Interfaces;
 using AlexGuitarsShop.Domain.Interfaces.Account;
 
@@ -13,13 +15,17 @@ public class AccountsUpdater : IAccountsUpdater
         _accountRepository = accountRepository;
     }
 
-    public async Task SetAdminRightsAsync(string email)
+    public async Task<IResult<AccountDto>> SetAdminRightsAsync(string email)
     {
-        await _accountRepository.UpdateAsync(email, (int)Role.Admin);
+        await _accountRepository.UpdateAsync(email, (int) Role.Admin);
+        return ResultCreator.GetValidResult(
+            new AccountDto {Email = email}, HttpStatusCode.OK);
     }
 
-    public async Task RemoveAdminRightsAsync(string email)
+    public async Task<IResult<AccountDto>> RemoveAdminRightsAsync(string email)
     {
-        await _accountRepository.UpdateAsync(email, (int)Role.User);
+        await _accountRepository.UpdateAsync(email, (int) Role.User);
+        return ResultCreator.GetValidResult(
+            new AccountDto {Email = email}, HttpStatusCode.OK);
     }
 }

@@ -1,0 +1,41 @@
+@model AlexGuitarsShop.Web.Domain.ViewModels.PaginatedListViewModel<AlexGuitarsShop.Common.Models.AccountDto>
+
+@{
+    const string textTitle = "Admins";
+    ViewData["Title"] = textTitle;
+}
+
+<div class="users-page-container">
+    <div class="users-page-background-container">
+        @if (Model.List.Count == 0)
+        {
+            <div class="notification-header">
+                <h1>No admins</h1>
+            </div>
+        }
+        else
+        {
+            <div class="users-content">
+                @foreach (var user in Model.List)
+                {
+                    <div class="user-container">
+                        <div class="user-info">
+                            <p>Name : @user.Name</p>
+                            <p>Email : @user.Email</p>
+                        </div>
+
+                        @if (User.IsInRole("SuperAdmin"))
+                        {
+                            <div class="make-button-container">
+                                <a class="make-button" asp-controller="Account" asp-route-email="@user.Email" asp-action="MakeUser">
+                                    <strong>Make user</strong>
+                                </a>
+                            </div>
+                        }
+                    </div>
+                }
+                @Html.Partial("_Pagination", Model)
+            </div>
+        }
+    </div>
+</div>

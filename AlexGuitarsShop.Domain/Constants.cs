@@ -20,9 +20,11 @@ public static class Constants
         public const int DescriptionMinLength = 10;
         public const int DescriptionMaxLength = 600;
     }
-
-    public static class Cart
+    
+    public static class ErrorMessages
     {
-        public const string Key = "Cart";
+        public const string InvalidAccount = "The information about the account is not filled correctly!";
+        public const string InvalidEmail = "Entered Email is not exists!";
+        public const string InvalidGuitarId = "Guitar by this id don't exist!";
     }
 }

@@ -1,12 +1,14 @@
+using AlexGuitarsShop.Common.Models;
+
 namespace AlexGuitarsShop.Domain.Interfaces.CartItem;
 
 public interface ICartItemsUpdater
 {
-    Task RemoveAsync(int id, int accountId);
+    Task<IResult<CartItemDto>> RemoveAsync(int id, int accountId);
 
-    Task IncrementAsync(int id, int accountId);
+    Task<IResult<CartItemDto>> IncrementAsync(int id, int accountId);
 
-    Task DecrementAsync(int id, int accountId);
+    Task<IResult<CartItemDto>> DecrementAsync(int id, int accountId);
 
-    Task OrderAsync(int accountId);
+    Task<IResult<string>> OrderAsync(int accountId);
 }

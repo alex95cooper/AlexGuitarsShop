@@ -1,10 +1,14 @@
+using AlexGuitarsShop.Common.Models;
+
 namespace AlexGuitarsShop.Domain.Interfaces.Guitar;
 
 public interface IGuitarsProvider
 {
-    Task<IResult<List<DAL.Models.Guitar>>> GetGuitarsByLimitAsync(int offset, int limit);
+    Task<IResult<List<GuitarDto>>> GetGuitarsByLimitAsync(int offset, int limit);
 
-    Task<IResult<DAL.Models.Guitar>> GetGuitarAsync(int id);
+    Task<IResult<GuitarDto>> GetGuitarAsync(int id);
+
+    Task<IResult<DAL.Models.Guitar>> GetReferenceGuitarAsync(int id);
 
     Task<IResult<int>> GetCountAsync();
 }

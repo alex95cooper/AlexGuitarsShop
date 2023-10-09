@@ -38,16 +38,8 @@ public class GuitarRepository : IGuitarRepository
 
     public async Task UpdateAsync(Guitar guitar)
     {
-        Guitar guitarToUpdate = await _db.Guitar.FirstOrDefaultAsync(x => x.Id == guitar.Id);
-        if (guitarToUpdate != null)
-        {
-            guitarToUpdate.Name = guitar.Name;
-            guitarToUpdate.Price = guitar.Price;
-            guitarToUpdate.Image = guitar.Image;
-            guitarToUpdate.Description = guitar.Description;
-            _db.Guitar.Update(guitarToUpdate);
-            await _db.SaveChangesAsync();
-        }
+        _db.Guitar.Update(guitar);
+        await _db.SaveChangesAsync();
     }
 
     public async Task DeleteAsync(int id)

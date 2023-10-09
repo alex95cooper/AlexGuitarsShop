@@ -19,4 +19,8 @@
       <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\AlexGuitarsShop.Common\AlexGuitarsShop.Common.csproj" />
+    </ItemGroup>
+
 </Project>

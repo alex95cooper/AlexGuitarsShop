@@ -1,163 +1,128 @@
-using AlexGuitarsShop.DAL.Models;
+using System.Net;
+using AlexGuitarsShop.Common;
+using AlexGuitarsShop.Common.Models;
 using AlexGuitarsShop.Domain;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
 using AlexGuitarsShop.Domain.Interfaces.Account;
 using AlexGuitarsShop.Domain.Validators;
-using AlexGuitarsShop.Extensions;
-using AlexGuitarsShop.ViewModels;
+using AlexGuitarsShop.Helpers;
+using Microsoft.AspNetCore.Mvc;
 
 namespace AlexGuitarsShop.Controllers;
 
+[ApiController]
 public class AccountController : Controller
 {
     private readonly IAccountsCreator _accountsCreator;
     private readonly IAccountsProvider _accountsProvider;
     private readonly IAccountsUpdater _accountsUpdater;
     private readonly IAccountValidator _accountValidator;
-    private readonly IAuthorizer _authorizer;
+    private readonly ActionResultMaker _resultMaker;
 
     public AccountController(IAccountsCreator accountsCreator, IAccountsProvider accountsProvider,
-        IAccountsUpdater accountsUpdater, IAccountValidator accountValidator, IAuthorizer authorizer)
+        IAccountsUpdater accountsUpdater, IAccountValidator accountValidator)
     {
         _accountsCreator = accountsCreator;
         _accountsProvider = accountsProvider;
         _accountsUpdater = accountsUpdater;
         _accountValidator = accountValidator;
-        _authorizer = authorizer;
+        _resultMaker = new ActionResultMaker();
     }
 
-    [HttpGet]
-    public IActionResult Register()
+    [HttpPost("accounts/register")]
+    public async Task<ActionResult<ResultDto<AccountDto>>> Register([FromBody] AccountDto accountDto)
     {
-        return GetViewOrRedirect();
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> Register(RegisterViewModel model)
-    {
-        if (model == null || !_accountValidator.CheckIfRegisterIsValid(model.ToRegister()))
+        var validationResult = _accountValidator.CheckIfRegisterIsValid(accountDto);
+        if (!validationResult.IsSuccess)
         {
-            ViewBag.Message = Constants.ErrorMessages.InvalidAccount;
-            return View("Notification");
+            return _resultMaker.ResolveResult(validationResult);
         }
 
-        if (User.Identity is {IsAuthenticated: true})
-        {
-            return RedirectToAction("Index", "Home");
-        }
-
-        var result = await _accountsCreator.AddAccountAsync(model.ToRegister());
-        if (result.IsSuccess)
-        {
-            await _authorizer.SignIn(result.Data);
-            return RedirectToAction("Index", "Home");
-        }
-
-        ModelState.AddModelError("", result.Error);
-        return View(model);
+        var result = await _accountsCreator.AddAccountAsync(accountDto);
+        return _resultMaker.ResolveResult(result);
     }
 
-    [HttpGet]
-    public IActionResult Login()
+    [HttpPost("accounts/login")]
+    public async Task<ActionResult<ResultDto<AccountDto>>> Login([FromBody] AccountDto accountDto)
     {
-        return GetViewOrRedirect();
-    }
-
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Login(LoginViewModel model)
-    {
-        if (model == null || !_accountValidator.CheckIfLoginIsValid(model.ToLogin()))
+        var validationResult = _accountValidator.CheckIfLoginIsValid(accountDto);
+        if (!validationResult.IsSuccess)
         {
-            ViewBag.Message = Constants.ErrorMessages.InvalidAccount;
-            return View("Notification");
+            return _resultMaker.ResolveResult(validationResult);
         }
 
-        var result = await _accountsProvider.GetAccountAsync(model.ToLogin());
-        if (result.IsSuccess)
-        {
-            await _authorizer.SignIn(result.Data);
-            return RedirectToAction("Index", "Home");
-        }
-
-        ModelState.AddModelError("", result.Error);
-        return View(model);
+        var result = await _accountsProvider.GetAccountAsync(accountDto);
+        return _resultMaker.ResolveResult(result);
     }
 
-    public async Task<IActionResult> Logout()
-    {
-        await _authorizer.SignOut();
-        return RedirectToAction("Index", "Home");
-    }
-
-    [HttpGet]
-    [Authorize(Roles = Constants.Roles.AdminPlus)]
-    public async Task<IActionResult> Admins(int pageNumber = 1)
+    [HttpGet("accounts/admins")]
+    public async Task<ActionResult<ResultDto<PaginatedListDto<AccountDto>>>> Admins([FromQuery] int pageNumber = 1)
     {
         int count = (await _accountsProvider.GetAdminsCountAsync()).Data;
+        if (count == 0)
+        {
+            return _resultMaker.ResolveResult(ResultCreator.GetValidResult(
+                new PaginatedListDto<AccountDto> {CountOfAll = 0, LimitedList = new List<AccountDto>()},
+                HttpStatusCode.NoContent));
+        }
+
         if (!PageValidator.CheckIfPageIsValid(pageNumber, Paginator.Limit, count))
         {
-            ViewBag.Message = Constants.ErrorMessages.InvalidPage;
-            return View("Notification");
+            return _resultMaker.ResolveResult(ResultCreator.GetInvalidResult<PaginatedListDto<AccountDto>>(
+                Constants.ErrorMessages.InvalidPage, HttpStatusCode.BadRequest));
         }
 
         int offset = Paginator.GetOffset(pageNumber);
-        List<Account> list = (await _accountsProvider.GetAdminsAsync(offset, Paginator.Limit)).Data;
-        PaginatedListViewModel<Account> model = list.ToPaginatedList(Title.Admins, count, pageNumber);
-        return View(model);
+        List<AccountDto> list = (await _accountsProvider.GetAdminsAsync(offset, Paginator.Limit)).Data;
+        return _resultMaker.ResolveResult(ResultCreator.GetValidResult(
+            new PaginatedListDto<AccountDto> {CountOfAll = count, LimitedList = list}, HttpStatusCode.OK));
     }
 
-    [HttpGet]
-    [Authorize(Roles = Constants.Roles.AdminPlus)]
-    public async Task<IActionResult> Users(int pageNumber = 1)
+    [HttpGet("accounts/users")]
+    public async Task<ActionResult<ResultDto<PaginatedListDto<AccountDto>>>> Users([FromQuery] int pageNumber = 1)
     {
         int count = (await _accountsProvider.GetUsersCountAsync()).Data;
+        if (count == 0)
+        {
+            return _resultMaker.ResolveResult(ResultCreator.GetValidResult(
+                new PaginatedListDto<AccountDto> {CountOfAll = 0, LimitedList = new List<AccountDto>()},
+                HttpStatusCode.NoContent));
+        }
+
         if (!PageValidator.CheckIfPageIsValid(pageNumber, Paginator.Limit, count))
         {
-            ViewBag.Message = Constants.ErrorMessages.InvalidPage;
-            return View("Notification");
+            return _resultMaker.ResolveResult(ResultCreator.GetInvalidResult<PaginatedListDto<AccountDto>>(
+                Constants.ErrorMessages.InvalidPage, HttpStatusCode.BadRequest));
         }
 
         int offset = Paginator.GetOffset(pageNumber);
-        List<Account> list = (await _accountsProvider.GetUsersAsync(offset, Paginator.Limit)).Data;
-        PaginatedListViewModel<Account> model = list.ToPaginatedList(Title.Users, count, pageNumber);
-        return View(model);
+        List<AccountDto> list = (await _accountsProvider.GetUsersAsync(offset, Paginator.Limit)).Data;
+        return _resultMaker.ResolveResult(ResultCreator.GetValidResult(
+            new PaginatedListDto<AccountDto> {CountOfAll = count, LimitedList = list}, HttpStatusCode.OK));
     }
 
-    [Authorize(Roles = Constants.Roles.SuperAdmin)]
-    public async Task<IActionResult> MakeAdmin(string email)
+    [HttpPut("accounts/make-admin")]
+    public async Task<ActionResult<ResultDto<AccountDto>>> MakeAdmin([FromBody] AccountDto account)
     {
-        if (!await _accountValidator.CheckIfEmailExist(email))
+        var validationResult = await _accountValidator.CheckIfEmailExist(account.Email);
+        if (!validationResult.IsSuccess)
         {
-            ViewBag.Message = Constants.ErrorMessages.InvalidEmail;
-            return View("Notification");
+            return _resultMaker.ResolveResult(validationResult);
         }
 
-        await _accountsUpdater.SetAdminRightsAsync(email);
-        return RedirectToAction("Users", "Account");
+        var result = await _accountsUpdater.SetAdminRightsAsync(account.Email);
+        return _resultMaker.ResolveResult(result);
     }
 
-    [Authorize(Roles = Constants.Roles.SuperAdmin)]
-    public async Task<IActionResult> MakeUser(string email)
+    [HttpPut("accounts/make-user")]
+    public async Task<ActionResult<ResultDto<AccountDto>>> MakeUser([FromBody] AccountDto account)
     {
-        if (!await _accountValidator.CheckIfEmailExist(email))
+        var validationResult = await _accountValidator.CheckIfEmailExist(account.Email);
+        if (!validationResult.IsSuccess)
         {
-            ViewBag.Message = Constants.ErrorMessages.InvalidEmail;
-            return View("Notification");
+            return _resultMaker.ResolveResult(validationResult);
         }
 
-        await _accountsUpdater.RemoveAdminRightsAsync(email);
-        return RedirectToAction("Admins", "Account");
-    }
-
-    private IActionResult GetViewOrRedirect()
-    {
-        if (User.Identity is {IsAuthenticated: true})
-        {
-            return RedirectToAction("Index", "Home");
-        }
-
-        return View();
+        var result = await _accountsUpdater.RemoveAdminRightsAsync(account.Email);
+        return _resultMaker.ResolveResult(result);
     }
 }
