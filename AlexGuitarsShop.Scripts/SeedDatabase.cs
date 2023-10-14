@@ -8,16 +8,16 @@ public static class SeedDatabase
 {
     private static AlexGuitarsShopDbContext _db;
 
-    public static void Init(DbContextOptions<AlexGuitarsShopDbContext> options)
+    public static async void InitAsync(DbContextOptions<AlexGuitarsShopDbContext> options)
     {
         _db = new AlexGuitarsShopDbContext(options);
         ModelBuilder builder = new ModelBuilder();
-        _db.Database.EnsureDeleted();
-        _db.Database.EnsureCreated();
+        await _db.Database.EnsureDeletedAsync();
+        await _db.Database.EnsureCreatedAsync();
         InitGuitars(builder);
         InitAccounts(builder);
         InitCartItems(builder);
-        FillTables();
+        await FillTables();
     }
 
     private static void InitGuitars(ModelBuilder modelBuilder)
@@ -36,7 +36,7 @@ public static class SeedDatabase
         modelBuilder.Entity<Account>(builder =>
         {
             builder.ToTable("Account").HasKey(x => x.Id);
-            
+
             builder.Property(x => x.Id).ValueGeneratedOnAdd();
             builder.Property(x => x.Name).HasMaxLength(15).IsRequired();
             builder.Property(x => x.Email).HasMaxLength(30).IsRequired();
@@ -65,10 +65,10 @@ public static class SeedDatabase
             .HasForeignKey(cartItem => cartItem.AccountId);
     }
 
-    private static void FillTables()
+    private static async Task FillTables()
     {
-        _db.Guitar.AddRange(DataFiller.GetGuitars());
+        _db.Guitar.AddRange(await DataFiller.GetGuitarsAsync());
         _db.Account.AddRange(DataFiller.GetAccounts());
-        _db.SaveChanges();
+        await _db.SaveChangesAsync();
     }
 }

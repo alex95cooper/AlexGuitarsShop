@@ -16,7 +16,7 @@ public class CartItemRepository : ICartItemRepository
     public async Task<CartItem> FindAsync(int id, int accountId)
     {
         return await _db.CartItem
-            .Where(x => x.AccountId == accountId )
+            .Where(x => x.AccountId == accountId)
             .Include(x => x.Product)
             .Where(cartItem => cartItem.Product.Id == id)
             .FirstOrDefaultAsync();

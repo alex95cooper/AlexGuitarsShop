@@ -92,6 +92,7 @@ public class GuitarController : Controller
         return View("Notification");
     }
 
+    [HttpGet]
     [Authorize(Roles = Constants.Roles.AdminPlus)]
     public async Task<IActionResult> Delete(int id)
     {

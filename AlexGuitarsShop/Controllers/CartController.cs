@@ -20,7 +20,7 @@ public class CartController : Controller
     private readonly IAccountsProvider _accountProvider;
     private readonly ICartItemValidator _cartItemValidator;
     private readonly IGuitarValidator _guitarValidator;
-    private readonly ActionResultMaker _resultMaker;
+    private readonly ActionResultBuilder _resultBuilder;
 
     public CartController(ICartItemsCreator cartItemsCreator, ICartItemsProvider cartItemsProvider,
         ICartItemsUpdater cartItemsUpdater, IGuitarsProvider guitarsProvider, IAccountsProvider accountProvider,
@@ -33,7 +33,7 @@ public class CartController : Controller
         _accountProvider = accountProvider;
         _cartItemValidator = cartItemValidator;
         _guitarValidator = guitarValidator;
-        _resultMaker = new ActionResultMaker();
+        _resultBuilder = new ActionResultBuilder();
     }
 
 
@@ -44,86 +44,91 @@ public class CartController : Controller
         if (result.IsSuccess)
         {
             var cartResult = await _cartItemsProvider.GetCartAsync(result.Data);
-            return _resultMaker.ResolveResult(cartResult);
+            return _resultBuilder.ResolveResult(cartResult);
         }
 
-        return _resultMaker.ResolveResult(
+        return _resultBuilder.ResolveResult(
             ResultCreator.GetInvalidResult<List<CartItemDto>>(
                 Constants.ErrorMessages.InvalidEmail, HttpStatusCode.OK));
     }
 
-    [HttpPost("carts/add")]
-    public async Task<ActionResult<ResultDto<CartItemDto>>> Add([FromBody] CartItemDto item)
+    [HttpPost("carts/add-product")]
+    public async Task<ActionResult<ResultDto>> Add([FromBody] CartItemDto item)
     {
         var result = GetAccountId(item.BuyerEmail);
         if (!result.IsSuccess)
         {
-            return _resultMaker.ResolveResult(ResultCreator.GetInvalidResult<CartItemDto>(
+            return _resultBuilder.ResolveResult(ResultCreator.GetInvalidResult(
                 result.Error, HttpStatusCode.BadRequest));
         }
 
         var validationResult = await _guitarValidator.CheckIfGuitarExist(item.ProductId);
         if (!validationResult.IsSuccess)
         {
-            return _resultMaker.ResolveResult(ResultCreator.GetInvalidResult<CartItemDto>(
+            return _resultBuilder.ResolveResult(ResultCreator.GetInvalidResult(
                 validationResult.Error, HttpStatusCode.BadRequest));
         }
 
         var guitarResult = await _guitarsProvider.GetReferenceGuitarAsync(item.ProductId);
         var cartResult = await _cartItemsCreator.AddNewCartItemAsync(guitarResult.Data, result.Data);
-        return _resultMaker.ResolveResult(cartResult);
+        return _resultBuilder.ResolveResult(cartResult);
     }
 
-    [HttpPut("carts/increment")]
-    public async Task<ActionResult<ResultDto<CartItemDto>>> Increment([FromBody] CartItemDto item)
+    [HttpPut("carts/increment-product")]
+    public async Task<ActionResult<ResultDto>> Increment([FromBody] CartItemDto item)
     {
         var validationResult = await ValidateUpdateRequest(item);
         if (validationResult.IsSuccess)
         {
-            return _resultMaker.ResolveResult(
+            return _resultBuilder.ResolveResult(
                 await _cartItemsUpdater.IncrementAsync(item.ProductId,
                     validationResult.Data.BuyerId));
         }
 
-        return _resultMaker.ResolveResult(validationResult);
+        return _resultBuilder.ResolveResult(ResultCreator.GetInvalidResult(
+            validationResult.Error, HttpStatusCode.BadRequest));
     }
 
-    [HttpPut("carts/decrement")]
-    public async Task<ActionResult<ResultDto<CartItemDto>>> Decrement([FromBody] CartItemDto item)
+    [HttpPut("carts/decrement-product")]
+    public async Task<ActionResult<ResultDto>> Decrement([FromBody] CartItemDto item)
     {
         var validationResult = await ValidateUpdateRequest(item);
         if (validationResult.IsSuccess)
         {
-            return _resultMaker.ResolveResult(
+            return _resultBuilder.ResolveResult(
                 await _cartItemsUpdater.DecrementAsync(item.ProductId,
                     validationResult.Data.BuyerId));
         }
 
-        return _resultMaker.ResolveResult(validationResult);
+        return _resultBuilder.ResolveResult(ResultCreator.GetInvalidResult(
+            validationResult.Error, HttpStatusCode.BadRequest));
     }
 
-    [HttpPut("carts/delete")]
-    public async Task<ActionResult<ResultDto<CartItemDto>>> Remove([FromBody] CartItemDto item)
+    [HttpPut("carts/delete-product")]
+    public async Task<ActionResult<ResultDto>> Remove([FromBody] CartItemDto item)
     {
         var validationResult = await ValidateUpdateRequest(item);
         if (validationResult.IsSuccess)
         {
-            return _resultMaker.ResolveResult(
+            return _resultBuilder.ResolveResult(
                 await _cartItemsUpdater.RemoveAsync(item.ProductId,
                     validationResult.Data.BuyerId));
         }
 
-        return _resultMaker.ResolveResult(validationResult);
+        return _resultBuilder.ResolveResult(ResultCreator.GetInvalidResult(
+            validationResult.Error, HttpStatusCode.BadRequest));
     }
 
-    [HttpPut("carts/order")]
-    public async Task Order([FromBody] AccountDto accountDto)
+    [HttpPut("carts/make-order")]
+    public async Task<ActionResult<ResultDto>> Order([FromBody] AccountDto accountDto)
     {
         var result = GetAccountId(accountDto.Email);
         if (result.IsSuccess)
         {
             await _cartItemsUpdater.OrderAsync(result.Data);
         }
+
+        return _resultBuilder.ResolveResult(ResultCreator.GetValidResult());
     }
 
     private IResult<int> GetAccountId(string email)

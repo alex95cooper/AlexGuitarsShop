@@ -4,9 +4,9 @@ namespace AlexGuitarsShop.Domain.Interfaces.Guitar;
 
 public interface IGuitarValidator
 {
-    Task<IResult<GuitarDto>> CheckIfGuitarExist(int id);
-    
-    IResult<GuitarDto> CheckIfGuitarIsValid(GuitarDto guitarDto);
+    Task<IResult> CheckIfGuitarExist(int id);
 
-    Task<IResult<GuitarDto>> CheckIfGuitarUpdateIsValid(GuitarDto guitarDto);
+    IResult CheckIfGuitarIsValid(GuitarDto guitarDto);
+
+    Task<IResult> CheckIfGuitarUpdateIsValid(GuitarDto guitarDto);
 }

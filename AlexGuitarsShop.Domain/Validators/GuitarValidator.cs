@@ -14,38 +14,38 @@ public class GuitarValidator : IGuitarValidator
         _guitarRepository = guitarRepository;
     }
 
-    public async Task<IResult<GuitarDto>> CheckIfGuitarExist(int id)
+    public async Task<IResult> CheckIfGuitarExist(int id)
     {
         return await _guitarRepository.GetAsync(id) != null
-            ? ResultCreator.GetValidResult(new GuitarDto {Id = id}, HttpStatusCode.OK)
-            : ResultCreator.GetInvalidResult<GuitarDto>(
+            ? ResultCreator.GetValidResult()
+            : ResultCreator.GetInvalidResult(
                 Constants.ErrorMessages.InvalidGuitarId, HttpStatusCode.BadRequest);
     }
 
-    public IResult<GuitarDto> CheckIfGuitarIsValid(GuitarDto guitarDto)
+    public IResult CheckIfGuitarIsValid(GuitarDto guitarDto)
     {
         if (guitarDto != null
             && CheckIfNameIsValid(guitarDto.Name)
             && CheckIfPriceIsValid(guitarDto.Price)
             && CheckIfDescriptionIsValid(guitarDto.Description))
         {
-            return ResultCreator.GetValidResult(guitarDto, HttpStatusCode.OK);
+            return ResultCreator.GetValidResult();
         }
 
-        return ResultCreator.GetInvalidResult<GuitarDto>(
-            Constants.ErrorMessages.InvalidAccount, HttpStatusCode.BadRequest);
+        return ResultCreator.GetInvalidResult(
+            Constants.ErrorMessages.InvalidGuitar, HttpStatusCode.BadRequest);
     }
 
-    public async Task<IResult<GuitarDto>> CheckIfGuitarUpdateIsValid(GuitarDto guitarDto)
+    public async Task<IResult> CheckIfGuitarUpdateIsValid(GuitarDto guitarDto)
     {
         var result = await CheckIfGuitarExist(guitarDto.Id);
         if (result.IsSuccess && CheckIfGuitarIsValid(guitarDto).IsSuccess)
         {
-            return ResultCreator.GetValidResult(guitarDto, HttpStatusCode.OK);
+            return ResultCreator.GetValidResult();
         }
 
-        return ResultCreator.GetInvalidResult<GuitarDto>(
-            Constants.ErrorMessages.InvalidAccount, HttpStatusCode.BadRequest);
+        return ResultCreator.GetInvalidResult(
+            Constants.ErrorMessages.InvalidGuitar, HttpStatusCode.BadRequest);
     }
 
     private static bool CheckIfNameIsValid(string name)

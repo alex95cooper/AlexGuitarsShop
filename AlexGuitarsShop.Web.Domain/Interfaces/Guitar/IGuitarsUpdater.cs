@@ -6,7 +6,7 @@ namespace AlexGuitarsShop.Web.Domain.Interfaces.Guitar;
 
 public interface IGuitarsUpdater
 {
-    Task<IResultDto<GuitarDto>> UpdateGuitarAsync(GuitarViewModel model);
+    Task<IResultDto> UpdateGuitarAsync(GuitarViewModel model);
 
-    Task<IResultDto<int>> DeleteGuitarAsync(int id);
+    Task<IResultDto> DeleteGuitarAsync(int id);
 }

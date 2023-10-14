@@ -15,18 +15,17 @@ public class AccountValidator : IAccountValidator
         _accountRepository = accountRepository;
     }
 
-    public async Task<IResult<AccountDto>> CheckIfEmailExist(string email)
+    public async Task<IResult> CheckIfEmailExist(string email)
     {
         if (email == null)
         {
-            ResultCreator.GetInvalidResult<AccountDto>(
+            return ResultCreator.GetInvalidResult<AccountDto>(
                 Constants.ErrorMessages.InvalidEmail, HttpStatusCode.BadRequest);
         }
 
         return await _accountRepository.FindAsync(email) != null
-            ? ResultCreator.GetValidResult(new AccountDto {Email = email}, HttpStatusCode.OK)
-            : ResultCreator.GetInvalidResult<AccountDto>(
-                Constants.ErrorMessages.InvalidEmail, HttpStatusCode.BadRequest);
+            ? ResultCreator.GetValidResult()
+            : ResultCreator.GetInvalidResult(Constants.ErrorMessages.InvalidEmail, HttpStatusCode.BadRequest);
     }
 
     public IResult<AccountDto> CheckIfRegisterIsValid(AccountDto accountDto)

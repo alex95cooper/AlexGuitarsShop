@@ -14,6 +14,16 @@ public static class ResultCreator
         };
     }
 
+    public static Result GetInvalidResult(string message, HttpStatusCode status)
+    {
+        return new Result
+        {
+            StatusCode = status,
+            IsSuccess = false,
+            Error = message
+        };
+    }
+
     public static Result<T> GetValidResult<T>(T data, HttpStatusCode status)
     {
         return new Result<T>
@@ -21,6 +31,15 @@ public static class ResultCreator
             StatusCode = status,
             IsSuccess = true,
             Data = data
+        };
+    }
+
+    public static Result GetValidResult()
+    {
+        return new Result
+        {
+            StatusCode = HttpStatusCode.OK,
+            IsSuccess = true,
         };
     }
 }

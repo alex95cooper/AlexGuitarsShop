@@ -6,6 +6,5 @@ public class _Pagination : PageModel
 {
     public void OnGet()
     {
-        
     }
 }

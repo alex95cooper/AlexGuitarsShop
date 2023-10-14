@@ -54,7 +54,7 @@ public class AccountRepository : IAccountRepository
         Account account = await FindAsync(email);
         if (account != null)
         {
-            account.Role = (Role)role;
+            account.Role = (Role) role;
             _db.Account.Update(account);
             await _db.SaveChangesAsync();
         }

@@ -1,5 +1,3 @@
-using System.Net;
-using AlexGuitarsShop.Common.Models;
 using AlexGuitarsShop.DAL.Interfaces;
 using AlexGuitarsShop.DAL.Models;
 using AlexGuitarsShop.Domain.Interfaces.CartItem;
@@ -15,7 +13,7 @@ public class CartItemsCreator : ICartItemsCreator
         _cartItemRepository = cartItemRepository;
     }
 
-    public async Task<IResult<CartItemDto>> AddNewCartItemAsync(Guitar guitar, int accountId)
+    public async Task<IResult> AddNewCartItemAsync(Guitar guitar, int accountId)
     {
         CartItem item = _cartItemRepository.FindAsync(guitar.Id, accountId).Result;
         if (item == null)
@@ -24,6 +22,6 @@ public class CartItemsCreator : ICartItemsCreator
             await _cartItemRepository.CreateAsync(item, accountId);
         }
 
-        return ResultCreator.GetValidResult(new CartItemDto(), HttpStatusCode.OK);
+        return ResultCreator.GetValidResult();
     }
 }

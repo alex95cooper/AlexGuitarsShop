@@ -1,4 +1,3 @@
-using System.Net;
 using AlexGuitarsShop.Common.Models;
 using AlexGuitarsShop.DAL.Interfaces;
 using AlexGuitarsShop.Domain.Extensions;
@@ -16,10 +15,10 @@ public class GuitarsCreator : IGuitarsCreator
         _guitarRepository = guitarRepository;
     }
 
-    public async Task<IResult<GuitarDto>> AddGuitarAsync(GuitarDto guitarDto)
+    public async Task<IResult> AddGuitarAsync(GuitarDto guitarDto)
     {
         Guitar guitarDal = guitarDto.ToGuitarDal();
         await _guitarRepository.AddAsync(guitarDal);
-        return ResultCreator.GetValidResult(guitarDto, HttpStatusCode.OK);
+        return ResultCreator.GetValidResult();
     }
 }
