@@ -17,7 +17,7 @@ public static class GuitarExtensions
             IsDeleted = guitar.IsDeleted
         };
     }
-    
+
     public static Guitar ToGuitarDal(this GuitarDto guitarDto)
     {
         return new Guitar

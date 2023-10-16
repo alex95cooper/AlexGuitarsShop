@@ -13,13 +13,13 @@ public class AccountsUpdater : IAccountsUpdater
         _shopBackendService = shopBackendService;
     }
 
-    public async Task<IResultDto<AccountDto>> SetAdminRightsAsync(string email)
+    public async Task<IResultDto> SetAdminRightsAsync(string email)
     {
         AccountDto accountDto = new AccountDto {Email = email};
         return await _shopBackendService.PutAsync(accountDto, Constants.Routes.MakeAdmin);
     }
 
-    public async Task<IResultDto<AccountDto>> RemoveAdminRightsAsync(string email)
+    public async Task<IResultDto> RemoveAdminRightsAsync(string email)
     {
         AccountDto accountDto = new AccountDto {Email = email};
         return await _shopBackendService.PutAsync(accountDto, Constants.Routes.MakeUser);

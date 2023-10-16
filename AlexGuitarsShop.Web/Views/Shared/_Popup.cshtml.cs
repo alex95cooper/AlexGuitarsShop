@@ -6,6 +6,5 @@ public class _Popup : PageModel
 {
     public void OnGet()
     {
-        
     }
 }

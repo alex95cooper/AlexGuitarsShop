@@ -33,7 +33,7 @@ public class CartItemsProvider : ICartItemsProvider
         if (Context.User.Identity is {IsAuthenticated: true})
         {
             return await _shopBackendService.GetAsync<List<CartItemDto>, string>(
-                Constants.Routes.GetCart,Context.User.Identity.Name);
+                Constants.Routes.GetCart, Context.User.Identity.Name);
         }
 
         return ResultDtoCreator.GetValidResult(

@@ -67,6 +67,7 @@ public class AccountController : Controller
         return View("Notification");
     }
 
+    [HttpGet]
     public async Task<IActionResult> Logout()
     {
         await _authorizer.SignOut();
@@ -117,8 +118,9 @@ public class AccountController : Controller
         return View("Notification");
     }
 
+    [HttpGet]
     [Authorize(Roles = Constants.Roles.SuperAdmin)]
-    public async Task<IActionResult> MakeAdmin(string email)
+    public async Task<IActionResult> MakeAdmin([FromRoute] string email)
     {
         var result = await _accountsUpdater.SetAdminRightsAsync(email);
         if (result.IsSuccess)
@@ -130,8 +132,9 @@ public class AccountController : Controller
         return View("Notification");
     }
 
+    [HttpGet]
     [Authorize(Roles = Constants.Roles.SuperAdmin)]
-    public async Task<IActionResult> MakeUser(string email)
+    public async Task<IActionResult> MakeUser([FromRoute] string email)
     {
         var result = await _accountsUpdater.RemoveAdminRightsAsync(email);
         if (result.IsSuccess)

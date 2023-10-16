@@ -15,14 +15,14 @@ public class GuitarsCreator : IGuitarsCreator
         _shopBackendService = shopBackendService;
     }
 
-    public async Task<IResultDto<GuitarDto>> AddGuitarAsync(GuitarViewModel model)
+    public async Task<IResultDto> AddGuitarAsync(GuitarViewModel model)
     {
         if (model == null)
         {
             return ResultDtoCreator.GetInvalidResult<GuitarDto>(Constants.Guitar.IncorrectGuitar);
         }
 
-        GuitarDto guitarDto = model.ToGuitar();
+        GuitarDto guitarDto = model.ToGuitarDto();
         guitarDto.Image = model!.Avatar == null ? model.Image : model.Avatar.ToBase64String();
         return await _shopBackendService.PostAsync(guitarDto, Constants.Routes.AddGuitar);
     }

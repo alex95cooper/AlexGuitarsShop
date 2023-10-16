@@ -27,9 +27,9 @@ public class CartItemsCreator : ICartItemsCreator
         set => Context.Session.SetString(Constants.Cart.Key, value);
     }
 
-    public async Task<IResultDto<CartItemDto>> AddNewCartItemAsync(GuitarViewModel model)
+    public async Task<IResultDto> AddNewCartItemAsync(GuitarViewModel model)
     {
-        GuitarDto guitarDto = model.ToGuitar();
+        GuitarDto guitarDto = model.ToGuitarDto();
         if (Context.User.Identity is {IsAuthenticated: true})
         {
             return await AddToDbAsync(guitarDto.Id);
@@ -47,7 +47,7 @@ public class CartItemsCreator : ICartItemsCreator
         return ResultDtoCreator.GetValidResult(itemDto);
     }
 
-    private async Task<IResultDto<CartItemDto>> AddToDbAsync(int id)
+    private async Task<IResultDto> AddToDbAsync(int id)
     {
         CartItemDto item = new() {ProductId = id, BuyerEmail = Context.User.Identity!.Name, Quantity = 1};
         var result = await _shopBackendService.PostAsync(item, Constants.Routes.AddCartItem);

@@ -5,7 +5,7 @@
 }
 
 <div class="register-page-container">
-  <div class="register-page-background-container">
+    <div class="register-page-background-container">
         <div class="register-content">
             <h2>New user register</h2>
             <form id="form" method="post" asp-controller="Account" asp-action="Register">
@@ -13,9 +13,9 @@
                 <div>
                     <label asp-for="Name"></label><br/>
                     <div class="error-field" id="error-name"></div>
-                    <input class="register-input-text" id="name" asp-for="Name" placeholder="From 3 to 20 symbols.." 
-                    pattern=".{3,20}" 
-                    required/>
+                    <input class="register-input-text" id="name" asp-for="Name" placeholder="From 3 to 20 symbols.."
+                           pattern=".{3,20}"
+                           required/>
                     <span asp-validation-for="Name"></span>
                 </div>
                 <div>
@@ -41,7 +41,7 @@
                 </div>
             </form>
         </div>
-  </div>
+    </div>
 </div>
 
 <script>

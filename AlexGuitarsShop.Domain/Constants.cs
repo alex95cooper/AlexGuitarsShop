@@ -20,11 +20,14 @@ public static class Constants
         public const int DescriptionMinLength = 10;
         public const int DescriptionMaxLength = 600;
     }
-    
+
     public static class ErrorMessages
     {
         public const string InvalidAccount = "The information about the account is not filled correctly!";
         public const string InvalidEmail = "Entered Email is not exists!";
+        public const string InvalidGuitar = "The information about the guitar is not filled correctly!";
         public const string InvalidGuitarId = "Guitar by this id don't exist!";
+        public const string UserNotFound = "User is not found";
+        public const string InvalidPassword = "Invalid password or login";
     }
 }

@@ -17,20 +17,20 @@ public class GuitarsUpdater : IGuitarsUpdater
         _shopBackendService = shopBackendService;
     }
 
-    public async Task<IResultDto<GuitarDto>> UpdateGuitarAsync(GuitarViewModel model)
+    public async Task<IResultDto> UpdateGuitarAsync(GuitarViewModel model)
     {
         if (model == null)
         {
             return ResultDtoCreator.GetInvalidResult<GuitarDto>(ErrorMessage);
         }
 
-        GuitarDto guitarDto = model.ToGuitar();
+        GuitarDto guitarDto = model.ToGuitarDto();
         guitarDto.Image = model.Avatar == null ? model.Image : model.Avatar.ToBase64String();
-        return await _shopBackendService.PutAsync(guitarDto, 
+        return await _shopBackendService.PutAsync(guitarDto,
             string.Format(Constants.Routes.UpdateGuitar, guitarDto.Id));
     }
 
-    public async Task<IResultDto<int>> DeleteGuitarAsync(int id)
+    public async Task<IResultDto> DeleteGuitarAsync(int id)
     {
         return await _shopBackendService.DeleteAsync(string.Format(Constants.Routes.DeleteGuitar, id));
     }

@@ -21,7 +21,9 @@ public class AccountsProvider : IAccountsProvider
         var account = await _accountRepository.FindAsync(accountDto.Email);
         if (account == null || account.Password != PasswordHasher.HashPassword(accountDto.Password))
         {
-            string message = account == null ? "User is not found" : "Invalid password or login";
+            string message = account == null
+                ? Constants.ErrorMessages.UserNotFound
+                : Constants.ErrorMessages.InvalidPassword;
             return ResultCreator.GetInvalidResult<AccountDto>(message, HttpStatusCode.BadRequest);
         }
 

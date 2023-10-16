@@ -1,5 +1,6 @@
 using System.Text;
 using AlexGuitarsShop.Common;
+using AlexGuitarsShop.Common.Models;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 
@@ -30,14 +31,29 @@ public class ShopBackendService : IShopBackendService
         }
     }
 
-    public async Task<IResultDto<T>> PostAsync<T>(T modelDto, string route)
+    public async Task<IResultDto<AccountDto>> PostAsync(AccountDto modelDto, string route)
     {
         try
         {
             var content = BuildContent(modelDto);
             string path = BuildPath(route);
             using var response = await _client.PostAsync(path, content);
-            return await Deserialize<T>(response);
+            return await Deserialize<AccountDto>(response);
+        }
+        catch
+        {
+            return BuildBadResult<AccountDto>();
+        }
+    }
+
+    public async Task<IResultDto> PostAsync<T>(T modelDto, string route)
+    {
+        try
+        {
+            var content = BuildContent(modelDto);
+            string path = BuildPath(route);
+            using var response = await _client.PostAsync(path, content);
+            return await Deserialize(response);
         }
         catch
         {
@@ -45,14 +61,14 @@ public class ShopBackendService : IShopBackendService
         }
     }
 
-    public async Task<IResultDto<T>> PutAsync<T>(T modelDto, string route)
+    public async Task<IResultDto> PutAsync<T>(T modelDto, string route)
     {
         try
         {
             var content = BuildContent(modelDto);
             string path = BuildPath(route);
             using var response = await _client.PutAsync(path, content);
-            return await Deserialize<T>(response);
+            return await Deserialize(response);
         }
         catch
         {
@@ -60,17 +76,17 @@ public class ShopBackendService : IShopBackendService
         }
     }
 
-    public async Task<IResultDto<int>> DeleteAsync(string route)
+    public async Task<IResultDto> DeleteAsync(string route)
     {
         try
         {
             string path = BuildPath(route);
             using var response = await _client.DeleteAsync(path);
-            return await Deserialize<int>(response);
+            return await Deserialize(response);
         }
         catch
         {
-            return BuildBadResult<int>();
+            return BuildBadResult();
         }
     }
 
@@ -91,9 +107,20 @@ public class ShopBackendService : IShopBackendService
         return JsonConvert.DeserializeObject<ResultDto<T>>(await response.Content.ReadAsStringAsync());
     }
 
+    private static async Task<ResultDto> Deserialize(HttpResponseMessage response)
+    {
+        return JsonConvert.DeserializeObject<ResultDto>(await response.Content.ReadAsStringAsync());
+    }
+
     private static ResultDto<T> BuildBadResult<T>()
     {
         return ResultDtoCreator.GetInvalidResult<T>(
+            Constants.ErrorMessages.ServerError);
+    }
+
+    private static ResultDto BuildBadResult()
+    {
+        return ResultDtoCreator.GetInvalidResult(
             Constants.ErrorMessages.ServerError);
     }
 }

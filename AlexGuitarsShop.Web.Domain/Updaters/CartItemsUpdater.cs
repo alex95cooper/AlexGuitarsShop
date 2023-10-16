@@ -38,18 +38,18 @@ public class CartItemsUpdater : ICartItemsUpdater
         }
     }
 
-    public async Task<IResultDto<CartItemDto>> RemoveAsync(int id)
+    public async Task<IResultDto> RemoveAsync(int id)
     {
         if (Context.User.Identity!.IsAuthenticated)
         {
             CartItemDto item = new() {ProductId = id, BuyerEmail = Context.User.Identity.Name};
-            return await _shopBackendService.PutAsync(item,Constants.Routes.DeleteCartItem);
+            return await _shopBackendService.PutAsync(item, Constants.Routes.DeleteCartItem);
         }
 
         return RemoveFromSessionCart(id);
     }
 
-    public async Task<IResultDto<CartItemDto>> IncrementAsync(int id)
+    public async Task<IResultDto> IncrementAsync(int id)
     {
         if (Context.User.Identity!.IsAuthenticated)
         {
@@ -60,7 +60,7 @@ public class CartItemsUpdater : ICartItemsUpdater
         return IncrementSessionCart(id);
     }
 
-    public async Task<IResultDto<CartItemDto>> DecrementAsync(int id)
+    public async Task<IResultDto> DecrementAsync(int id)
     {
         if (Context.User.Identity!.IsAuthenticated)
         {
@@ -71,7 +71,7 @@ public class CartItemsUpdater : ICartItemsUpdater
         return DecrementSessionCart(id);
     }
 
-    public async Task<IResultDto<AccountDto>> OrderAsync()
+    public async Task<IResultDto> OrderAsync()
     {
         if (Context.User.Identity!.IsAuthenticated)
         {

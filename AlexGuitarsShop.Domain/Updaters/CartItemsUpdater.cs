@@ -1,5 +1,3 @@
-using System.Net;
-using AlexGuitarsShop.Common.Models;
 using AlexGuitarsShop.DAL.Interfaces;
 using AlexGuitarsShop.Domain.Interfaces.CartItem;
 
@@ -17,24 +15,24 @@ public class CartItemsUpdater : ICartItemsUpdater
         _cartItemRepository = cartItemRepository;
     }
 
-    public async Task<IResult<CartItemDto>> RemoveAsync(int id, int accountId)
+    public async Task<IResult> RemoveAsync(int id, int accountId)
     {
         await _cartItemRepository.DeleteAsync(id, accountId);
-        return ResultCreator.GetValidResult(new CartItemDto {ProductId = id}, HttpStatusCode.OK);
+        return ResultCreator.GetValidResult();
     }
 
-    public async Task<IResult<CartItemDto>> IncrementAsync(int id, int accountId)
+    public async Task<IResult> IncrementAsync(int id, int accountId)
     {
         int quantity = await _cartItemRepository.GetProductQuantityAsync(id, accountId) + 1;
-        if (quantity <= MaxQuantity)
+        if (quantity is > MinQuantity and <= MaxQuantity)
         {
             await _cartItemRepository.UpdateQuantityAsync(id, accountId, quantity);
         }
 
-        return ResultCreator.GetValidResult(new CartItemDto {ProductId = id}, HttpStatusCode.OK);
+        return ResultCreator.GetValidResult();
     }
 
-    public async Task<IResult<CartItemDto>> DecrementAsync(int id, int accountId)
+    public async Task<IResult> DecrementAsync(int id, int accountId)
     {
         int quantity = await _cartItemRepository.GetProductQuantityAsync(id, accountId) - 1;
         if (quantity >= MinQuantity)
@@ -42,12 +40,12 @@ public class CartItemsUpdater : ICartItemsUpdater
             await _cartItemRepository.UpdateQuantityAsync(id, accountId, quantity);
         }
 
-        return ResultCreator.GetValidResult(new CartItemDto {ProductId = id}, HttpStatusCode.OK);
+        return ResultCreator.GetValidResult();
     }
 
-    public async Task<IResult<string>> OrderAsync(int accountId)
+    public async Task<IResult> OrderAsync(int accountId)
     {
         await _cartItemRepository.DeleteAllAsync(accountId);
-        return ResultCreator.GetValidResult("", HttpStatusCode.OK);
+        return ResultCreator.GetValidResult();
     }
 }

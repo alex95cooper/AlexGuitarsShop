@@ -14,6 +14,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlexGuitarsShop.Web.Domain"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlexGuitarsShop.Common", "AlexGuitarsShop.Common\AlexGuitarsShop.Common.csproj", "{755248E0-AE03-4DD6-940D-9483D9A28AC5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlexGuitarsShop.Common.Tests", "AlexGuitarsShop.Common.Tests\AlexGuitarsShop.Common.Tests.csproj", "{CEFB92E2-A2DC-4B75-8713-36334CED1709}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlexGuitarsShop.Web.Domain.Tests", "AlexGuitarsShop.Web.Domain.Tests\AlexGuitarsShop.Web.Domain.Tests.csproj", "{828CA691-C72B-4AD3-8575-FA7623D59A6A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlexGuitarsShop.Tests", "AlexGuitarsShop.Tests\AlexGuitarsShop.Tests.csproj", "{274D9C0A-75DD-4C89-8797-6EF274E68E81}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlexGuitarsShop.Domain.Tests", "AlexGuitarsShop.Domain.Tests\AlexGuitarsShop.Domain.Tests.csproj", "{4799F61D-68C2-4999-B6EB-9B55BC28D284}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -48,6 +56,22 @@ Global
 		{755248E0-AE03-4DD6-940D-9483D9A28AC5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{755248E0-AE03-4DD6-940D-9483D9A28AC5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{755248E0-AE03-4DD6-940D-9483D9A28AC5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CEFB92E2-A2DC-4B75-8713-36334CED1709}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CEFB92E2-A2DC-4B75-8713-36334CED1709}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CEFB92E2-A2DC-4B75-8713-36334CED1709}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CEFB92E2-A2DC-4B75-8713-36334CED1709}.Release|Any CPU.Build.0 = Release|Any CPU
+		{828CA691-C72B-4AD3-8575-FA7623D59A6A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{828CA691-C72B-4AD3-8575-FA7623D59A6A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{828CA691-C72B-4AD3-8575-FA7623D59A6A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{828CA691-C72B-4AD3-8575-FA7623D59A6A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{274D9C0A-75DD-4C89-8797-6EF274E68E81}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{274D9C0A-75DD-4C89-8797-6EF274E68E81}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{274D9C0A-75DD-4C89-8797-6EF274E68E81}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{274D9C0A-75DD-4C89-8797-6EF274E68E81}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4799F61D-68C2-4999-B6EB-9B55BC28D284}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4799F61D-68C2-4999-B6EB-9B55BC28D284}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4799F61D-68C2-4999-B6EB-9B55BC28D284}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4799F61D-68C2-4999-B6EB-9B55BC28D284}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 	EndGlobalSection

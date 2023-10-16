@@ -16,7 +16,7 @@ public class AccountController : Controller
     private readonly IAccountsProvider _accountsProvider;
     private readonly IAccountsUpdater _accountsUpdater;
     private readonly IAccountValidator _accountValidator;
-    private readonly ActionResultMaker _resultMaker;
+    private readonly ActionResultBuilder _resultBuilder;
 
     public AccountController(IAccountsCreator accountsCreator, IAccountsProvider accountsProvider,
         IAccountsUpdater accountsUpdater, IAccountValidator accountValidator)
@@ -25,7 +25,7 @@ public class AccountController : Controller
         _accountsProvider = accountsProvider;
         _accountsUpdater = accountsUpdater;
         _accountValidator = accountValidator;
-        _resultMaker = new ActionResultMaker();
+        _resultBuilder = new ActionResultBuilder();
     }
 
     [HttpPost("accounts/register")]
@@ -34,11 +34,11 @@ public class AccountController : Controller
         var validationResult = _accountValidator.CheckIfRegisterIsValid(accountDto);
         if (!validationResult.IsSuccess)
         {
-            return _resultMaker.ResolveResult(validationResult);
+            return _resultBuilder.ResolveResult(validationResult);
         }
 
         var result = await _accountsCreator.AddAccountAsync(accountDto);
-        return _resultMaker.ResolveResult(result);
+        return _resultBuilder.ResolveResult(result);
     }
 
     [HttpPost("accounts/login")]
@@ -47,11 +47,11 @@ public class AccountController : Controller
         var validationResult = _accountValidator.CheckIfLoginIsValid(accountDto);
         if (!validationResult.IsSuccess)
         {
-            return _resultMaker.ResolveResult(validationResult);
+            return _resultBuilder.ResolveResult(validationResult);
         }
 
         var result = await _accountsProvider.GetAccountAsync(accountDto);
-        return _resultMaker.ResolveResult(result);
+        return _resultBuilder.ResolveResult(result);
     }
 
     [HttpGet("accounts/admins")]
@@ -60,20 +60,20 @@ public class AccountController : Controller
         int count = (await _accountsProvider.GetAdminsCountAsync()).Data;
         if (count == 0)
         {
-            return _resultMaker.ResolveResult(ResultCreator.GetValidResult(
+            return _resultBuilder.ResolveResult(ResultCreator.GetValidResult(
                 new PaginatedListDto<AccountDto> {CountOfAll = 0, LimitedList = new List<AccountDto>()},
                 HttpStatusCode.NoContent));
         }
 
         if (!PageValidator.CheckIfPageIsValid(pageNumber, Paginator.Limit, count))
         {
-            return _resultMaker.ResolveResult(ResultCreator.GetInvalidResult<PaginatedListDto<AccountDto>>(
+            return _resultBuilder.ResolveResult(ResultCreator.GetInvalidResult<PaginatedListDto<AccountDto>>(
                 Constants.ErrorMessages.InvalidPage, HttpStatusCode.BadRequest));
         }
 
         int offset = Paginator.GetOffset(pageNumber);
         List<AccountDto> list = (await _accountsProvider.GetAdminsAsync(offset, Paginator.Limit)).Data;
-        return _resultMaker.ResolveResult(ResultCreator.GetValidResult(
+        return _resultBuilder.ResolveResult(ResultCreator.GetValidResult(
             new PaginatedListDto<AccountDto> {CountOfAll = count, LimitedList = list}, HttpStatusCode.OK));
     }
 
@@ -83,46 +83,46 @@ public class AccountController : Controller
         int count = (await _accountsProvider.GetUsersCountAsync()).Data;
         if (count == 0)
         {
-            return _resultMaker.ResolveResult(ResultCreator.GetValidResult(
+            return _resultBuilder.ResolveResult(ResultCreator.GetValidResult(
                 new PaginatedListDto<AccountDto> {CountOfAll = 0, LimitedList = new List<AccountDto>()},
                 HttpStatusCode.NoContent));
         }
 
         if (!PageValidator.CheckIfPageIsValid(pageNumber, Paginator.Limit, count))
         {
-            return _resultMaker.ResolveResult(ResultCreator.GetInvalidResult<PaginatedListDto<AccountDto>>(
+            return _resultBuilder.ResolveResult(ResultCreator.GetInvalidResult<PaginatedListDto<AccountDto>>(
                 Constants.ErrorMessages.InvalidPage, HttpStatusCode.BadRequest));
         }
 
         int offset = Paginator.GetOffset(pageNumber);
         List<AccountDto> list = (await _accountsProvider.GetUsersAsync(offset, Paginator.Limit)).Data;
-        return _resultMaker.ResolveResult(ResultCreator.GetValidResult(
+        return _resultBuilder.ResolveResult(ResultCreator.GetValidResult(
             new PaginatedListDto<AccountDto> {CountOfAll = count, LimitedList = list}, HttpStatusCode.OK));
     }
 
     [HttpPut("accounts/make-admin")]
-    public async Task<ActionResult<ResultDto<AccountDto>>> MakeAdmin([FromBody] AccountDto account)
+    public async Task<ActionResult<ResultDto>> MakeAdmin([FromBody] AccountDto account)
     {
         var validationResult = await _accountValidator.CheckIfEmailExist(account.Email);
         if (!validationResult.IsSuccess)
         {
-            return _resultMaker.ResolveResult(validationResult);
+            return _resultBuilder.ResolveResult(validationResult);
         }
 
         var result = await _accountsUpdater.SetAdminRightsAsync(account.Email);
-        return _resultMaker.ResolveResult(result);
+        return _resultBuilder.ResolveResult(result);
     }
 
     [HttpPut("accounts/make-user")]
-    public async Task<ActionResult<ResultDto<AccountDto>>> MakeUser([FromBody] AccountDto account)
+    public async Task<ActionResult<ResultDto>> MakeUser([FromBody] AccountDto account)
     {
         var validationResult = await _accountValidator.CheckIfEmailExist(account.Email);
         if (!validationResult.IsSuccess)
         {
-            return _resultMaker.ResolveResult(validationResult);
+            return _resultBuilder.ResolveResult(validationResult);
         }
 
         var result = await _accountsUpdater.RemoveAdminRightsAsync(account.Email);
-        return _resultMaker.ResolveResult(result);
+        return _resultBuilder.ResolveResult(result);
     }
 }
