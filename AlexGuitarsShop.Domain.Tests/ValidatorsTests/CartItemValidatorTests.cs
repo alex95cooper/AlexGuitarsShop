@@ -19,10 +19,12 @@ public class CartItemValidatorTests
         _cartItemValidator = new CartItemValidator(_cartItemRepositoryMock.Object);
     }
 
-    [TestCase(10, 40)]
-    public async Task CheckIfRegisterIsValid_InvalidInput_ReturnsInvalidResult(int id, int accountId)
+    [Test]
+    public async Task CheckIfRegisterIsValid_InvalidInput_ReturnsInvalidResult()
     {
         // Arrange 
+        int id = 10;
+        int accountId = 40;
         var exceptedStatus = HttpStatusCode.BadRequest;
         var exceptedMessage = Constants.ErrorMessages.InvalidEmail;
 

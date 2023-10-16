@@ -72,11 +72,11 @@ public class AccountValidatorTests
         Assert.AreEqual(exceptedMessage, result.Error);
     }
 
-    [TestCase("Alex", "lex95bond@gmail.com", "asdfg")]
-    public void CheckIfRegisterIsValid_ValidInput_ReturnsValidResult(string name, string email, string password)
+    [Test]
+    public void CheckIfRegisterIsValid_ValidInput_ReturnsValidResult()
     {
         // Arrange 
-        var accountDto = new AccountDto {Name = name, Email = email, Password = password};
+        var accountDto = new AccountDto {Name = "Alex", Email = "lex95bond@gmail.com", Password = "asdfg"};
         var exceptedStatus = HttpStatusCode.OK;
 
         // Act
@@ -87,11 +87,12 @@ public class AccountValidatorTests
         Assert.AreEqual(exceptedStatus, result.StatusCode);
     }
 
-    [TestCase("lex95bond@gmail.com", "aaaaaaaaaassssssssssddddddddddffffffffffgggggggggghh")]
-    public void CheckIfLoginIsValid_InvalidInput_ReturnsInvalidResult(string email, string password)
+    [Test]
+    public void CheckIfLoginIsValid_InvalidInput_ReturnsInvalidResult()
     {
         // Arrange 
-        var accountDto = new AccountDto {Email = email, Password = password};
+        var accountDto = new AccountDto {Email = "lex95bond@gmail.com", 
+            Password = "aaaaaaaaaassssssssssddddddddddffffffffffgggggggggghh"};
         var exceptedStatus = HttpStatusCode.BadRequest;
         var exceptedMessage = Constants.ErrorMessages.InvalidAccount;
 
@@ -104,11 +105,11 @@ public class AccountValidatorTests
         Assert.AreEqual(exceptedMessage, result.Error);
     }
 
-    [TestCase("lex95bond@gmail.com", "asdfg")]
-    public void CheckIfLoginIsValid_ValidInput_ReturnsValidResult(string email, string password)
+    [Test]
+    public void CheckIfLoginIsValid_ValidInput_ReturnsValidResult()
     {
         // Arrange 
-        var accountDto = new AccountDto {Email = email, Password = password};
+        var accountDto = new AccountDto {Email = "lex95bond@gmail.com", Password = "asdfg"};
         var exceptedStatus = HttpStatusCode.OK;
 
         // Act

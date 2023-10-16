@@ -4,32 +4,41 @@ namespace AlexGuitarsShop.Common.Tests;
 
 public class ResultDtoCreatorTests
 {
-    [TestCase("Goodbye World!")]
-    public void GetInvalidResult_ErrorString_ReturnResult(string message)
+    [Test]
+    public void GetInvalidResultGeneric_ErrorString_ReturnsResult()
     {
-        // Arrange & Act 
-        var result = ResultDtoCreator.GetInvalidResult(message);
+        // Arrange
+        string errorMessage = "Goodbye World!";
+        
+        // Act 
+        var result = ResultDtoCreator.GetInvalidResult<int>(errorMessage);
 
         // Assert 
         Assert.IsFalse(result.IsSuccess);
-        Assert.AreEqual(message, result.Error);
+        Assert.AreEqual(errorMessage, result.Error);
     }
-
-    [TestCase("Goodbye World!")]
-    public void GetInvalidResult_ErrorString_ReturnResult<T>(string message)
+    
+    [Test]
+    public void GetInvalidResult_ErrorString_ReturnsResult()
     {
-        // Arrange & Act 
-        var result = ResultDtoCreator.GetInvalidResult<T>(message);
+        // Arrange
+        string errorMessage = "Goodbye World!";
+        
+        //  Act 
+        var result = ResultDtoCreator.GetInvalidResult(errorMessage);
 
         // Assert 
         Assert.IsFalse(result.IsSuccess);
-        Assert.AreEqual(message, result.Error);
+        Assert.AreEqual(errorMessage, result.Error);
     }
-
-    [TestCase("Data")]
-    public void GetValidResult_TData_ReturnResult<T>(T data)
+    
+    [Test]
+    public void GetValidResult_TData_ReturnResult()
     {
-        // Arrange & Act 
+        // Arrange
+        string data = "Data";
+        
+        // Act 
         var result = ResultDtoCreator.GetValidResult(data);
 
         // Assert 

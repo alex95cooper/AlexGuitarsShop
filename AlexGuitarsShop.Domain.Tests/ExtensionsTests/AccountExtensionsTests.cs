@@ -4,7 +4,7 @@ using AlexGuitarsShop.DAL.Models;
 using AlexGuitarsShop.Domain.Extensions;
 using NUnit.Framework;
 
-namespace AlexGuitarsShop.Domain.Tests;
+namespace AlexGuitarsShop.Domain.Tests.ExtensionsTests;
 
 public class AccountExtensionsTests
 {

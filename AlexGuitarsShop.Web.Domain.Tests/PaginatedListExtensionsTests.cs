@@ -6,10 +6,12 @@ namespace AlexGuitarsShop.Web.Domain.Tests;
 
 public class PaginatedListExtensionsTests
 {
-    [TestCase(Title.Catalog, 1)]
-    public void ToPaginatedListViewModel_PaginatedListDto_ReturnsViewModel(Title title, int pageNumber)
+    [Test]
+    public void ToPaginatedListViewModel_PaginatedListDto_ReturnsViewModel()
     {
         // Arrange
+        var title = Title.Catalog;
+        int pageNumber = 1;
         PaginatedListDto<int> listDto = new PaginatedListDto<int>
         {
             CountOfAll = 3, LimitedList = new List<int> {1, 2, 3}

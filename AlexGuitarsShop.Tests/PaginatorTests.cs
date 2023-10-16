@@ -5,10 +5,14 @@ namespace AlexGuitarsShop.Tests;
 
 public class PaginatorTests
 {
-    [TestCase(3, 20)]
-    public void GetOffset_PageNumber_ReturnOffset(int pageNumber, int expectedOffset)
+    [Test]
+    public void GetOffset_PageNumber_ReturnOffset()
     {
-        // Arrange & Act 
+        // Arrange
+        int pageNumber = 3;
+        int expectedOffset = 20;
+        
+        // Act 
         int offset = Paginator.GetOffset(pageNumber);
 
         // Assert 

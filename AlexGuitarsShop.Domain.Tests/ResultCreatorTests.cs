@@ -5,10 +5,14 @@ namespace AlexGuitarsShop.Domain.Tests;
 
 public class ResultCreatorTests
 {
-    [TestCase("Goodbye World!", HttpStatusCode.BadRequest)]
-    public void GetInvalidResult_ErrorString_ReturnResult(string message, HttpStatusCode statusCode)
+    [Test]
+    public void GetInvalidResult_ErrorString_ReturnResult()
     {
-        // Arrange & Act 
+        // Arrange
+        string message = "Goodbye World!";
+        var statusCode = HttpStatusCode.BadRequest;
+        
+        // Act 
         var result = ResultCreator.GetInvalidResult(message, statusCode);
 
         // Assert 
@@ -17,11 +21,15 @@ public class ResultCreatorTests
         Assert.AreEqual(message, result.Error);
     }
 
-    [TestCase("Goodbye World!", HttpStatusCode.BadRequest)]
-    public void GetInvalidResult_ErrorString_ReturnResult<T>(string message, HttpStatusCode statusCode)
+    [Test]
+    public void GetInvalidResultGeneric_ErrorString_ReturnResult()
     {
-        // Arrange & Act 
-        var result = ResultCreator.GetInvalidResult<T>(message, statusCode);
+        // Arrange
+        string message = "Goodbye World!";
+        var statusCode = HttpStatusCode.BadRequest;
+        
+        // & Act 
+        var result = ResultCreator.GetInvalidResult<int>(message, statusCode);
 
         // Assert 
         Assert.IsFalse(result.IsSuccess);
@@ -29,10 +37,14 @@ public class ResultCreatorTests
         Assert.AreEqual(message, result.Error);
     }
 
-    [TestCase("Data", HttpStatusCode.BadRequest)]
-    public void GetValidResult_TData_ReturnResult<T>(T data, HttpStatusCode statusCode)
+    [Test]
+    public void GetValidResult_TData_ReturnResult()
     {
-        // Arrange & Act 
+        // Arrange
+        string data = "Data";
+        var statusCode = HttpStatusCode.BadRequest;
+        
+        // Act 
         var result = ResultCreator.GetValidResult(data, statusCode);
 
         // Assert 

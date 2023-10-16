@@ -17,20 +17,22 @@ public class ActionResultMakerTests
         _resultBuilder = new ActionResultBuilder();
     }
 
-    [TestCase("Data", HttpStatusCode.OK)]
-    public void ResolveResult_Result_ReturnsActionResult<T>(T data, HttpStatusCode statusCode)
+    [Test]
+    public void ResolveResult_Result_ReturnsActionResult()
     {
         // Arrange
-        var expectedResult = new ResultDto<T> {Data = data, IsSuccess = true};
+        string data = "Data";
+        var statusCode = HttpStatusCode.OK;
+        var expectedResult = new ResultDto<string> {Data = data, IsSuccess = true};
 
         // Act
-        var actionResult = _resultBuilder.ResolveResult(new Result<T>
+        var actionResult = _resultBuilder.ResolveResult(new Result<string>
         {
             Data = data, IsSuccess = true, StatusCode = statusCode
         });
 
         var objectResult = ((OkObjectResult) actionResult.Result!).Value!;
-        var result = (ResultDto<T>) objectResult;
+        var result = (ResultDto<string>) objectResult;
 
         // Assert
         Assert.AreEqual(expectedResult.Data, result.Data);

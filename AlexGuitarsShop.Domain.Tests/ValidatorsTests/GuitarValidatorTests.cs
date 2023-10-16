@@ -37,11 +37,11 @@ public class GuitarValidatorTests
         Assert.AreEqual(exceptedMessage, result.Error);
     }
 
-    [TestCase("SuperGuitar", 1000001, "asdfg")]
-    public void CheckIfGuitarIsValid_InvalidInput_ReturnsInvalidResult(string name, int price, string description)
+    [Test]
+    public void CheckIfGuitarIsValid_InvalidInput_ReturnsInvalidResult()
     {
-        // Arrange 
-        var guitarDto = new GuitarDto {Name = name, Price = price, Description = description};
+        // Arrange
+        var guitarDto = new GuitarDto {Name = "SuperGuitar", Price = 1000001, Description = "asdfg"};
         var exceptedStatus = HttpStatusCode.BadRequest;
         string exceptedMessage = Constants.ErrorMessages.InvalidGuitar;
 
@@ -54,11 +54,12 @@ public class GuitarValidatorTests
         Assert.AreEqual(exceptedMessage, result.Error);
     }
 
-    [TestCase("SuperGuitar", 5000, "Its description of SuperGuitar")]
-    public void CheckIfGuitarIsValid_ValidInput_ReturnsValidResult(string name, int price, string description)
+    [Test]
+    public void CheckIfGuitarIsValid_ValidInput_ReturnsValidResult()
     {
         // Arrange 
-        var guitarDto = new GuitarDto {Name = name, Price = price, Description = description};
+        var guitarDto = new GuitarDto {Name = "SuperGuitar", Price = 5000, 
+            Description = "Its description of SuperGuitar"};
         var exceptedStatus = HttpStatusCode.OK;
 
         // Act

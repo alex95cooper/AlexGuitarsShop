@@ -19,10 +19,12 @@ public class CartItemsUpdaterTests
         _cartItemsUpdater = new CartItemsUpdater(_cartItemRepositoryMock.Object);
     }
 
-    [TestCase(5, 1)]
-    public async Task IncrementAsync_ValidInput_ReturnsValidResult(int id, int accountId)
+    [Test]
+    public async Task IncrementAsync_ValidInput_ReturnsValidResult()
     {
         // Arrange 
+        int id = 5;
+        int accountId = 1;
         var expectedStatus = HttpStatusCode.OK;
 
         // Act
@@ -37,10 +39,12 @@ public class CartItemsUpdaterTests
                 It.IsAny<int>()), Times.Never());
     }
 
-    [TestCase(5, 1)]
-    public async Task DecrementAsync_ValidInput_ReturnsValidResult(int id, int accountId)
+    [Test]
+    public async Task DecrementAsync_ValidInput_ReturnsValidResult()
     {
         // Arrange 
+        int id = 5;
+        int accountId = 1;
         var expectedStatus = HttpStatusCode.OK;
 
         // Act
