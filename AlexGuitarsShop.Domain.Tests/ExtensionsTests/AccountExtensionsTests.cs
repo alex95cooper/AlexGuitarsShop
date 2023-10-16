@@ -12,7 +12,12 @@ public class AccountExtensionsTests
     public void ToAccountDto_Account_ReturnsAccountDto()
     {
         // Arrange
-        var account = new Account {Name = "Alex", Email = "lex95bond@gmail.com", Role = Role.Admin};
+        var account = new Account
+        {
+            Name = "Alex",
+            Email = "lex95bond@gmail.com",
+            Role = Role.Admin
+        };
 
         // Act
         var accountDto = account.ToAccountDto();
@@ -30,7 +35,9 @@ public class AccountExtensionsTests
         Role expectedRole = Role.User;
         var accountDto = new AccountDto
         {
-            Name = "Anton", Email = "Anton@gmail.com", Password = "qwerty"
+            Name = "Anton",
+            Email = "Anton@gmail.com",
+            Password = "qwerty"
         };
 
         // Act

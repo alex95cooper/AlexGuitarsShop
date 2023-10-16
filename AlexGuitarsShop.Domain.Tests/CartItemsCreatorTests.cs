@@ -21,18 +21,22 @@ public class CartItemsCreatorTests
     }
 
     [Test]
-    public async Task AddNewCartItemAsync_ValidInput_ReturnsCorrectResult()
+    public async Task AddNewCartItemAsync_ValidInput_ReturnsValidResult()
     {
         // Arrange
-        var guitar = new Guitar {Id = 35, Name = "Super guitar"};
+        var guitar = new Guitar
+        {
+            Id = 35,
+            Name = "Super guitar"
+        };
         int accountId = 1;
-        var expectedStatus = HttpStatusCode.OK;
+        var expectedStatusCode = HttpStatusCode.OK;
 
         // Act
         var result = await _cartItemsCreator.AddNewCartItemAsync(guitar, accountId);
 
         // Assert
         Assert.IsTrue(result.IsSuccess);
-        Assert.AreEqual(expectedStatus, result.StatusCode);
+        Assert.AreEqual(expectedStatusCode, result.StatusCode);
     }
 }

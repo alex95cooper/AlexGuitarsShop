@@ -6,13 +6,13 @@ namespace AlexGuitarsShop.Domain.Tests.ValidatorsTests;
 public class PageValidatorTests
 {
     [Test]
-    public void CheckIfPageIsValid_InvalidInput_ReturnsFalse()
+    public void CheckIfPageIsValid_InvalidPageNumber_ReturnsFalse()
     {
         // Arrange
         int pageNumber = 5;
         int limit = 10;
         int totalCount = 35;
-        
+
         // Act
         bool result = PageValidator.CheckIfPageIsValid(pageNumber, limit, totalCount);
 

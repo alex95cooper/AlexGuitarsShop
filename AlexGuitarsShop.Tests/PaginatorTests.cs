@@ -11,7 +11,7 @@ public class PaginatorTests
         // Arrange
         int pageNumber = 3;
         int expectedOffset = 20;
-        
+
         // Act 
         int offset = Paginator.GetOffset(pageNumber);
 

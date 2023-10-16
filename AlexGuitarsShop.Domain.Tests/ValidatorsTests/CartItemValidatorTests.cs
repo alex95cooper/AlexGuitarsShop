@@ -20,12 +20,12 @@ public class CartItemValidatorTests
     }
 
     [Test]
-    public async Task CheckIfRegisterIsValid_InvalidInput_ReturnsInvalidResult()
+    public async Task CheckIfRegisterIsValid_ValidInput_ReturnsInvalidResult()
     {
         // Arrange 
         int id = 10;
         int accountId = 40;
-        var exceptedStatus = HttpStatusCode.BadRequest;
+        var exceptedStatusCode = HttpStatusCode.BadRequest;
         var exceptedMessage = Constants.ErrorMessages.InvalidEmail;
 
         // Act
@@ -33,7 +33,7 @@ public class CartItemValidatorTests
 
         // Assert
         Assert.IsFalse(result.IsSuccess);
-        Assert.AreEqual(exceptedStatus, result.StatusCode);
+        Assert.AreEqual(exceptedStatusCode, result.StatusCode);
         Assert.AreEqual(exceptedMessage, result.Error);
     }
 }

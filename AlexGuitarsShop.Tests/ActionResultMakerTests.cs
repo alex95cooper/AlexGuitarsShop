@@ -23,7 +23,11 @@ public class ActionResultMakerTests
         // Arrange
         string data = "Data";
         var statusCode = HttpStatusCode.OK;
-        var expectedResult = new ResultDto<string> {Data = data, IsSuccess = true};
+        var expectedResult = new ResultDto<string>
+        {
+            Data = data,
+            IsSuccess = true
+        };
 
         // Act
         var actionResult = _resultBuilder.ResolveResult(new Result<string>

@@ -6,44 +6,44 @@ namespace AlexGuitarsShop.Domain.Tests;
 public class ResultCreatorTests
 {
     [Test]
-    public void GetInvalidResult_ErrorString_ReturnResult()
+    public void GetInvalidResult_ErrorString_ReturnInvalidResult()
     {
         // Arrange
         string message = "Goodbye World!";
-        var statusCode = HttpStatusCode.BadRequest;
-        
+        var expectedStatusCode = HttpStatusCode.BadRequest;
+
         // Act 
-        var result = ResultCreator.GetInvalidResult(message, statusCode);
+        var result = ResultCreator.GetInvalidResult(message, expectedStatusCode);
 
         // Assert 
         Assert.IsFalse(result.IsSuccess);
-        Assert.AreEqual(statusCode, result.StatusCode);
+        Assert.AreEqual(expectedStatusCode, result.StatusCode);
         Assert.AreEqual(message, result.Error);
     }
 
     [Test]
-    public void GetInvalidResultGeneric_ErrorString_ReturnResult()
+    public void GetInvalidResultGeneric_ErrorString_ReturnInvalidResult()
     {
         // Arrange
         string message = "Goodbye World!";
-        var statusCode = HttpStatusCode.BadRequest;
-        
+        var expectedStatusCode = HttpStatusCode.BadRequest;
+
         // & Act 
-        var result = ResultCreator.GetInvalidResult<int>(message, statusCode);
+        var result = ResultCreator.GetInvalidResult<int>(message, expectedStatusCode);
 
         // Assert 
         Assert.IsFalse(result.IsSuccess);
-        Assert.AreEqual(statusCode, result.StatusCode);
+        Assert.AreEqual(expectedStatusCode, result.StatusCode);
         Assert.AreEqual(message, result.Error);
     }
 
     [Test]
-    public void GetValidResult_TData_ReturnResult()
+    public void GetValidResult_DataString_ReturnValidResult()
     {
         // Arrange
         string data = "Data";
         var statusCode = HttpStatusCode.BadRequest;
-        
+
         // Act 
         var result = ResultCreator.GetValidResult(data, statusCode);
 
@@ -53,10 +53,10 @@ public class ResultCreatorTests
     }
 
     [Test]
-    public void GetValidResult_Empty_ReturnResult()
+    public void GetValidResult_Void_ReturnValidResult()
     {
         // Arrange
-        HttpStatusCode expectedStatusCode = HttpStatusCode.OK;
+        var expectedStatusCode = HttpStatusCode.OK;
 
         // Act 
         var result = ResultCreator.GetValidResult();

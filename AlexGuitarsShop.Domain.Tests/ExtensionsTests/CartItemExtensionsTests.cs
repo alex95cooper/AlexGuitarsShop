@@ -13,7 +13,8 @@ public class CartItemExtensionsTests
         var expectedItem = new CartItem
         {
             ProductId = 35,
-            Quantity = 5, Product = new Guitar {Id = 1}
+            Quantity = 5,
+            Product = new Guitar {Id = 1}
         };
 
         // Act

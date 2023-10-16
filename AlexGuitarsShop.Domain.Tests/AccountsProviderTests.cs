@@ -26,7 +26,8 @@ public class AccountsProviderTests
         var account = new AccountDto
         {
             Name = "Alex",
-            Email = "lex95bond@gmail.com", Password = "asdfg"
+            Email = "lex95bond@gmail.com",
+            Password = "asdfg"
         };
         string expectedMessage = Constants.ErrorMessages.UserNotFound;
 

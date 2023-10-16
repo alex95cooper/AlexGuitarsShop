@@ -14,7 +14,8 @@ public class PaginatedListExtensionsTests
         int pageNumber = 1;
         PaginatedListDto<int> listDto = new PaginatedListDto<int>
         {
-            CountOfAll = 3, LimitedList = new List<int> {1, 2, 3}
+            CountOfAll = 3,
+            LimitedList = new List<int> {1, 2, 3}
         };
 
         // Act

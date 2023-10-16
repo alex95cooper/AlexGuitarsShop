@@ -25,14 +25,14 @@ public class CartItemsUpdaterTests
         // Arrange 
         int id = 5;
         int accountId = 1;
-        var expectedStatus = HttpStatusCode.OK;
+        var expectedStatusCode = HttpStatusCode.OK;
 
         // Act
         var result = await _cartItemsUpdater.IncrementAsync(id, accountId);
 
         // Assert
         Assert.IsTrue(result.IsSuccess);
-        Assert.AreEqual(expectedStatus, result.StatusCode);
+        Assert.AreEqual(expectedStatusCode, result.StatusCode);
 
         _cartItemRepositoryMock.Verify(crm =>
             crm.UpdateQuantityAsync(It.IsAny<int>(), It.IsAny<int>(),
@@ -45,14 +45,14 @@ public class CartItemsUpdaterTests
         // Arrange 
         int id = 5;
         int accountId = 1;
-        var expectedStatus = HttpStatusCode.OK;
+        var expectedStatusCode = HttpStatusCode.OK;
 
         // Act
         var result = await _cartItemsUpdater.DecrementAsync(id, accountId);
 
         // Assert
         Assert.IsTrue(result.IsSuccess);
-        Assert.AreEqual(expectedStatus, result.StatusCode);
+        Assert.AreEqual(expectedStatusCode, result.StatusCode);
 
         _cartItemRepositoryMock.Verify(crm =>
             crm.UpdateQuantityAsync(It.IsAny<int>(), It.IsAny<int>(),

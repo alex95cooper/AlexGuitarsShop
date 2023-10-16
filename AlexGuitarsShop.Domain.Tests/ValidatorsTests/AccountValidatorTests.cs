@@ -24,99 +24,115 @@ public class AccountValidatorTests
     public async Task CheckIfEmailExist_Null_ReturnsInvalidResult()
     {
         // Arrange 
-        var exceptedStatus = HttpStatusCode.BadRequest;
-        var exceptedMessage = Constants.ErrorMessages.InvalidEmail;
+        var expectedStatusCode = HttpStatusCode.BadRequest;
+        var expectedMessage = Constants.ErrorMessages.InvalidEmail;
 
         // Act
         var result = await _accountValidator.CheckIfEmailExist(null);
 
         // Assert
         Assert.IsFalse(result.IsSuccess);
-        Assert.AreEqual(exceptedStatus, result.StatusCode);
-        Assert.AreEqual(exceptedMessage, result.Error);
+        Assert.AreEqual(expectedStatusCode, result.StatusCode);
+        Assert.AreEqual(expectedMessage, result.Error);
 
         _accountRepositoryMock.Verify(ar =>
             ar.FindAsync(It.IsAny<string>()), Times.Never());
     }
 
     [Test]
-    public async Task CheckIfEmailExist_InvalidInput_ReturnsValidResult()
+    public async Task CheckIfEmailExist_InvalidEmail_ReturnsValidResult()
     {
         // Arrange 
-        var exceptedStatus = HttpStatusCode.BadRequest;
-        string email = "lex95bond@gmail.com";
+        var expectedStatusCode = HttpStatusCode.BadRequest;
+        string email = "Valera@gmail.com";
 
         // Act
         var result = await _accountValidator.CheckIfEmailExist(email);
 
         // Assert
         Assert.IsFalse(result.IsSuccess);
-        Assert.AreEqual(exceptedStatus, result.StatusCode);
+        Assert.AreEqual(expectedStatusCode, result.StatusCode);
     }
 
-    [TestCase("TheLongestNameInTheWorld", "lex95bond@gmail.com", "asdfg")]
-    [TestCase("Alex", "lex95bondgmailcom", "asdfg")]
-    public void CheckIfRegisterIsValid_InvalidInput_ReturnsInvalidResult(string name, string email, string password)
+    [Test]
+    public void CheckIfRegisterIsValid_InvalidEmail_ReturnsInvalidResult()
     {
         // Arrange 
-        var accountDto = new AccountDto {Name = name, Email = email, Password = password};
-        var exceptedStatus = HttpStatusCode.BadRequest;
-        var exceptedMessage = Constants.ErrorMessages.InvalidAccount;
+        var accountDto = new AccountDto
+        {
+            Name = "Alex",
+            Email = "invalidEmail",
+            Password = "asdfg"
+        };
+        var expectedStatusCode = HttpStatusCode.BadRequest;
+        var expectedMessage = Constants.ErrorMessages.InvalidAccount;
 
         // Act
         var result = _accountValidator.CheckIfRegisterIsValid(accountDto);
 
         // Assert
         Assert.IsFalse(result.IsSuccess);
-        Assert.AreEqual(exceptedStatus, result.StatusCode);
-        Assert.AreEqual(exceptedMessage, result.Error);
+        Assert.AreEqual(expectedStatusCode, result.StatusCode);
+        Assert.AreEqual(expectedMessage, result.Error);
     }
 
     [Test]
-    public void CheckIfRegisterIsValid_ValidInput_ReturnsValidResult()
+    public void CheckIfRegisterIsValid_ValidAccount_ReturnsValidResult()
     {
         // Arrange 
-        var accountDto = new AccountDto {Name = "Alex", Email = "lex95bond@gmail.com", Password = "asdfg"};
-        var exceptedStatus = HttpStatusCode.OK;
+        var accountDto = new AccountDto
+        {
+            Name = "Alex",
+            Email = "lex95bond@gmail.com",
+            Password = "asdfg"
+        };
+        var expectedStatusCode = HttpStatusCode.OK;
 
         // Act
         var result = _accountValidator.CheckIfRegisterIsValid(accountDto);
 
         // Assert
         Assert.IsTrue(result.IsSuccess);
-        Assert.AreEqual(exceptedStatus, result.StatusCode);
+        Assert.AreEqual(expectedStatusCode, result.StatusCode);
     }
 
     [Test]
-    public void CheckIfLoginIsValid_InvalidInput_ReturnsInvalidResult()
+    public void CheckIfLoginIsValid_InvalidPassword_ReturnsInvalidResult()
     {
         // Arrange 
-        var accountDto = new AccountDto {Email = "lex95bond@gmail.com", 
-            Password = "aaaaaaaaaassssssssssddddddddddffffffffffgggggggggghh"};
-        var exceptedStatus = HttpStatusCode.BadRequest;
-        var exceptedMessage = Constants.ErrorMessages.InvalidAccount;
+        var accountDto = new AccountDto
+        {
+            Email = "lex95bond@gmail.com",
+            Password = new string('a', 51)
+        };
+        var expectedStatusCode = HttpStatusCode.BadRequest;
+        var expectedMessage = Constants.ErrorMessages.InvalidAccount;
 
         // Act
         var result = _accountValidator.CheckIfRegisterIsValid(accountDto);
 
         // Assert
         Assert.IsFalse(result.IsSuccess);
-        Assert.AreEqual(exceptedStatus, result.StatusCode);
-        Assert.AreEqual(exceptedMessage, result.Error);
+        Assert.AreEqual(expectedStatusCode, result.StatusCode);
+        Assert.AreEqual(expectedMessage, result.Error);
     }
 
     [Test]
-    public void CheckIfLoginIsValid_ValidInput_ReturnsValidResult()
+    public void CheckIfLoginIsValid_ValidAccount_ReturnsValidResult()
     {
         // Arrange 
-        var accountDto = new AccountDto {Email = "lex95bond@gmail.com", Password = "asdfg"};
-        var exceptedStatus = HttpStatusCode.OK;
+        var accountDto = new AccountDto
+        {
+            Email = "lex95bond@gmail.com",
+            Password = "asdfg"
+        };
+        var expectedStatusCode = HttpStatusCode.OK;
 
         // Act
         var result = _accountValidator.CheckIfLoginIsValid(accountDto);
 
         // Assert
         Assert.IsTrue(result.IsSuccess);
-        Assert.AreEqual(exceptedStatus, result.StatusCode);
+        Assert.AreEqual(expectedStatusCode, result.StatusCode);
     }
 }

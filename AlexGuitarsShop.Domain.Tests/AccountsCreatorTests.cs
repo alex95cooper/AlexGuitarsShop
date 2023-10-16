@@ -27,7 +27,9 @@ public class AccountsCreatorTests
         var account = new AccountDto
         {
             Name = "Alex",
-            Email = "lex95bond@gmail.com", Password = "asdfg", Role = Role.Admin
+            Email = "lex95bond@gmail.com",
+            Password = "asdfg",
+            Role = Role.Admin
         };
 
         // Act

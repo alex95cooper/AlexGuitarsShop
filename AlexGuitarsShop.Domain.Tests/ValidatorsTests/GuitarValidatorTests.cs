@@ -21,69 +21,81 @@ public class GuitarValidatorTests
     }
 
     [Test]
-    public async Task CheckIfGuitarExist_InvalidInput_ReturnsInvalidResult()
+    public async Task CheckIfGuitarExist_InvalidId_ReturnsInvalidResult()
     {
         // Arrange 
         int id = 35;
-        var exceptedStatus = HttpStatusCode.BadRequest;
-        var exceptedMessage = Constants.ErrorMessages.InvalidGuitarId;
+        var expectedStatusCode = HttpStatusCode.BadRequest;
+        var expectedMessage = Constants.ErrorMessages.InvalidGuitarId;
 
         // Act
         var result = await _guitarValidator.CheckIfGuitarExist(id);
 
         // Assert
         Assert.IsFalse(result.IsSuccess);
-        Assert.AreEqual(exceptedStatus, result.StatusCode);
-        Assert.AreEqual(exceptedMessage, result.Error);
+        Assert.AreEqual(expectedStatusCode, result.StatusCode);
+        Assert.AreEqual(expectedMessage, result.Error);
     }
 
     [Test]
-    public void CheckIfGuitarIsValid_InvalidInput_ReturnsInvalidResult()
+    public void CheckIfGuitarIsValid_InvalidPrice_ReturnsInvalidResult()
     {
         // Arrange
-        var guitarDto = new GuitarDto {Name = "SuperGuitar", Price = 1000001, Description = "asdfg"};
-        var exceptedStatus = HttpStatusCode.BadRequest;
-        string exceptedMessage = Constants.ErrorMessages.InvalidGuitar;
+        var guitarDto = new GuitarDto
+        {
+            Name = "SuperGuitar",
+            Price = 1000001,
+            Description = "asdfg"
+        };
+        var expectedStatusCode = HttpStatusCode.BadRequest;
+        string expectedMessage = Constants.ErrorMessages.InvalidGuitar;
 
         // Act
         var result = _guitarValidator.CheckIfGuitarIsValid(guitarDto);
 
         // Assert
         Assert.IsFalse(result.IsSuccess);
-        Assert.AreEqual(exceptedStatus, result.StatusCode);
-        Assert.AreEqual(exceptedMessage, result.Error);
+        Assert.AreEqual(expectedStatusCode, result.StatusCode);
+        Assert.AreEqual(expectedMessage, result.Error);
     }
 
     [Test]
-    public void CheckIfGuitarIsValid_ValidInput_ReturnsValidResult()
+    public void CheckIfGuitarIsValid_ValidGuitarDto_ReturnsValidResult()
     {
         // Arrange 
-        var guitarDto = new GuitarDto {Name = "SuperGuitar", Price = 5000, 
-            Description = "Its description of SuperGuitar"};
-        var exceptedStatus = HttpStatusCode.OK;
+        var guitarDto = new GuitarDto
+        {
+            Name = "SuperGuitar",
+            Price = 5000,
+            Description = "Its description of SuperGuitar"
+        };
+        var expectedStatusCode = HttpStatusCode.OK;
 
         // Act
         var result = _guitarValidator.CheckIfGuitarIsValid(guitarDto);
 
         // Assert
         Assert.IsTrue(result.IsSuccess);
-        Assert.AreEqual(exceptedStatus, result.StatusCode);
+        Assert.AreEqual(expectedStatusCode, result.StatusCode);
     }
 
     [Test]
-    public async Task CheckIfGuitarUpdateIsValid_InvalidInput_ReturnsInvalidResult()
+    public async Task CheckIfGuitarUpdateIsValid_InvalidId_ReturnsInvalidResult()
     {
         // Arrange 
-        var guitarDto = new GuitarDto {Id = 35};
-        var exceptedStatus = HttpStatusCode.BadRequest;
-        var exceptedMessage = Constants.ErrorMessages.InvalidGuitar;
+        var guitarDto = new GuitarDto
+        {
+            Id = 35
+        };
+        var expectedStatusCode = HttpStatusCode.BadRequest;
+        var expectedMessage = Constants.ErrorMessages.InvalidGuitar;
 
         // Act
         var result = await _guitarValidator.CheckIfGuitarUpdateIsValid(guitarDto);
 
         // Assert
         Assert.IsFalse(result.IsSuccess);
-        Assert.AreEqual(exceptedStatus, result.StatusCode);
-        Assert.AreEqual(exceptedMessage, result.Error);
+        Assert.AreEqual(expectedStatusCode, result.StatusCode);
+        Assert.AreEqual(expectedMessage, result.Error);
     }
 }

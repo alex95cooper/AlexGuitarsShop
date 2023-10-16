@@ -10,7 +10,11 @@ public class AccountExtensionsTests
     public void ToAccountDto_LoginViewModel_ReturnsAccountDto()
     {
         // Arrange
-        var model = new LoginViewModel {Email = "lex95bond@gmail.com", Password = "asdfg"};
+        var model = new LoginViewModel
+        {
+            Email = "lex95bond@gmail.com",
+            Password = "asdfg"
+        };
 
         // Act
         var account = model.ToAccountDto();
@@ -26,8 +30,10 @@ public class AccountExtensionsTests
         // Arrange
         var model = new RegisterViewModel
         {
-            Name = "Anton", Email = "Anton@gmail.com",
-            Password = "qwerty", PasswordConfirm = "qwerty"
+            Name = "Anton", 
+            Email = "Anton@gmail.com",
+            Password = "qwerty", 
+            PasswordConfirm = "qwerty"
         };
 
         // Act

@@ -9,7 +9,7 @@ public class ResultDtoCreatorTests
     {
         // Arrange
         string errorMessage = "Goodbye World!";
-        
+
         // Act 
         var result = ResultDtoCreator.GetInvalidResult<int>(errorMessage);
 
@@ -17,13 +17,13 @@ public class ResultDtoCreatorTests
         Assert.IsFalse(result.IsSuccess);
         Assert.AreEqual(errorMessage, result.Error);
     }
-    
+
     [Test]
-    public void GetInvalidResult_ErrorString_ReturnsResult()
+    public void GetInvalidResult_ErrorString_ReturnsInvalidResult()
     {
         // Arrange
         string errorMessage = "Goodbye World!";
-        
+
         //  Act 
         var result = ResultDtoCreator.GetInvalidResult(errorMessage);
 
@@ -31,13 +31,13 @@ public class ResultDtoCreatorTests
         Assert.IsFalse(result.IsSuccess);
         Assert.AreEqual(errorMessage, result.Error);
     }
-    
+
     [Test]
-    public void GetValidResult_TData_ReturnResult()
+    public void GetValidResult_DataString_ReturnsValidResult()
     {
         // Arrange
         string data = "Data";
-        
+
         // Act 
         var result = ResultDtoCreator.GetValidResult(data);
 
@@ -47,7 +47,7 @@ public class ResultDtoCreatorTests
     }
 
     [Test]
-    public void GetValidResult_Empty_ReturnResult()
+    public void GetValidResult_Empty_ReturnValidResult()
     {
         // Arrange & Act 
         var result = ResultDtoCreator.GetValidResult();
